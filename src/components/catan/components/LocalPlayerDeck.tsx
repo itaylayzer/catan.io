@@ -3,8 +3,8 @@ import {
     TooltipTrigger,
     TooltipContent,
 } from "@/components/ui/tooltip";
-import { MaterialList, DevcardList } from "@/types/materials";
 import { LOCAL_DECK_MATERIALS } from "@/config/constants/ui";
+import { useCatanStore } from "@/store/useCatanStore";
 
 const isReactIcons = [
     false,
@@ -19,14 +19,11 @@ const isReactIcons = [
     false,
 ];
 
-export function LocalPlayerDeck({
-    materials,
-    misteryCards,
-}: {
-    materials: MaterialList;
-    misteryCards: DevcardList;
-}) {
-    const combine = [...materials, ...misteryCards];
+export function LocalPlayerDeck({}: {}) {
+    const {
+        local: { materials, devcards },
+    } = useCatanStore();
+    const combine = [...materials, ...devcards];
 
     return (
         <div>

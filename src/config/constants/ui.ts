@@ -1,9 +1,9 @@
-import SVGWood from "@/components/svg/SVGWood";
-import SVGBrick from "@/components/svg/SVGBrick";
-import SVGOre from "@/components/svg/SVGOre";
-import SVGWheet from "@/components/svg/SVGWheet";
-import SVGWool from "@/components/svg/SVGWhool";
-import SVGMonopoly from "@/components/svg/SVGMonopoly";
+import SVGWood from "@/components/svg/custom/SVGWood";
+import SVGBrick from "@/components/svg/custom/SVGBrick";
+import SVGOre from "@/components/svg/custom/SVGOre";
+import SVGWheet from "@/components/svg/custom/SVGWheet";
+import SVGWool from "@/components/svg/custom/SVGWhool";
+import SVGMonopoly from "@/components/svg/custom/SVGMonopoly";
 
 import {
     FaMagic,
@@ -15,8 +15,9 @@ import {
 } from "react-icons/fa";
 import { FaHouse, FaHandshakeSimple, FaChessKnight } from "react-icons/fa6";
 import { RiPlantFill } from "react-icons/ri";
+import { Fa2Roads } from "@/components/svg/react-icons/Fa2Roads";
 
-export const COLORS = ["#7f1d1d", "#15803d", "#3b82f6", "#c2410c"];
+export const COLORS = ["#fff", "#3b82f6", "#7f1d1d", "#c2410c"];
 
 export const MATERIALS = [
     { name: "Wood", icon: SVGWood },
@@ -70,7 +71,7 @@ const DEVELOPMENTS = [
     },
     ONLINE_STATS[0],
     {
-        icon: FaRoad,
+        icon: Fa2Roads,
         name: "2 Roads",
     },
     {

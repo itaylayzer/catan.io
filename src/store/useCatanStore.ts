@@ -1,5 +1,6 @@
 import { Socket } from "@/server/sockets";
 import { MaterialList, DevcardList } from "@/types/materials";
+import { Player } from "@/types/player";
 import { create } from "zustand";
 
 type CatanData = {
@@ -17,27 +18,13 @@ type CatanData = {
         devcards: DevcardList;
     };
     client: {
-        name?: string;
         id?: number;
         socket?: Socket;
     };
-    onlines: Map<
-        number,
-        {
-            name: string;
-            materials: number;
-            victoryPoints: number;
-            devcards: number;
-            color: number;
-            roads: number;
-        }
-    >;
-    local: {
+    onlines: Map<number, Player>;
+    local: Omit<Player, "materials" | "devcards"> & {
         materials: MaterialList;
         devcards: DevcardList;
-        color: number;
-        roads: number;
-        victoryPoints: number;
     };
 };
 
@@ -75,6 +62,7 @@ const defaultValue: CatanData = {
         roads: 0,
         victoryPoints: 0,
         color: 0,
+        name: "shani",
     },
 };
 

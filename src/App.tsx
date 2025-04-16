@@ -16,7 +16,6 @@ function App() {
             set({
                 client: {
                     id: -1,
-                    name: "shifra",
                     socket: await io(TranslateCode(code)),
                 },
             });

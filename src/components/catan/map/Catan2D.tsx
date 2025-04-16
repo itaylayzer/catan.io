@@ -1,10 +1,10 @@
 import { BsHexagonFill } from "react-icons/bs";
 import { ReactNode, useEffect, useRef, useState } from "react";
-import SVGBrick from "@/components/svg/SVGBrick";
-import SVGOre from "@/components/svg/SVGOre";
-import SVGWheet from "@/components/svg/SVGWheet";
-import SVGWool from "@/components/svg/SVGWhool";
-import SVGWood from "@/components/svg/SVGWood";
+import SVGBrick from "@/components/svg/custom/SVGBrick";
+import SVGOre from "@/components/svg/custom/SVGOre";
+import SVGWheet from "@/components/svg/custom/SVGWheet";
+import SVGWool from "@/components/svg/custom/SVGWhool";
+import SVGWood from "@/components/svg/custom/SVGWood";
 import { cn } from "@/lib/utils";
 import { ClientCodes, ServerCodes } from "@/config/constants/codes";
 import { useCatanStore } from "@/store/useCatanStore";
@@ -112,14 +112,16 @@ function Hex(
 let delayNumber = 0;
 
 export default function Catan2D() {
-    const [height, setHeight] = useState(755);
-    const containerRef = useRef<HTMLDivElement>(null);
+    const outerRef = useRef<HTMLDivElement>(null);
+    const boardRef = useRef<HTMLDivElement>(null);
+    const [scale, setScale] = useState(1);
 
     const {
         set,
         materials,
         initialized,
-        client: { socket, name },
+        client: { socket },
+        local: { name },
     } = useCatanStore();
     useEffect(() => {
         socket!.on(
@@ -171,7 +173,6 @@ export default function Catan2D() {
                     client: {
                         socket,
                         id,
-                        name,
                     },
                 });
             }
@@ -180,87 +181,98 @@ export default function Catan2D() {
         socket!.emit(ServerCodes.INIT, name);
     }, []);
 
+    // Dynamic scaling effect
     useEffect(() => {
-        if (containerRef.current) {
-            setHeight(containerRef.current.clientHeight);
-        }
+        const updateScale = () => {
+            if (outerRef.current && boardRef.current) {
+                const outer = outerRef.current.getBoundingClientRect();
+                const board = boardRef.current.getBoundingClientRect();
 
-        const getHeight = () => {
-            if (containerRef.current) {
-                setHeight(containerRef.current.clientHeight);
+                const scaleX = outer.width / board.width;
+                const scaleY = outer.height / board.height;
+
+                // Choose the smaller scale to fit within the viewport
+                setScale(Math.min(scaleX, scaleY, 1)); // Prevent upscaling
             }
         };
 
-        const eventsNames = ["resize", "scroll"];
-
-        eventsNames.forEach((name) => window.addEventListener(name, getHeight));
-        return () => {
-            eventsNames.forEach((name) =>
-                window.removeEventListener(name, getHeight)
-            );
-        };
-    }, [containerRef, height]);
-
-    delayNumber = 0;
+        updateScale();
+        window.addEventListener("resize", updateScale);
+        return () => window.removeEventListener("resize", updateScale);
+    }, []);
 
     return !initialized ? null : (
-        <div ref={containerRef} className="flex-1 cursor opacity-80 relative">
+        <div className="relative w-full h-full overflow-hidden" ref={outerRef}>
             <div
-                className={cn(
-                    "relative h-[645px] w-[710px] top-[50%] left-[50%] -translate-[50%]"
-                )}
+                className="absolute"
                 style={{
-                    scale: `${height / 755}`,
+                    left: "50%",
+                    top: "50%",
+                    transform: `translate(-50%, -50%) scale(${scale})`,
+                    transformOrigin: "top left",
                 }}
             >
-                <div className="translate-x-[140px]">
-                    {rows.flatMap((rowLength, rowIndex) =>
-                        new Array(rowLength).fill(null).map((_, colIndex) => {
-                            const hexIndex =
-                                (rowIndex === 0
-                                    ? 0
-                                    : rowIndex === 1
-                                    ? rows[0]
-                                    : rows
-                                          .slice(0, rowIndex)
-                                          .reduce((a, b) => a + b) ?? 0) +
-                                colIndex;
+                <div ref={boardRef} className="relative w-fit h-fit">
+                    <div
+                        style={{
+                            translate: `-215px -322.5px`,
+                        }}
+                    >
+                        {rows.flatMap((rowLength, rowIndex) =>
+                            new Array(rowLength)
+                                .fill(null)
+                                .map((_, colIndex) => {
+                                    const hexIndex =
+                                        (rowIndex === 0
+                                            ? 0
+                                            : rowIndex === 1
+                                            ? rows[0]
+                                            : rows
+                                                  .slice(0, rowIndex)
+                                                  .reduce((a, b) => a + b) ??
+                                              0) + colIndex;
 
-                            const { num, material } = materials.get(hexIndex)!;
-                            if (num === 7) console.log("num === 7");
-                            const colorValue = convertions.matsColors[material];
+                                    const { num, material } =
+                                        materials.get(hexIndex)!;
+                                    const colorValue =
+                                        convertions.matsColors[material];
 
-                            const x =
-                                fixing.x *
-                                round *
-                                spacing *
-                                (-(rowLength - 3) + colIndex * 2);
-                            const z = rowIndex * 2 * round * fixing.z * spacing;
+                                    const x =
+                                        fixing.x *
+                                        round *
+                                        spacing *
+                                        (-(rowLength - 3) + colIndex * 2);
+                                    const z =
+                                        rowIndex *
+                                        2 *
+                                        round *
+                                        fixing.z *
+                                        spacing;
 
-                            return (
-                                <Hex
-                                    color={colorValue}
-                                    className="absolute  cursor-grab"
-                                    style={{
-                                        translate: `${x}px ${z}px`,
-                                    }}
-                                >
-                                    <div className="flex gap-2 items-center font-mono font-bold text-2xl">
-                                        <p>{num}</p>
-                                        {matsToIcon[material]
-                                            ? matsToIcon[material]({
-                                                  fill: "white",
-                                                  stroke: "white",
-                                                  color: "white",
-                                                  width: 30,
-                                                  height: 30,
-                                              })
-                                            : null}
-                                    </div>
-                                </Hex>
-                            );
-                        })
-                    )}
+                                    return (
+                                        <Hex
+                                            key={hexIndex}
+                                            color={colorValue}
+                                            className="absolute cursor-grab"
+                                            style={{
+                                                translate: `${x}px ${z}px`,
+                                            }}
+                                        >
+                                            <div className="flex gap-2 items-center font-mono font-bold text-2xl">
+                                                <p>{num}</p>
+                                                {matsToIcon[material]?.({
+                                                    fill: "white",
+                                                    stroke: "white",
+                                                    color: "white",
+                                                    width: 30,
+                                                    height: 30,
+                                                })}
+                                            </div>
+                                        </Hex>
+                                    );
+                                })
+                        )}
+                    </div>
                 </div>
             </div>
         </div>

@@ -1,7 +1,7 @@
 export interface Player {
     name: string;
     victoryPoints: number;
-    mysteries: number;
+    devcards: number;
     materials: number;
     color: number;
     roads: number;

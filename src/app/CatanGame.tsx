@@ -2,52 +2,11 @@ import { ActionDeck } from "@/components/catan/components/ActionDeck";
 import { BankCard } from "@/components/catan/components/BankCard";
 import { Chat } from "@/components/catan/components/Chat";
 import { LocalPlayerDeck } from "@/components/catan/components/LocalPlayerDeck";
-import { OnlinePlayerCard } from "@/components/catan/components/OnlinePlayerCard";
+import PlayersBar from "@/components/catan/components/PlayersBar";
+
 import { TradeCard } from "@/components/catan/components/TradeCard";
 import Catan2D from "@/components/catan/map/Catan2D";
-import { MaterialList } from "@/types/materials";
 import { toast } from "sonner";
-
-
-const Players = [
-    {
-        name: "Barak",
-        materials: 6,
-        victoryPoints: 8,
-        mysteries: 3,
-        color: 0,
-        roads: 10,
-    },
-    {
-        name: "Yoni",
-        materials: 6,
-        victoryPoints: 8,
-        mysteries: 3,
-        color: 1,
-        roads: 10,
-    },
-    {
-        name: "Barak",
-        materials: 6,
-        victoryPoints: 8,
-        mysteries: 3,
-        color: 2,
-        roads: 10,
-    },
-    {
-        name: "Yoni",
-        materials: 6,
-        victoryPoints: 8,
-        mysteries: 3,
-        color: 3,
-        roads: 10,
-    },
-];
-
-const LocalPlayer = {
-    materials: [10, 10, 10, 10, 10] as MaterialList,
-    misteryCards: [10, 10, 10, 10, 10] as MaterialList,
-};
 
 export function CatanGame() {
     return (
@@ -101,16 +60,13 @@ export function CatanGame() {
             <div className="flex-1 flex flex-col gap-3 items-center">
                 <Catan2D />
                 <ActionDeck />
-                <LocalPlayerDeck {...LocalPlayer} />
+                <LocalPlayerDeck />
                 <div className="h-5"></div>
             </div>
             <div className="right-0 absolute pt-32 h-full">
                 <div className="flex flex-col gap-3 px-5 h-full ">
                     <BankCard />
-                    <p className="text-2xl mt-10">Players</p>
-                    {Players.map((player) => (
-                        <OnlinePlayerCard player={player} key={player.color} />
-                    ))}
+                    <PlayersBar />
                     <Chat className="flex-1 " />
                 </div>
             </div>

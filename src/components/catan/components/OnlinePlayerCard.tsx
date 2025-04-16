@@ -10,12 +10,12 @@ import { Player } from "@/types/player";
 import { PiHouseSimpleFill } from "react-icons/pi";
 
 export function OnlinePlayerCard({ player }: { player: Player }) {
-    const { materials, mysteries, name, victoryPoints, color, roads } = player;
+    const { materials, devcards, name, victoryPoints, color, roads } = player;
 
-    const list = [materials, mysteries, victoryPoints, roads];
+    const list = [materials, devcards, victoryPoints, roads];
 
     return (
-        <div className="flex gap-1 outline-1 rounded-sm  px-4 py-1 items-center">
+        <div className="flex gap-1 px-4 py-1 items-center">
             <PiHouseSimpleFill
                 opacity={1}
                 style={{
