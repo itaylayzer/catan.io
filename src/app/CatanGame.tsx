@@ -6,46 +6,13 @@ import PlayersBar from "@/components/catan/components/PlayersBar";
 
 import { TradeCard } from "@/components/catan/components/TradeCard";
 import Catan2D from "@/components/catan/map/Catan2D";
-import { toast } from "sonner";
 
 export function CatanGame() {
     return (
         <div className="flex absolute w-[100%] h-[100%] top-0 left-0">
             <div className="absolute pt-32 h-full">
                 <div className="flex flex-col gap-3 px-5 w-[333px] h-full">
-                    <h1
-                        className="text-6xl text-center font-bold "
-                        onClick={() => {
-                            toast("Trade: from Barak", {
-                                cancel: {
-                                    label: "No",
-                                    onClick: () => console.log("a"),
-                                },
-                                description: (
-                                    <div className="text-sm ">
-                                        <div>
-                                            <span className="font-bold">
-                                                Wants:
-                                            </span>{" "}
-                                            🪵 Wood, 🧱 Brick
-                                        </div>
-                                        <div>
-                                            <span className="font-bold">
-                                                Gives:
-                                            </span>{" "}
-                                            🌾 Wheat, ⛏️ Ore
-                                        </div>
-                                    </div>
-                                ),
-                                action: {
-                                    label: "Yes",
-                                    onClick: () => console.log("Undo"),
-                                },
-                            });
-                        }}
-                    >
-                        Catan
-                    </h1>
+                    <h1 className="text-6xl text-center font-bold ">Catan</h1>
                     <a
                         href="https://itaylayzer.github.io/"
                         className="mb-5 font-mono text-center text-muted-foreground -translate-y-4"

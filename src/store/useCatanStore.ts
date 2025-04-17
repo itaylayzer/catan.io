@@ -99,8 +99,6 @@ export const useCatanStore = create<CatanStore>((set) => ({
             }) => {
                 const harborMap = new Map(harbors);
 
-                console.log(JSON.stringify(materials));
-
                 const materialsMap = new Map(
                     materials.map(([index, { num, material }]) => {
                         return [
