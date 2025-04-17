@@ -5,6 +5,7 @@ import { LocalPlayerDeck } from "@/components/catan/components/LocalPlayerDeck";
 import PlayersBar from "@/components/catan/components/PlayersBar";
 
 import { TradeCard } from "@/components/catan/components/TradeCard";
+import DicesView from "@/components/catan/dices/DicesView";
 import Catan2D from "@/components/catan/map/Catan2D";
 
 export function CatanGame() {
@@ -19,8 +20,8 @@ export function CatanGame() {
                     >
                         @itaylayzer
                     </a>
-                    <div className="flex flex-col justify-center mt-5">
-                        <TradeCard />
+                    <div className="h-min">
+                        <DicesView />
                     </div>
                 </div>
             </div>
