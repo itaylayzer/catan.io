@@ -12,4 +12,7 @@ export default defineConfig({
         },
     },
     base: "/catan.io/",
+    build: {
+        outDir: "docs",
+    },
 });

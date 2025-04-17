@@ -3,9 +3,9 @@ import { Material } from "@/types/materials";
 import { VertexType } from "@/types/vertex";
 import { ArrayShuffle } from "@/utils/ArrayShuffle";
 import { GraphUtils, Vertex } from "./Graph";
-import AreasArray from "@/config/data/areas.json";
-import SettlementsArray from "@/config/data/areas.json";
-import HarborsArray from "@/config/data/harbors.json";
+import AreasArray from "@/config/data/game/areas.json";
+import SettlementsArray from "@/config/data/game/areas.json";
+import HarborsArray from "@/config/data/game/harbors.json";
 import { Player } from "./Player";
 import { Socket } from "./sockets";
 
