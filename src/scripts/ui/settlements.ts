@@ -1,8 +1,5 @@
 import { Point } from "../types/point";
 
-const W = 150;
-const H = 150;
-
 const dotPositions = [
     { x: 75, y: -7.5 },
     { x: 75, y: 157.5 },
@@ -70,4 +67,4 @@ uniquePoints.sort((a, b) => {
     return a.y - b.y;
 });
 
-console.log(JSON.stringify(uniquePoints));
+console.log(JSON.stringify(uniquePoints, null, 4));

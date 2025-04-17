@@ -40,18 +40,30 @@ const uniquePoints: {
         x: number;
         y: number;
     };
-}[] = [...edges];
+}[] = [];
 
+let found = 0;
 for (const point of edges) {
     const isDuplicate = uniquePoints.some(
         (existing) =>
-            point.from.index === existing.to.index &&
-            point.to.index === existing.from.index
+            (point.from.index === existing.to.index &&
+                point.to.index === existing.from.index) ||
+            (point.from.index === existing.from.index &&
+                point.to.index === existing.to.index)
     );
     if (!isDuplicate) {
         uniquePoints.push(point);
+    } else {
+        found++;
     }
 }
+console.error("found", found, "duplicates in ", edges.length, "edges");
+
+uniquePoints.forEach((value, index) => {
+    const fixedNum = 10;
+    uniquePoints[index].middle.y =
+        Math.round(value.middle.y / fixedNum) * fixedNum;
+});
 
 uniquePoints.sort((a, b) => {
     if (a.middle.y === b.middle.y) {
@@ -62,4 +74,4 @@ uniquePoints.sort((a, b) => {
 
 console.error(uniquePoints.length);
 
-console.log(JSON.stringify(uniquePoints));
+console.log(JSON.stringify(uniquePoints, null, 4));

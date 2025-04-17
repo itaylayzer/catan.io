@@ -8,17 +8,11 @@ import { useCatanStore } from "./store/useCatanStore";
 function App() {
     const {
         client: { socket },
-        set,
+        setSocket,
     } = useCatanStore();
     useEffect(() => {
         createServer(async ({ code }) => {
-            console.log("opend server on code: ", code);
-            set({
-                client: {
-                    id: -1,
-                    socket: await io(TranslateCode(code)),
-                },
-            });
+            setSocket(await io(TranslateCode(code)));
         });
     }, []);
 
