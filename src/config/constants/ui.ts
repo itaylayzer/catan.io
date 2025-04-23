@@ -11,6 +11,7 @@ import {
     FaRoad,
     FaTrophy,
     FaDiceSix,
+    FaStop,
     FaCity,
 } from "react-icons/fa";
 import { FaHouse, FaHandshakeSimple, FaChessKnight } from "react-icons/fa6";
@@ -34,35 +35,6 @@ export const ONLINE_STATS = [
     { name: "Roads", icon: FaRoad },
 ];
 
-export const ACTION_DECK_BUTTONS = [
-    {
-        icon: FaDiceSix,
-        header: "Roll Doce",
-    },
-    {
-        icon: FaRoad,
-        header: "Place Road",
-        count: 1,
-    },
-    {
-        icon: FaHouse,
-        header: "Place House",
-        count: 1,
-    },
-    {
-        icon: FaCity,
-        header: "Upgrade to City",
-        count: 1,
-    },
-    {
-        icon: FaMagic,
-        header: "Buy Mistery Card",
-    },
-    {
-        icon: FaHandshakeSimple,
-        header: "Trade",
-    },
-];
 
 const DEVELOPMENTS = [
     {

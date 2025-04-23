@@ -5,34 +5,88 @@ import {
     TooltipContent,
 } from "@/components/ui/tooltip";
 import { ServerCodes } from "@/config/constants/codes";
-import { ACTION_DECK_BUTTONS } from "@/config/constants/ui";
 import { useCatanStore } from "@/store/useCatanStore";
+import VMath from "@/utils/VMath";
+import { FaCity, FaDiceSix, FaMagic, FaRoad, FaStop } from "react-icons/fa";
+import { FaHandshakeSimple, FaHouse } from "react-icons/fa6";
 
 export function ActionDeck() {
     const {
         client: { socket, id },
         turnId,
+        ui: { dicesState },
+        bank,
     } = useCatanStore();
+
+    const ACTION_DECK_BUTTONS = [
+        {
+            icon: dicesState === "mine" ? FaStop : FaDiceSix,
+            header: dicesState === "mine" ? "Stop Turn" : "Roll Dices",
+        },
+        {
+            icon: FaRoad,
+            header: "Place Road",
+            count: 1,
+        },
+        {
+            icon: FaHouse,
+            header: "Place House",
+            count: 1,
+        },
+        {
+            icon: FaCity,
+            header: "Upgrade to City",
+            count: 1,
+        },
+        {
+            icon: FaMagic,
+            header: "Buy Mistery Card",
+        },
+        {
+            icon: FaHandshakeSimple,
+            header: "Trade",
+        },
+    ];
 
     const actions = [
         () => {
-            socket?.emit(ServerCodes.ROLL);
+            dicesState === "mine"
+                ? socket?.emit(ServerCodes.STOP_TURN)
+                : socket?.emit(ServerCodes.ROLL);
         },
         () => {
+            // ROADS
             socket;
         },
         () => {
+            // HOUSES
             socket;
         },
         () => {
+            // CITIES
             socket;
         },
         () => {
+            // DEVCARD
+            VMath(bank.devcards).sum() > 0 &&
+                socket?.emit(ServerCodes.BUY_DEVCARD);
+        },
+        () => {
+            // TRADE
             socket;
         },
     ];
 
-    const disabled = [turnId !== id, false, false, false, false];
+    const allDisabled = turnId !== id || dicesState === "rolling";
+
+    const disabled = [
+        allDisabled,
+        allDisabled || false,
+        allDisabled || false,
+        allDisabled || false,
+        allDisabled || false,
+        allDisabled || false,
+    ];
 
     return (
         <div>

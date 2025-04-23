@@ -1,11 +1,19 @@
-import { convertions } from "@/components/catan/map/configs";
-import { ClientCodes, ServerCodes } from "@/config/constants/codes";
+import { handleSocket } from "@/client/client";
 import { nonFunction } from "@/config/objects/nonFunction";
 import { Socket } from "@/server/sockets";
 import { DevcardList, MaterialList } from "@/types/materials";
 import { Player } from "@/types/player";
-import { randIntNot } from "@/utils/randIntNot";
+import { EventDispatcher } from "@/utils/EventDispatcher";
 import { create } from "zustand";
+
+export type UIMapState =
+    | "loading"
+    | "ready"
+    | "picking vertex"
+    | "picking area"
+    | "picking edge";
+
+export type UITurnState = "ready" | "rolling" | "mine" | "others";
 
 type CatanData = {
     harbors: Map<number, number>;
@@ -34,14 +42,11 @@ type CatanData = {
     dices: [number, number];
     ui: {
         mapState: {
-            state:
-                | "loading"
-                | "ready"
-                | "picking vertex"
-                | "picking area"
-                | "picking edge";
+            state: UIMapState;
             callback: (data: any) => void;
         };
+        dicesState: UITurnState;
+        events: EventDispatcher;
     };
 };
 
@@ -89,93 +94,17 @@ const defaultValue: CatanData = {
             state: "loading",
             callback: nonFunction,
         },
+        dicesState: "ready",
+        events: new EventDispatcher(),
     },
 };
 
 export type CatanStore = CatanData & CatanActions;
 
-export const useCatanStore = create<CatanStore>((set) => ({
+export const useCatanStore = create<CatanStore>((set, get) => ({
     ...defaultValue,
     set,
     setSocket(socket) {
-        socket.on(
-            ClientCodes.INIT,
-            ({
-                harbors,
-                materials,
-                bank,
-                id,
-                robberArea,
-            }: {
-                harbors: [number, number][];
-                materials: [
-                    number,
-                    {
-                        num: number;
-                        material: number;
-                    }
-                ][];
-                bank: {
-                    materials: number[];
-                    devcards: number[];
-                };
-                id: number;
-                robberArea: number;
-            }) => {
-                const harborMap = new Map(harbors);
-
-                const materialsMap = new Map(
-                    materials.map(([index, { num, material }]) => {
-                        return [
-                            index,
-                            {
-                                num,
-                                material: convertions.matsNaming[material],
-                            },
-                        ];
-                    })
-                );
-
-                set({
-                    harbors: harborMap,
-                    materials: materialsMap,
-                    robberArea,
-                    bank: {
-                        devcards: bank.devcards as DevcardList,
-                        materials: bank.materials as DevcardList,
-                    },
-                    client: {
-                        socket,
-                        id,
-                    },
-                    ui: {
-                        mapState: {
-                            state: "ready", // point:ready
-                            callback: nonFunction,
-                        },
-                    },
-                });
-            }
-        );
-
-        socket.on(
-            ClientCodes.TURN,
-            ({ dices }: { dices: [number, number] }) => {
-                set({
-                    dices: [
-                        randIntNot(1, 6, [dices[0]]),
-                        randIntNot(1, 6, [dices[1]]),
-                    ],
-                });
-
-                setTimeout(() => {
-                    set({ dices });
-                }, 100);
-            }
-        );
-
-        socket.emit(ServerCodes.INIT, name);
-
-        set({ client: { socket, id: -1 } });
+        handleSocket(socket, set, get);
     },
 }));

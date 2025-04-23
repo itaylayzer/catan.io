@@ -4,7 +4,9 @@ import {
     TooltipContent,
 } from "@/components/ui/tooltip";
 import { LOCAL_DECK_MATERIALS } from "@/config/constants/ui";
+import { useRender } from "@/hooks/useRender";
 import { useCatanStore } from "@/store/useCatanStore";
+import { useEffect } from "react";
 
 const isReactIcons = [
     false,
@@ -22,7 +24,18 @@ const isReactIcons = [
 export function LocalPlayerDeck({}: {}) {
     const {
         local: { materials, devcards },
+        ui: { events },
     } = useCatanStore();
+
+    const render = useRender();
+
+    useEffect(() => {
+        events.on("render decks", render);
+        return () => {
+            events.off("render decks", render);
+        };
+    }, [render]);
+
     const combine = [...materials, ...devcards];
 
     return (

@@ -4,11 +4,14 @@ export enum ServerCodes {
     STATUS = "s",
     ROLL = "r",
     MESSAGE = "m",
+    STOP_TURN = "t",
+    BUY_DEVCARD = "d",
 }
 // Server to Client
 export enum ClientCodes {
     STATUS = "s",
     INIT = "i",
-    TURN = "t",
+    TURN_DICE = "t",
     MESSAGE = "m",
+    TURN_SWITCH = "a",
 }

@@ -1,10 +1,23 @@
 import { useCatanStore } from "@/store/useCatanStore";
 import { OnlinePlayerCard } from "./OnlinePlayerCard";
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
+import { useRender } from "@/hooks/useRender";
 
 export default function PlayersBar() {
-    const { onlines, local } = useCatanStore();
+    const {
+        onlines,
+        local,
+        ui: { events },
+    } = useCatanStore();
 
+    const render = useRender();
+
+    useEffect(() => {
+        events.on("render decks", render);
+        return () => {
+            events.off("render decks", render);
+        };
+    }, [render]);
     const list: ReactNode[] = [];
     onlines.forEach((player) =>
         list.push(OnlinePlayerCard({ player: player }))

@@ -16,7 +16,7 @@ export class Player {
         this.materials = [0, 0, 0, 0, 0];
         this.devcards = [0, 0, 0, 0, 0];
 
-        this.settlements = new Set();
+        this.settlements = new Set([0]);
         this.roads = new Set();
         this.cities = new Set();
 

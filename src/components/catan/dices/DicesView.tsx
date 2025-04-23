@@ -19,10 +19,12 @@ function Dice({
     texturePaths,
     position,
     num,
+    fired,
 }: {
     texturePaths: string[];
     position?: Vector3;
     num: number;
+    fired: () => void;
 }) {
     const ref = useRef<Mesh>(null);
 
@@ -59,6 +61,9 @@ function Dice({
         };
         roll(1).then(() => {
             setFakeNum(num);
+            setTimeout(() => {
+                fired();
+            }, 500);
         });
 
         return () => {
@@ -86,7 +91,12 @@ function Dice({
 }
 
 export default function DicesView() {
-    const { dices } = useCatanStore();
+    const {
+        dices,
+        ui: { events },
+    } = useCatanStore();
+
+    const [times, setTimes] = useState(0);
 
     const diceTextures = [
         "textures/dices/di1.png",
@@ -96,6 +106,15 @@ export default function DicesView() {
         "textures/dices/di5.png",
         "textures/dices/di6.png",
     ];
+
+    useEffect(() => {
+        setTimes(0);
+    }, [dices]);
+
+    useEffect(() => {
+        if (times < 2) return;
+        events.emit("dices finished");
+    }, [times]);
 
     return (
         <div className="h-15">
@@ -107,11 +126,17 @@ export default function DicesView() {
                 <ambientLight intensity={3} color="#ffffff" />
                 <group position={[0, 0, 0]}>
                     <Dice
+                        fired={() => {
+                            setTimes((old) => old + 1);
+                        }}
                         texturePaths={diceTextures}
                         position={new Vector3(-0.2, 0, 0)}
                         num={dices[0]}
                     />
                     <Dice
+                        fired={() => {
+                            setTimes((old) => old + 1);
+                        }}
                         texturePaths={diceTextures}
                         position={new Vector3(0.2, 0, 0)}
                         num={dices[1]}

@@ -9,6 +9,7 @@ import HarborsArray from "@/config/data/game/harbors.json";
 import { Player } from "./Player";
 import { Socket } from "./sockets";
 import { randInt } from "three/src/math/MathUtils.js";
+import VMath from "@/utils/VMath";
 
 const MIDDLE_INDEX = 9;
 
@@ -17,7 +18,7 @@ export class Catan {
     private players: Player[];
     private robberArea: number;
     private bank: { materials: number[]; devcards: number[] };
-
+    private turnId: number;
     constructor() {
         this.vertecies = Array(AREAS + VERTECIES)
             .fill(undefined)
@@ -33,6 +34,7 @@ export class Catan {
             devcards: [14, 5, 2, 2, 2],
             materials: [19, 19, 19, 19, 19],
         };
+        this.turnId = 0;
         this.robberArea = 9;
         this.players = [];
 
@@ -213,14 +215,52 @@ export class Catan {
         // TODO:
     }
 
-    public act_rollDice(playerId: number) {
-        // TODO:
-
+    public act_rollDice() {
         const dices = [randInt(1, 6), randInt(1, 6)];
+        const dicesSum = dices[0] + dices[1];
+        const areas = this.vertecies
+            .filter(({ material }, index) => {
+                return index < AREAS && material?.num === dicesSum;
+            })
+            .flatMap(({ material, edges }) => {
+                const { material: mat } = material!;
+
+                const vertecies: { vertex: number; mat: number }[] = [];
+
+                edges.forEach(({ color, offset }) => {
+                    if (color === VertexType.SETTLEMENT) {
+                        vertecies.push({
+                            vertex: offset,
+                            mat,
+                        });
+                    }
+                });
+
+                return vertecies;
+            });
+
+        const addons = this.players.map(({ id, settlements }) => {
+            const mats = [0, 0, 0, 0, 0];
+
+            const materials: number[] = [];
+
+            areas.forEach(({ mat, vertex }) => {
+                settlements.has(vertex - AREAS) && materials.push(mat);
+            });
+
+            VMath(mats).countpicks(materials);
+
+            return { from: id, mats };
+        });
 
         return {
             dices,
+            addons,
         };
+    }
+
+    public act_stopTurn(): number {
+        return (this.turnId = (this.turnId + 1) % this.players.length);
     }
 
     public act_moveRobber(playerId: number) {

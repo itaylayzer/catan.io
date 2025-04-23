@@ -22,7 +22,7 @@ export default function createServer(onOpen?: (server: Server) => void) {
             });
 
             socket.on(ServerCodes.ROLL, () => {
-                socket.emit(ClientCodes.TURN, catan.act_rollDice(id));
+                socket.emit(ClientCodes.TURN_DICE, catan.act_rollDice());
             });
 
             socket.on(ServerCodes.MESSAGE, (message) => {
@@ -31,6 +31,13 @@ export default function createServer(onOpen?: (server: Server) => void) {
                     date: new Date().getTime(),
                     message,
                 });
+            });
+
+            socket.on(ServerCodes.STOP_TURN, () => {
+                catan.sockets.emit(
+                    ClientCodes.TURN_SWITCH,
+                    catan.act_stopTurn()
+                );
             });
         }
     );
