@@ -1,12 +1,13 @@
 import { convertions } from "@/components/catan/map/configs";
 import { ClientCodes, ServerCodes } from "@/config/constants/codes";
+import { nonFunction } from "@/config/objects/nonFunction";
 import { Socket } from "@/server/sockets";
-import { MaterialList, DevcardList } from "@/types/materials";
+import { DevcardList, MaterialList } from "@/types/materials";
 import { Player } from "@/types/player";
+import { randIntNot } from "@/utils/randIntNot";
 import { create } from "zustand";
 
 type CatanData = {
-    initialized: boolean;
     harbors: Map<number, number>;
     materials: Map<
         number,
@@ -15,6 +16,7 @@ type CatanData = {
             material: string;
         }
     >;
+    robberArea: number;
     bank: {
         materials: MaterialList;
         devcards: DevcardList;
@@ -27,6 +29,19 @@ type CatanData = {
     local: Omit<Player, "materials" | "devcards"> & {
         materials: MaterialList;
         devcards: DevcardList;
+    };
+    turnId: number;
+    dices: [number, number];
+    ui: {
+        mapState: {
+            state:
+                | "loading"
+                | "ready"
+                | "picking vertex"
+                | "picking area"
+                | "picking edge";
+            callback: (data: any) => void;
+        };
     };
 };
 
@@ -48,7 +63,7 @@ type CatanActions = {
 };
 
 const defaultValue: CatanData = {
-    initialized: false,
+    robberArea: -1,
     harbors: new Map(),
     materials: new Map(),
     bank: {
@@ -67,6 +82,14 @@ const defaultValue: CatanData = {
         color: 0,
         name: "shani",
     },
+    turnId: 0,
+    dices: [1, 1],
+    ui: {
+        mapState: {
+            state: "loading",
+            callback: nonFunction,
+        },
+    },
 };
 
 export type CatanStore = CatanData & CatanActions;
@@ -82,6 +105,7 @@ export const useCatanStore = create<CatanStore>((set) => ({
                 materials,
                 bank,
                 id,
+                robberArea,
             }: {
                 harbors: [number, number][];
                 materials: [
@@ -96,6 +120,7 @@ export const useCatanStore = create<CatanStore>((set) => ({
                     devcards: number[];
                 };
                 id: number;
+                robberArea: number;
             }) => {
                 const harborMap = new Map(harbors);
 
@@ -114,7 +139,7 @@ export const useCatanStore = create<CatanStore>((set) => ({
                 set({
                     harbors: harborMap,
                     materials: materialsMap,
-                    initialized: true,
+                    robberArea,
                     bank: {
                         devcards: bank.devcards as DevcardList,
                         materials: bank.materials as DevcardList,
@@ -123,7 +148,29 @@ export const useCatanStore = create<CatanStore>((set) => ({
                         socket,
                         id,
                     },
+                    ui: {
+                        mapState: {
+                            state: "ready", // point:ready
+                            callback: nonFunction,
+                        },
+                    },
                 });
+            }
+        );
+
+        socket.on(
+            ClientCodes.TURN,
+            ({ dices }: { dices: [number, number] }) => {
+                set({
+                    dices: [
+                        randIntNot(1, 6, [dices[0]]),
+                        randIntNot(1, 6, [dices[1]]),
+                    ],
+                });
+
+                setTimeout(() => {
+                    set({ dices });
+                }, 100);
             }
         );
 

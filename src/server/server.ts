@@ -10,14 +10,27 @@ export default function createServer(onOpen?: (server: Server) => void) {
             onOpen?.(self);
         },
         (socket) => {
+            let id = -1;
             socket.on(ServerCodes.INIT, (name: string) => {
-                const id = catan.playerJoin(name, socket);
+                id = catan.playerJoin(name, socket);
 
-                socket.emit(ClientCodes.INIT, {...catan.json(), id});
+                socket.emit(ClientCodes.INIT, { ...catan.json(), id });
             });
 
             socket.on(ServerCodes.STATUS, () => {
                 socket.emit(ClientCodes.STATUS, catan.playerCount < 4);
+            });
+
+            socket.on(ServerCodes.ROLL, () => {
+                socket.emit(ClientCodes.TURN, catan.act_rollDice(id));
+            });
+
+            socket.on(ServerCodes.MESSAGE, (message) => {
+                catan.sockets.emit(ClientCodes.MESSAGE, {
+                    from: id,
+                    date: new Date().getTime(),
+                    message,
+                });
             });
         }
     );

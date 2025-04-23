@@ -6,13 +6,27 @@ import { useEffect, useRef, useState } from "react";
 import { GoDotFill } from "react-icons/go";
 import { convertions, matsToIcon } from "./configs";
 import { Hex } from "./Hex";
+import { cn } from "@/lib/utils";
+import { FaChessPawn } from "react-icons/fa";
+import { FaRegChessPawn } from "react-icons/fa6";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export default function Catan2D() {
     const outerRef = useRef<HTMLDivElement>(null);
     const boardRef = useRef<HTMLDivElement>(null);
     const [scale, setScale] = useState(1);
 
-    const { materials, initialized } = useCatanStore();
+    const {
+        materials,
+        robberArea,
+        ui: {
+            mapState: { state, callback },
+        },
+    } = useCatanStore();
 
     // Dynamic scaling effect
     useEffect(() => {
@@ -34,7 +48,7 @@ export default function Catan2D() {
         return () => window.removeEventListener("resize", updateScale);
     }, []);
 
-    return !initialized ? null : (
+    return state === "loading" ? null : (
         <div className="relative w-full h-full overflow-hidden" ref={outerRef}>
             <div
                 className="absolute"
@@ -52,58 +66,138 @@ export default function Catan2D() {
                         }}
                     >
                         {Array.from(materials.entries()).map(
-                            ([index, { num, material }]) => (
-                                <Hex
-                                    key={index}
-                                    color={convertions.matsColors[material]}
-                                    className="absolute cursor-grab"
-                                    style={{
-                                        translate: `${Areas[index].x}px ${Areas[index].y}px`,
-                                    }}
-                                >
-                                    <div className="flex gap-2 items-center font-mono font-bold text-2xl">
-                                        <p>{num}</p>
-                                        {matsToIcon[material]?.({
-                                            fill: "white",
-                                            stroke: "white",
-                                            color: "white",
-                                            width: 30,
-                                            height: 30,
-                                        })}
-                                    </div>
-                                </Hex>
-                            )
+                            ([index, { num, material }]) => {
+                                const className =
+                                    state === "picking area" &&
+                                    robberArea !== index
+                                        ? `animate-pulse hover:animate-none hover:scale-95 transition-transform cursor-pointer z-10`
+                                        : `pointer-events-none`;
+
+                                return (
+                                    <Hex
+                                        onClick={() => {
+                                            console.log("picked area:", index);
+
+                                            state === "picking area" &&
+                                                callback(index);
+                                        }}
+                                        key={index}
+                                        color={convertions.matsColors[material]}
+                                        className={cn("absolute", className)}
+                                        style={{
+                                            animationDelay: `${index / 4}s`,
+                                            translate: `${Areas[index].x}px ${Areas[index].y}px`,
+                                        }}
+                                    >
+                                        <div className="flex gap-2 items-center font-mono font-bold text-2xl">
+                                            {index === robberArea ? (
+                                                <Tooltip>
+                                                    <TooltipTrigger asChild>
+                                                        <FaRegChessPawn
+                                                            className="z-10"
+                                                            color="white"
+                                                            size={26}
+                                                        />
+                                                    </TooltipTrigger>
+                                                    <TooltipContent>
+                                                        <p>Robber</p>
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            ) : null}
+                                            <p>{num}</p>
+                                            {matsToIcon[material]?.({
+                                                fill: "white",
+                                                stroke: "white",
+                                                color: "white",
+                                                width: 30,
+                                                height: 30,
+                                            })}
+                                        </div>
+                                    </Hex>
+                                );
+                            }
                         )}
 
-                        {Settlements.map(({ x, y }, index) => (
-                            <div
-                                data-id={index}
-                                className="z-2 absolute"
-                                style={{
-                                    translate: `${x}px ${y}px`,
-                                }}
-                            >
-                                <GoDotFill
-                                    color={`#fff${index === 2 ? "f" : "0"}`}
-                                    size={30}
-                                    style={{ translate: `${-15}px ${-15}px` }}
-                                />
-                            </div>
-                        ))}
+                        {Settlements.map(({ x, y }, index) => {
+                            const used = [4, 5, 0, 10];
+                            const color = `#fff${
+                                used.includes(index)
+                                    ? "f"
+                                    : state === "picking vertex"
+                                    ? "8"
+                                    : "0"
+                            }`;
+                            const className =
+                                state === "picking vertex" &&
+                                !used.includes(index)
+                                    ? "animate-pulse hover:scale-95 hover:animate-none cursor-pointer"
+                                    : "pointer-events-none";
+
+                            return (
+                                <div
+                                    data-id={index}
+                                    className={cn(
+                                        "z-2 absolute transition-transform",
+                                        className
+                                    )}
+                                    style={{
+                                        translate: `${x}px ${y}px`,
+                                    }}
+                                >
+                                    <GoDotFill
+                                        color={color}
+                                        size={30}
+                                        style={{
+                                            translate: `${-15}px ${-15}px`,
+                                        }}
+                                        onClick={() => {
+                                            console.log(
+                                                "picked vertex:",
+                                                index
+                                            );
+
+                                            state === "picking vertex" &&
+                                                callback([index]);
+                                        }}
+                                    />
+                                </div>
+                            );
+                        })}
 
                         <svg className="absolute -top-[50px] -left-[400px] w-[1000px] h-[1000px]">
-                            {Roads.map(({ from, to }, index) => (
-                                <line
-                                    stroke={`#fff${
-                                        [4, 5, 0, 10].includes(index) ? "f" : "0"
-                                    }`}
-                                    strokeWidth={5}
-                                    x1={to.x + 400}
-                                    x2={from.x + 400}
-                                    y1={to.y + 50}
-                                    y2={from.y + 50}
-                                />
-                            ))}
+                            {Roads.map(({ from, to }, index) => {
+                                const used = [4, 5, 0, 10];
+
+                                const stroke = `#fff${
+                                    used.includes(index)
+                                        ? "f"
+                                        : state === "picking edge"
+                                        ? "8"
+                                        : "0"
+                                }`;
+                                const className =
+                                    state === "picking edge" &&
+                                    !used.includes(index)
+                                        ? "animate-pulse hover:animate-none cursor-pointer"
+                                        : "pointer-events-none";
+                                return (
+                                    <line
+                                        stroke={stroke}
+                                        className={className}
+                                        strokeWidth={5}
+                                        x1={to.x + 400}
+                                        x2={from.x + 400}
+                                        y1={to.y + 50}
+                                        y2={from.y + 50}
+                                        onClick={() => {
+                                            console.log("picked edge:", index);
+
+                                            state === "picking edge" &&
+                                                callback([index, from, to]);
+                                        }}
+                                    />
+                                );
+                            })}
                         </svg>
                     </div>
                 </div>

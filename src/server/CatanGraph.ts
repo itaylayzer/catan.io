@@ -8,13 +8,16 @@ import SettlementsArray from "@/config/data/game/areas.json";
 import HarborsArray from "@/config/data/game/harbors.json";
 import { Player } from "./Player";
 import { Socket } from "./sockets";
+import { randInt } from "three/src/math/MathUtils.js";
 
 const MIDDLE_INDEX = 9;
 
 export class Catan {
     private vertecies: Vertex[];
     private players: Player[];
+    private robberArea: number;
     private bank: { materials: number[]; devcards: number[] };
+
     constructor() {
         this.vertecies = Array(AREAS + VERTECIES)
             .fill(undefined)
@@ -30,11 +33,22 @@ export class Catan {
             devcards: [14, 5, 2, 2, 2],
             materials: [19, 19, 19, 19, 19],
         };
+        this.robberArea = 9;
         this.players = [];
 
         this.prepareCatanEdges();
         this.prepareCatanLands();
         this.prepareCatanHarbors();
+    }
+
+    public get sockets() {
+        return {
+            emit: (eventName: string, args?: any) => {
+                this.players.forEach(({ socket }) =>
+                    socket.emit(eventName, args)
+                );
+            },
+        };
     }
 
     ////////////////////// PREPARE ///////////////////
@@ -131,6 +145,7 @@ export class Catan {
 
     /////////////////// EXPORT /////////////////
     public json() {
+        const { robberArea, bank } = this;
         return {
             harbors: this.vertecies
                 .filter((v) => v.harbor !== undefined)
@@ -144,7 +159,8 @@ export class Catan {
                             { num: number; material: number }
                         ]
                 ),
-            bank: this.bank,
+            robberArea,
+            bank,
         };
     }
 
@@ -199,6 +215,12 @@ export class Catan {
 
     public act_rollDice(playerId: number) {
         // TODO:
+
+        const dices = [randInt(1, 6), randInt(1, 6)];
+
+        return {
+            dices,
+        };
     }
 
     public act_moveRobber(playerId: number) {

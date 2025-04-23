@@ -1,6 +1,8 @@
 import Peer, { DataConnection, PeerOptions } from "peerjs";
 import { TranslateCode, code } from "../utils/code";
 import Config from "../config";
+import { decrypt, encrypt } from "./chiper";
+import Pako from "pako";
 
 const peerOptions: PeerOptions = {
     // @ts-ignore
@@ -55,7 +57,7 @@ export class Socket {
 
         this.client.on("data", (data) => {
             try {
-                const d = JSON.parse(data as string) as {
+                const d = JSON.parse(decrypt(data as Pako.Data) as string) as {
                     event: string;
                     args: any;
                 };
@@ -84,7 +86,9 @@ export class Socket {
     }
     public emit(event_name: string, args?: any) {
         this.client.send(
-            JSON.stringify({ event: event_name, args: args ?? undefined })
+            encrypt(
+                JSON.stringify({ event: event_name, args: args ?? undefined })
+            )
         );
     }
     public disconnect() {
