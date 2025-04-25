@@ -20,18 +20,6 @@ import { MdStore } from "react-icons/md";
 function CatanGame() {
     return (
         <div className="flex absolute w-[100%] h-[100%] top-0 left-0">
-            <div className="absolute z-20">
-                <Dialog>
-                    <DialogTrigger asChild>
-                        <Button className="cursor-pointer z-20" variant="link">
-                            <MdStore /> open store
-                        </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                        <StoreView />
-                    </DialogContent>
-                </Dialog>
-            </div>
             <div className="absolute pt-32 h-full">
                 <div className="flex flex-col gap-3 px-5 w-[333px] h-full">
                     <h1 className="text-6xl text-center font-bold ">Catan</h1>
@@ -53,7 +41,20 @@ function CatanGame() {
                 <div className="h-5"></div>
             </div>
             <div className="right-0 absolute pt-32 h-full">
-                <div className="flex flex-col gap-3 px-5 h-full ">
+                <div className="flex flex-col gap-3 px-5 h-full">
+                    <Dialog>
+                        <DialogTrigger asChild>
+                            <Button
+                                className="absolute right-7 -translate-y-8 cursor-pointer z-20"
+                                variant="link"
+                            >
+                                <MdStore /> store menu
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                            <StoreView />
+                        </DialogContent>
+                    </Dialog>
                     <BankCard />
                     <PlayersBar />
                     <Chat className="flex-1 " />
@@ -64,6 +65,8 @@ function CatanGame() {
 }
 
 export function PlayPage() {
+    document.title = "Catan.io | Play";
+
     const {
         client: { socket },
         setSocket,
