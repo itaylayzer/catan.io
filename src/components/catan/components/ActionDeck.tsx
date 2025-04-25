@@ -5,10 +5,11 @@ import {
     TooltipContent,
 } from "@/components/ui/tooltip";
 import { ServerCodes } from "@/config/constants/codes";
+import { STORE_ICONS } from "@/config/constants/ui";
 import { useCatanStore } from "@/store/useCatanStore";
 import VMath from "@/utils/VMath";
-import { FaCity, FaDiceSix, FaMagic, FaRoad, FaStop } from "react-icons/fa";
-import { FaHandshakeSimple, FaHouse } from "react-icons/fa6";
+import { FaDiceSix, FaStop } from "react-icons/fa";
+import { FaHandshakeSimple } from "react-icons/fa6";
 
 export function ActionDeck() {
     const {
@@ -24,22 +25,22 @@ export function ActionDeck() {
             header: dicesState === "mine" ? "Stop Turn" : "Roll Dices",
         },
         {
-            icon: FaRoad,
+            icon: STORE_ICONS.road,
             header: "Place Road",
             count: 1,
         },
         {
-            icon: FaHouse,
-            header: "Place House",
+            icon: STORE_ICONS.settlement,
+            header: "Place Settlement",
             count: 1,
         },
         {
-            icon: FaCity,
+            icon: STORE_ICONS.city,
             header: "Upgrade to City",
             count: 1,
         },
         {
-            icon: FaMagic,
+            icon: STORE_ICONS.devcard,
             header: "Buy Mistery Card",
         },
         {

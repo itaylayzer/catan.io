@@ -5,16 +5,8 @@ import SVGWheet from "@/components/svg/custom/SVGWheet";
 import SVGWool from "@/components/svg/custom/SVGWhool";
 import SVGMonopoly from "@/components/svg/custom/SVGMonopoly";
 
-import {
-    FaMagic,
-    FaQuestion,
-    FaRoad,
-    FaTrophy,
-    FaDiceSix,
-    FaStop,
-    FaCity,
-} from "react-icons/fa";
-import { FaHouse, FaHandshakeSimple, FaChessKnight } from "react-icons/fa6";
+import { FaMagic, FaQuestion, FaRoad, FaTrophy, FaCity } from "react-icons/fa";
+import { FaHouse, FaChessKnight } from "react-icons/fa6";
 import { RiPlantFill } from "react-icons/ri";
 import { Fa2Roads } from "@/components/svg/react-icons/Fa2Roads";
 
@@ -31,10 +23,9 @@ export const MATERIALS = [
 export const ONLINE_STATS = [
     { name: "Victory Points", icon: FaTrophy },
     { name: "Materials", icon: FaQuestion },
-    { name: "Mystery Cards", icon: FaMagic },
+    { name: "Development Cards", icon: FaMagic },
     { name: "Roads", icon: FaRoad },
 ];
-
 
 const DEVELOPMENTS = [
     {
@@ -55,6 +46,13 @@ const DEVELOPMENTS = [
         name: "Monopol",
     },
 ];
+
+export const STORE_ICONS = {
+    road: FaRoad,
+    settlement: FaHouse,
+    city: FaCity,
+    devcard: FaMagic,
+};
 
 export const TRADE_MATERIALS = [...MATERIALS, ONLINE_STATS[2]];
 export const LOCAL_DECK_MATERIALS = [...MATERIALS, ...DEVELOPMENTS];

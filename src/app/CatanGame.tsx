@@ -3,13 +3,29 @@ import { BankCard } from "@/components/catan/components/BankCard";
 import { Chat } from "@/components/catan/components/Chat";
 import { LocalPlayerDeck } from "@/components/catan/components/LocalPlayerDeck";
 import PlayersBar from "@/components/catan/components/PlayersBar";
+import { StoreView } from "@/components/catan/components/StoreView";
 
 import DicesView from "@/components/catan/dices/DicesView";
 import Catan2D from "@/components/catan/map/Catan2D";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { MdStore } from "react-icons/md";
 
 export function CatanGame() {
     return (
         <div className="flex absolute w-[100%] h-[100%] top-0 left-0">
+            <div className="absolute z-20">
+                <Dialog>
+                    <DialogTrigger asChild>
+                        <Button className="cursor-pointer z-20" variant="link">
+                            <MdStore /> open store
+                        </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                        <StoreView />
+                    </DialogContent>
+                </Dialog>
+            </div>
             <div className="absolute pt-32 h-full">
                 <div className="flex flex-col gap-3 px-5 w-[333px] h-full">
                     <h1 className="text-6xl text-center font-bold ">Catan</h1>
