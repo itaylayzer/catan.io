@@ -20,7 +20,7 @@ const router = createBrowserRouter([
         path: "catan.io/play",
         element: <PlayPage />,
     },
-]);
+], {});
 
 createRoot(document.getElementById("root")!).render(
     <TooltipProvider>

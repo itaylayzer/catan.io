@@ -7,7 +7,6 @@ import { GoDotFill } from "react-icons/go";
 import { convertions, matsToIcon } from "./configs";
 import { Hex } from "./Hex";
 import { cn } from "@/lib/utils";
-import { FaChessPawn } from "react-icons/fa";
 import { FaRegChessPawn } from "react-icons/fa6";
 import {
     Tooltip,
@@ -89,10 +88,10 @@ export default function Catan2D() {
                                             translate: `${Areas[index].x}px ${Areas[index].y}px`,
                                         }}
                                     >
-                                        <div className="flex gap-2 items-center font-mono font-bold text-2xl">
+                                        <div className="flex gap-2 items-center font-[Rubik] scale-85 font-bold text-2xl">
                                             {index === robberArea ? (
                                                 <Tooltip>
-                                                    <TooltipTrigger asChild>
+                                                    <TooltipTrigger>
                                                         <FaRegChessPawn
                                                             className="z-10"
                                                             color="white"
@@ -105,13 +104,20 @@ export default function Catan2D() {
                                                 </Tooltip>
                                             ) : null}
                                             <p>{num}</p>
-                                            {matsToIcon[material]?.({
-                                                fill: "white",
-                                                stroke: "white",
-                                                color: "white",
-                                                width: 30,
-                                                height: 30,
-                                            })}
+                                            <Tooltip>
+                                                <TooltipTrigger>
+                                                    {matsToIcon[material]?.({
+                                                        fill: "white",
+                                                        stroke: "white",
+                                                        color: "white",
+                                                        width: 30,
+                                                        height: 30,
+                                                    })}
+                                                </TooltipTrigger>
+                                                <TooltipContent>
+                                                    <p>{material}</p>
+                                                </TooltipContent>
+                                            </Tooltip>
                                         </div>
                                     </Hex>
                                 );

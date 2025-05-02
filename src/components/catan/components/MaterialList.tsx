@@ -15,8 +15,8 @@ export function MatsCountsViewer({ mats }: { mats: MaterialList }) {
                     <TooltipTrigger asChild>
                         <div
                             className={cn(
-                                "flex gap-1 items-center",
-                                value ? "opacity-100" : "opacity-30"
+                                "flex gap-2 items-center",
+                                value ? "" : "hidden"
                             )}
                         >
                             <p className="text-lg scale-90 font-[Rubik]">

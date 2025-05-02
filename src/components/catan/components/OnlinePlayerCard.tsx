@@ -15,7 +15,7 @@ export function OnlinePlayerCard({ player }: { player: Player }) {
     const list = [materials, devcards, victoryPoints, roads];
 
     return (
-        <div className="flex gap-1 px-4 py-1 items-center">
+        <div className="flex gap-2 px-4 py-1 items-center">
             <PiHouseSimpleFill
                 opacity={1}
                 style={{
@@ -31,8 +31,10 @@ export function OnlinePlayerCard({ player }: { player: Player }) {
             {list.map((value, index) => (
                 <Tooltip key={index}>
                     <TooltipTrigger asChild>
-                        <div className="flex gap-1 items-center opacity-65">
-                            <p className="text-lg">{value}</p>
+                        <div className="flex gap-2 items-center opacity-65">
+                            <p className="text-lg font-[Rubik] scale-90">
+                                {value}
+                            </p>
                             {ONLINE_STATS[index].icon({
                                 color: "white",
                                 opacity: 0.65,

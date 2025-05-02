@@ -1,20 +1,17 @@
 import createServer from "@/server/server";
-import { useEffect } from "react";
 import { io } from "@/server/sockets";
-import { TranslateCode } from "@/utils/code";
 import { useCatanStore } from "@/store/useCatanStore";
+import { TranslateCode } from "@/utils/code";
+import { useEffect } from "react";
 
 import { ActionDeck } from "@/components/catan/components/ActionDeck";
 import { BankCard } from "@/components/catan/components/BankCard";
 import { Chat } from "@/components/catan/components/Chat";
 import { LocalPlayerDeck } from "@/components/catan/components/LocalPlayerDeck";
 import PlayersBar from "@/components/catan/components/PlayersBar";
-import { StoreView } from "@/components/catan/components/StoreView";
-
-import DicesView from "@/components/catan/dices/DicesView";
+import Dices2D from "@/components/catan/dices/Dices2D";
 import Catan2D from "@/components/catan/map/Catan2D";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { MdStore } from "react-icons/md";
 
 function CatanGame() {
@@ -30,7 +27,7 @@ function CatanGame() {
                         @itaylayzer
                     </a>
                     <div className="h-min">
-                        <DicesView />
+                        <Dices2D />
                     </div>
                 </div>
             </div>
@@ -42,19 +39,15 @@ function CatanGame() {
             </div>
             <div className="right-0 absolute pt-32 h-full">
                 <div className="flex flex-col gap-3 px-5 h-full">
-                    <Dialog>
-                        <DialogTrigger asChild>
-                            <Button
-                                className="absolute right-7 -translate-y-8 cursor-pointer z-20"
-                                variant="link"
-                            >
-                                <MdStore /> store menu
-                            </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                            <StoreView />
-                        </DialogContent>
-                    </Dialog>
+                    <Button
+                        onClick={() => {
+                            window.open("/catan.io/store", "_blank");
+                        }}
+                        className="absolute right-7 -translate-y-8 cursor-pointer z-20"
+                        variant="link"
+                    >
+                        <MdStore /> store menu
+                    </Button>
                     <BankCard />
                     <PlayersBar />
                     <Chat className="flex-1 " />
@@ -71,6 +64,7 @@ export function PlayPage() {
         client: { socket },
         setSocket,
     } = useCatanStore();
+
     useEffect(() => {
         createServer(async ({ code }) => {
             setSocket(await io(TranslateCode(code)));

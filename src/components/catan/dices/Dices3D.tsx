@@ -90,7 +90,7 @@ function Dice({
     );
 }
 
-export default function DicesView() {
+export default function Dices3D() {
     const {
         dices,
         ui: { events },
@@ -99,12 +99,12 @@ export default function DicesView() {
     const [times, setTimes] = useState(0);
 
     const diceTextures = [
-        "textures/dices/di1.png",
-        "textures/dices/di2.png",
-        "textures/dices/di3.png",
-        "textures/dices/di4.png",
-        "textures/dices/di5.png",
-        "textures/dices/di6.png",
+        "/catan/textures/dices/di1.png",
+        "/catan/textures/dices/di2.png",
+        "/catan/textures/dices/di3.png",
+        "/catan/textures/dices/di4.png",
+        "/catan/textures/dices/di5.png",
+        "/catan/textures/dices/di6.png",
     ];
 
     useEffect(() => {

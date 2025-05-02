@@ -8,7 +8,8 @@ import { ServerCodes } from "@/config/constants/codes";
 import { STORE_ICONS } from "@/config/constants/ui";
 import { useCatanStore } from "@/store/useCatanStore";
 import VMath from "@/utils/VMath";
-import { FaDiceSix, FaStop } from "react-icons/fa";
+import { FaStopwatch } from "react-icons/fa";
+import { RiDiceFill } from "react-icons/ri";
 import { FaHandshakeSimple } from "react-icons/fa6";
 
 export function ActionDeck() {
@@ -21,7 +22,7 @@ export function ActionDeck() {
 
     const ACTION_DECK_BUTTONS = [
         {
-            icon: dicesState === "mine" ? FaStop : FaDiceSix,
+            icon: dicesState === "mine" ? FaStopwatch : RiDiceFill,
             header: dicesState === "mine" ? "Stop Turn" : "Roll Dices",
         },
         {
@@ -95,7 +96,7 @@ export function ActionDeck() {
                 {ACTION_DECK_BUTTONS.map(({ header, icon, count }, index) => {
                     return (
                         <Tooltip key={header}>
-                            <TooltipTrigger asChild>
+                            <TooltipTrigger>
                                 <Button
                                     variant="ghost"
                                     className="hover:animate-pulse cursor-pointer aspect-square hover:scale-125"
@@ -103,7 +104,7 @@ export function ActionDeck() {
                                     disabled={disabled[index]}
                                 >
                                     {count ? (
-                                        <p className="text-xl opacity-65 font-mono font-bold ">
+                                        <p className="text-xl opacity-65 font-[Rubik] scale-85">
                                             {count}
                                         </p>
                                     ) : null}

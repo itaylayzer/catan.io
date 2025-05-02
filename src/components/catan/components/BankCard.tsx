@@ -18,8 +18,10 @@ export function BankCard({}: {}) {
             {materials.map((value, index) => (
                 <Tooltip key={index}>
                     <TooltipTrigger asChild>
-                        <div className="flex gap-1 items-center opacity-65">
-                            <p className="text-lg">{value}</p>
+                        <div className="flex gap-2 items-center opacity-65">
+                            <p className="text-lg font-[Rubik] scale-90">
+                                {value}
+                            </p>
                             {MATERIALS[index].icon({
                                 stroke: "white",
                                 opacity: 0.65,
@@ -36,8 +38,8 @@ export function BankCard({}: {}) {
             ))}
             <Tooltip>
                 <TooltipTrigger asChild>
-                    <div className="flex gap-1 items-center opacity-65">
-                        <p className="text-lg">
+                    <div className="flex gap-2 items-center opacity-65">
+                        <p className="text-lg font-[Rubik] scale-90">
                             {devcards.reduce((a, b) => a + b)}
                         </p>
                         {ONLINE_STATS[2].icon({

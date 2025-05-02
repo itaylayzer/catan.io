@@ -32,7 +32,7 @@ export function StoreView({ className }: { className?: ClassValue }) {
                                 {name.toUpperCase()}
                             </h1>
                             <div className="flex-1" />
-                            <div className="flex gap-3">
+                            <div className="flex gap-2">
                                 <MatsCountsViewer mats={cost as MaterialList} />
                             </div>
                         </div>
