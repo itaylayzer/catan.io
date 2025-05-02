@@ -5,7 +5,10 @@ export enum ServerCodes {
     ROLL = "r",
     MESSAGE = "m",
     STOP_TURN = "t",
-    BUY_DEVCARD = "d",
+    BUY_DEVCARD = "bd",
+    BUY_ROAD = "br",
+    BUY_SETTLEMENT = "bs",
+    BUY_CITY = "bc",
 }
 // Server to Client
 export enum ClientCodes {
@@ -14,4 +17,7 @@ export enum ClientCodes {
     TURN_DICE = "t",
     MESSAGE = "m",
     TURN_SWITCH = "a",
+    PLAYER_UPDATE = "pu",
+    BANK_UPDATE = "bu",
+    OTHER_UPDATE = "ou",
 }

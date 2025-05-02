@@ -70,6 +70,12 @@ const VMath = (list: number[]) => ({
     avg() {
         return this.sum() / list.length;
     },
+    available(other: number[]) {
+        return this.clone()
+            .sameSize.sub(other)
+            .get()
+            .every((v) => v >= 0);
+    },
 });
 
 export default VMath;

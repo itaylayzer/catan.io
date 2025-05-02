@@ -1,6 +1,6 @@
-[
-    { "name": "road", "cost": [1, 0, 0, 1, 0] },
-    { "name": "settlement", "cost": [1, 1, 1, 1, 0] },
-    { "name": "city", "cost": [0, 0, 2, 0, 3] },
-    { "name": "devcard", "cost": [0, 1, 1, 0, 1] }
-]
+{
+    "road": [1, 0, 0, 1, 0],
+    "settlement": [1, 1, 1, 1, 0],
+    "city": [0, 0, 2, 0, 3],
+    "devcard": [0, 1, 1, 0, 1]
+}

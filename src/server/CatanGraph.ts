@@ -10,14 +10,15 @@ import { Player } from "./Player";
 import { Socket } from "./sockets";
 import { randInt } from "three/src/math/MathUtils.js";
 import VMath from "@/utils/VMath";
-
+import Store from "@/config/data/game/store.json";
+import { randIndexBasedValues } from "@/utils/randIndexBasedValues";
 const MIDDLE_INDEX = 9;
 
 export class Catan {
     private vertecies: Vertex[];
     private players: Player[];
     private robberArea: number;
-    private bank: { materials: number[]; devcards: number[] };
+    public bank: { materials: number[]; devcards: number[] };
     private turnId: number;
     constructor() {
         this.vertecies = Array(AREAS + VERTECIES)
@@ -48,6 +49,12 @@ export class Catan {
             emit: (eventName: string, args?: any) => {
                 this.players.forEach(({ socket }) =>
                     socket.emit(eventName, args)
+                );
+            },
+            emitExcept: (exceptId: number, eventName: string, args?: any) => {
+                this.players.forEach(
+                    ({ socket, id }) =>
+                        id !== exceptId && socket.emit(eventName, args)
                 );
             },
         };
@@ -139,10 +146,11 @@ export class Catan {
         return this.players.length;
     }
 
-    public playerJoin(name: string, socket: Socket) {
-        return (
-            this.players.push(new Player(this.playerCount, name, socket)) - 1
-        );
+    public playerJoin(name: string, socket: Socket): Player {
+        const player = new Player(this.playerCount, name, socket);
+        this.players.push(player);
+
+        return player;
     }
 
     /////////////////// EXPORT /////////////////
@@ -179,45 +187,10 @@ export class Catan {
         return players;
     }
 
-    public inf_playerActionable(playerId: number) {
-        // TODO:
-    }
-
-    public inf_playerMaterials(playerId: number) {
-        return this.players.map((p) => {
-            if (p.id === playerId) {
-                return p.materials;
-            }
-
-            return p.materials.reduce((a, b) => a + b);
-        });
-    }
-
-    public inf_playerDevcards(playerId: number) {
-        return this.players.map((p) => {
-            if (p.id === playerId) {
-                return p.devcards;
-            }
-
-            return p.devcards.reduce((a, b) => a + b);
-        });
-    }
-
-    public inf_playerVictoryPoints() {
-        return this.players.map((p) => p.victoryPoints);
-    }
-
-    public inf_playerAmounts(playerId: number) {
-        return this.players[playerId].amounts;
-    }
-
-    public inf_achivementCards(playerId: number) {
-        // TODO:
-    }
-
     public act_rollDice() {
         const dices = [randInt(1, 6), randInt(1, 6)];
         const dicesSum = dices[0] + dices[1];
+
         const areas = this.vertecies
             .filter(({ material }, index) => {
                 return index < AREAS && material?.num === dicesSum;
@@ -263,14 +236,107 @@ export class Catan {
         return (this.turnId = (this.turnId + 1) % this.players.length);
     }
 
-    public act_moveRobber(playerId: number) {
-        // TODO:
+    public act_buyRoad(
+        player: Player,
+        roadFrom: number,
+        roadTo: number
+    ): boolean {
+        // check if settlement already bought
+        if (
+            player.roads.has([roadFrom, roadTo]) ||
+            this.vertecies[roadFrom].edges.get(roadTo)!.color !==
+                VertexType.SETTLEMENT
+        )
+            return false;
+
+        // check if theres enough amounts
+        if (player.amounts.road <= 0) return false;
+
+        // check if theres enough materials
+        if (!VMath(player.materials).available(Store.road)) return false;
+
+        // Move mats
+        VMath(this.bank.materials).sameSize.add(Store.road);
+        VMath(player.materials).sameSize.sub(Store.road);
+
+        const paint = (from: number, to: number, color: number) => {
+            this.vertecies[from].edges.get(to)!.color = color;
+        };
+
+        // Paint
+        paint(roadFrom + AREAS, roadTo + AREAS, player.id);
+        paint(roadTo + AREAS, roadFrom + AREAS, player.id);
+
+        // Add to map
+        player.roads.add([roadFrom, roadTo]);
+
+        return true;
     }
 
-    public act_devCard(playerId: number) {
-        // TODO:
+    public act_buySettlement(player: Player, settlementIndex: number): boolean {
+        // check if settlement already bought
+        if (
+            player.settlements.has(settlementIndex) ||
+            this.vertecies[settlementIndex + AREAS].color !==
+                VertexType.SETTLEMENT
+        )
+            return false;
+
+        // check if theres enough amounts
+        if (player.amounts.settlement <= 0) return false;
+
+        // check if theres enough materials
+        if (!VMath(player.materials).available(Store.settlement)) return false;
+
+        // Move mats
+        VMath(this.bank.materials).sameSize.add(Store.settlement);
+        VMath(player.materials).sameSize.sub(Store.settlement);
+
+        // Paint
+        this.vertecies[settlementIndex + AREAS].color = player.id;
+
+        // Add to map
+        player.settlements.add(settlementIndex);
+
+        return true;
     }
-    public act_dropMaterials(playerId: number) {
-        // TODO:
+
+    public act_buyCity(player: Player, cityIndex: number): boolean {
+        // check if theres a settlement there or theres already a city there
+        if (!player.settlements.has(cityIndex) || player.cities.has(cityIndex))
+            return false;
+
+        // check if theres enough amounts
+        if (player.amounts.city <= 0) return false;
+
+        // check if theres enough materials
+        if (!VMath(player.materials).available(Store.city)) return false;
+
+        // Move mats
+        VMath(this.bank.materials).sameSize.add(Store.city);
+        VMath(player.materials).sameSize.sub(Store.city);
+
+        // Add to map
+        player.cities.add(cityIndex);
+
+        return true;
+    }
+
+    public act_buyDevcard(player: Player) {
+        const index = randIndexBasedValues(this.bank.devcards);
+        if (index === -1) return false;
+
+        // check if theres enough materials
+        if (!VMath(player.materials).available(Store.devcard)) return false;
+
+        // Move mats
+        VMath(this.bank.materials).sameSize.add(Store.devcard);
+        VMath(player.materials).sameSize.sub(Store.devcard);
+
+        // move devcards
+        this.bank.devcards[index]--;
+        player.devcards[index]++;
+
+        return true;
     }
 }

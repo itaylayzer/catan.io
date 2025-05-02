@@ -4,5 +4,7 @@ export interface Player {
     devcards: number;
     materials: number;
     color: number;
-    roads: number;
+    settlements: number[];
+    cities: number[];
+    roads: [number, number][];
 }

@@ -2,6 +2,7 @@ import { useCatanStore } from "@/store/useCatanStore";
 import { OnlinePlayerCard } from "./OnlinePlayerCard";
 import { ReactNode, useEffect } from "react";
 import { useRender } from "@/hooks/useRender";
+import VMath from "@/utils/VMath";
 
 export default function PlayersBar() {
     const {
@@ -20,56 +21,19 @@ export default function PlayersBar() {
     }, [render]);
     const list: ReactNode[] = [];
     onlines.forEach((player) =>
-        list.push(OnlinePlayerCard({ player: player }))
+        list.push(OnlinePlayerCard({ player: player }), <hr />)
     );
     list.push(
         OnlinePlayerCard({
             player: {
                 color: 0,
-                devcards: local.devcards.reduce((a, b) => a + b),
-                materials: local.materials.reduce((a, b) => a + b),
+                devcards: VMath(local.devcards).sum(),
+                materials: VMath(local.materials).sum(),
                 name: local.name,
                 roads: local.roads,
                 victoryPoints: local.victoryPoints,
-            },
-        })
-    );
-    list.push(<hr />);
-    list.push(
-        OnlinePlayerCard({
-            player: {
-                color: 1,
-                devcards: local.devcards.reduce((a, b) => a + b),
-                materials: local.materials.reduce((a, b) => a + b),
-                name: local.name,
-                roads: local.roads,
-                victoryPoints: local.victoryPoints,
-            },
-        })
-    );
-    list.push(<hr />);
-    list.push(
-        OnlinePlayerCard({
-            player: {
-                color: 2,
-                devcards: local.devcards.reduce((a, b) => a + b),
-                materials: local.materials.reduce((a, b) => a + b),
-                name: local.name,
-                roads: local.roads,
-                victoryPoints: local.victoryPoints,
-            },
-        })
-    );
-    list.push(<hr />);
-    list.push(
-        OnlinePlayerCard({
-            player: {
-                color: 3,
-                devcards: local.devcards.reduce((a, b) => a + b),
-                materials: local.materials.reduce((a, b) => a + b),
-                name: local.name,
-                roads: local.roads,
-                victoryPoints: local.victoryPoints,
+                cities: [],
+                settlements: [],
             },
         })
     );

@@ -1,6 +1,9 @@
 import { MaterialList, DevcardList } from "@/types/materials";
 import { Socket } from "./sockets";
 
+import MaterialsStarter from "@/config/data/starter/materials.json";
+import DevcardsStarter from "@/config/data/starter/devcards.json";
+
 export class Player {
     public victory: number;
     public materials: MaterialList;
@@ -13,10 +16,10 @@ export class Player {
 
     constructor(public id: number, public name: string, public socket: Socket) {
         this.victory = 0;
-        this.materials = [0, 0, 0, 0, 0];
-        this.devcards = [0, 0, 0, 0, 0];
+        this.materials = MaterialsStarter as MaterialList;
+        this.devcards = DevcardsStarter as DevcardList;
 
-        this.settlements = new Set([0]);
+        this.settlements = new Set();
         this.roads = new Set();
         this.cities = new Set();
 
@@ -28,11 +31,14 @@ export class Player {
         this.knightUsed = 0;
     }
 
-    public increaseVictory() {
-        this.victory++;
-    }
-
     public get victoryPoints() {
-        return this.victory + this.devcards[1];
+        console.log(
+            "server",
+            "victory point",
+            this.settlements.size,
+            this.cities.size,
+            this.devcards[1]
+        );
+        return this.settlements.size + this.cities.size + this.devcards[1];
     }
 }

@@ -5,6 +5,8 @@ import { DevcardList, MaterialList } from "@/types/materials";
 import { Player } from "@/types/player";
 import { EventDispatcher } from "@/utils/EventDispatcher";
 import { create } from "zustand";
+import MaterialsStarter from "@/config/data/starter/materials.json";
+import DevcardsStarter from "@/config/data/starter/devcards.json";
 
 export type UIMapState =
     | "loading"
@@ -37,14 +39,12 @@ type CatanData = {
     local: Omit<Player, "materials" | "devcards"> & {
         materials: MaterialList;
         devcards: DevcardList;
+        amounts: Record<"road" | "settlement" | "city", number>;
     };
     turnId: number;
     dices: [number, number];
     ui: {
-        mapState: {
-            state: UIMapState;
-            callback: (data: any) => void;
-        };
+        mapState: UIMapState;
         dicesState: UITurnState;
         events: EventDispatcher;
     };
@@ -80,20 +80,24 @@ const defaultValue: CatanData = {
     },
     onlines: new Map(),
     local: {
-        materials: [0, 0, 0, 0, 0],
-        devcards: [0, 0, 0, 0, 0],
-        roads: 0,
+        materials: MaterialsStarter as MaterialList,
+        devcards: DevcardsStarter as MaterialList,
+        roads: [],
+        cities: [],
+        settlements: [],
         victoryPoints: 0,
         color: 0,
         name: "shani",
+        amounts: {
+            city: 4,
+            road: 15,
+            settlement: 5,
+        },
     },
     turnId: 0,
     dices: [1, 1],
     ui: {
-        mapState: {
-            state: "loading",
-            callback: nonFunction,
-        },
+        mapState: "loading",
         dicesState: "ready",
         events: new EventDispatcher(),
     },

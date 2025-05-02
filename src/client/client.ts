@@ -142,6 +142,52 @@ export function handleSocket(
         setTurnState(get().turnId === get().local.color ? "ready" : "others");
     });
 
+    socket.on(
+        ClientCodes.PLAYER_UPDATE,
+        (
+            data: Partial<{
+                amounts: Record<"road" | "settlement" | "city", number>;
+                settlements: number[];
+                cities: number[];
+                roads: [number, number][];
+                materials: MaterialList;
+                devcards: MaterialList;
+            }> & { vp: number }
+        ) => {
+            const local = { ...get().local };
+            if (data.amounts) local.amounts = data.amounts;
+            if (data.settlements) local.settlements = data.settlements;
+            if (data.cities) local.cities = data.cities;
+            if (data.roads) local.roads = data.roads;
+            if (data.materials) local.materials = data.materials;
+            if (data.devcards) local.devcards = data.devcards;
+            local.victoryPoints = data.vp;
+
+            set({ local });
+        }
+    );
+
+    socket.on(
+        ClientCodes.OTHER_UPDATE,
+        (
+            data: Record<"id" | "materials" | "devcards" | "vp", number> &
+                Partial<Record<"cities" | "settlements", number[]>> & {
+                    roads?: [number, number][];
+                }
+        ) => {
+            const player = get().onlines.get(data.id)!;
+            player.materials = data.materials;
+            player.devcards = data.devcards;
+            if (data.roads) player.roads = data.roads;
+            if (data.cities) player.cities = data.cities;
+            if (data.settlements) player.settlements = data.settlements;
+            player.victoryPoints = data.vp;
+
+            get().onlines.set(data.id, { ...player });
+            set({ onlines: new Map(get().onlines) });
+        }
+    );
+
     socket.emit(ServerCodes.INIT, name);
 
     set({ client: { socket, id: -1 } });

@@ -21,7 +21,7 @@ export function StoreView({ className }: { className?: ClassValue }) {
                 Building Costs
             </h1>
             <hr />
-            {Store.map(({ name, cost }) => {
+            {Object.entries(Store).map(([name, cost]) => {
                 const key = name as keyof typeof STORE_ICONS;
                 const icon = STORE_ICONS[key];
                 return (

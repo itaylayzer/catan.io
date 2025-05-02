@@ -1,6 +1,8 @@
 import { ClientCodes, ServerCodes } from "@/config/constants/codes";
 import { Catan } from "./CatanGraph";
 import { Server } from "./sockets";
+import { Player } from "./Player";
+import VMath from "@/utils/VMath";
 
 export default function createServer(onOpen?: (server: Server) => void) {
     const catan = new Catan();
@@ -10,11 +12,14 @@ export default function createServer(onOpen?: (server: Server) => void) {
             onOpen?.(self);
         },
         (socket) => {
-            let id = -1;
+            let local: Player | null = null;
             socket.on(ServerCodes.INIT, (name: string) => {
-                id = catan.playerJoin(name, socket);
+                local = catan.playerJoin(name, socket);
 
-                socket.emit(ClientCodes.INIT, { ...catan.json(), id });
+                socket.emit(ClientCodes.INIT, {
+                    ...catan.json(),
+                    id: local.id,
+                });
             });
 
             socket.on(ServerCodes.STATUS, () => {
@@ -27,7 +32,7 @@ export default function createServer(onOpen?: (server: Server) => void) {
 
             socket.on(ServerCodes.MESSAGE, (message) => {
                 catan.sockets.emit(ClientCodes.MESSAGE, {
-                    from: id,
+                    from: local!.id,
                     date: new Date().getTime(),
                     message,
                 });
@@ -38,6 +43,88 @@ export default function createServer(onOpen?: (server: Server) => void) {
                     ClientCodes.TURN_SWITCH,
                     catan.act_stopTurn()
                 );
+            });
+
+            const deckUpdate = (
+                data: Partial<{
+                    amounts: Record<"road" | "settlement" | "city", number>;
+                    settlements: number[];
+                    cities: number[];
+                    roads: [number, number][];
+                    devcards: number[];
+                }>
+            ) => {
+                socket.emit(ClientCodes.PLAYER_UPDATE, {
+                    ...data,
+                    vp: local!.victoryPoints,
+                    materials: local!.materials,
+                });
+                catan.sockets.emit(ClientCodes.BANK_UPDATE, catan.bank);
+
+                catan.sockets.emitExcept(local!.id, ClientCodes.OTHER_UPDATE, {
+                    id: local!.id,
+                    materials: VMath(local!.materials).sum(),
+                    devcards: VMath(local!.devcards).sum(),
+                    vp: local!.victoryPoints, // TODO: calculate victory points
+                    ...(data.roads
+                        ? { roads: Array.from(local!.roads.values()) }
+                        : {}),
+                    ...(data.cities
+                        ? { cities: Array.from(local!.cities.values()) }
+                        : {}),
+                    ...(data.settlements
+                        ? {
+                              settlements: Array.from(
+                                  local!.settlements.values()
+                              ),
+                          }
+                        : {}),
+                });
+            };
+
+            socket.on(
+                ServerCodes.BUY_ROAD,
+                ([roadFrom, roadTo]: [number, number]) => {
+                    if (
+                        catan.act_buyRoad(
+                            local!,
+                            Math.min(roadFrom, roadTo),
+                            Math.max(roadFrom, roadTo)
+                        )
+                    ) {
+                        deckUpdate({
+                            amounts: local!.amounts,
+                            roads: Array.from(local!.roads.values()),
+                        });
+                    }
+                }
+            );
+
+            socket.on(ServerCodes.BUY_CITY, (cityIndex: number) => {
+                if (catan.act_buyCity(local!, cityIndex)) {
+                    deckUpdate({
+                        amounts: local!.amounts,
+                        cities: Array.from(local!.cities.values()),
+                    });
+                }
+            });
+
+            socket.on(ServerCodes.BUY_SETTLEMENT, (settlementIndex: number) => {
+                if (catan.act_buySettlement(local!, settlementIndex)) {
+                    deckUpdate({
+                        amounts: local!.amounts,
+                        settlements: Array.from(local!.settlements.values()),
+                    });
+                }
+            });
+
+            socket.on(ServerCodes.BUY_DEVCARD, () => {
+                if (catan.act_buyDevcard(local!)) {
+                    deckUpdate({
+                        amounts: local!.amounts,
+                        devcards: local!.devcards,
+                    });
+                }
             });
         }
     );

@@ -12,7 +12,8 @@ import { PiHouseSimpleFill } from "react-icons/pi";
 export function OnlinePlayerCard({ player }: { player: Player }) {
     const { materials, devcards, name, victoryPoints, color, roads } = player;
 
-    const list = [materials, devcards, victoryPoints, roads];
+    console.log("client", "victoryPoints", victoryPoints);
+    const list = [victoryPoints, materials, devcards, roads.length];
 
     return (
         <div className="flex gap-2 px-4 py-1 items-center">

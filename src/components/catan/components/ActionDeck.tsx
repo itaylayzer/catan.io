@@ -7,17 +7,19 @@ import {
 import { ServerCodes } from "@/config/constants/codes";
 import { STORE_ICONS } from "@/config/constants/ui";
 import { useCatanStore } from "@/store/useCatanStore";
-import VMath from "@/utils/VMath";
 import { FaStopwatch } from "react-icons/fa";
 import { RiDiceFill } from "react-icons/ri";
 import { FaHandshakeSimple } from "react-icons/fa6";
+import VMath from "@/utils/VMath";
+import Store from "@/config/data/game/store.json";
 
 export function ActionDeck() {
     const {
         client: { socket, id },
         turnId,
-        ui: { dicesState },
-        bank,
+        ui: { dicesState, events },
+        local,
+        set,
     } = useCatanStore();
 
     const ACTION_DECK_BUTTONS = [
@@ -28,17 +30,17 @@ export function ActionDeck() {
         {
             icon: STORE_ICONS.road,
             header: "Place Road",
-            count: 1,
+            count: local.amounts.road,
         },
         {
             icon: STORE_ICONS.settlement,
             header: "Place Settlement",
-            count: 1,
+            count: local.amounts.settlement,
         },
         {
             icon: STORE_ICONS.city,
             header: "Upgrade to City",
-            count: 1,
+            count: local.amounts.city,
         },
         {
             icon: STORE_ICONS.devcard,
@@ -57,21 +59,41 @@ export function ActionDeck() {
                 : socket?.emit(ServerCodes.ROLL);
         },
         () => {
+            set({
+                ui: {
+                    events,
+                    dicesState,
+                    mapState: "picking edge",
+                },
+            });
             // ROADS
             socket;
         },
         () => {
+            set({
+                ui: {
+                    events,
+                    dicesState,
+                    mapState: "picking vertex",
+                },
+            });
             // HOUSES
             socket;
         },
         () => {
+            set({
+                ui: {
+                    events,
+                    dicesState,
+                    mapState: "picking vertex",
+                },
+            });
             // CITIES
             socket;
         },
         () => {
             // DEVCARD
-            VMath(bank.devcards).sum() > 0 &&
-                socket?.emit(ServerCodes.BUY_DEVCARD);
+            socket?.emit(ServerCodes.BUY_DEVCARD);
         },
         () => {
             // TRADE
@@ -83,10 +105,10 @@ export function ActionDeck() {
 
     const disabled = [
         allDisabled,
-        allDisabled || false,
-        allDisabled || false,
-        allDisabled || false,
-        allDisabled || false,
+        allDisabled || !VMath(local.materials).available(Store.road),
+        allDisabled || !VMath(local.materials).available(Store.settlement),
+        allDisabled || !VMath(local.materials).available(Store.city),
+        allDisabled || !VMath(local.materials).available(Store.devcard),
         allDisabled || false,
     ];
 
@@ -104,7 +126,7 @@ export function ActionDeck() {
                                     disabled={disabled[index]}
                                 >
                                     {count ? (
-                                        <p className="text-xl opacity-65 font-[Rubik] scale-85">
+                                        <p className="text-md opacity-65 font-[Rubik]">
                                             {count}
                                         </p>
                                     ) : null}
