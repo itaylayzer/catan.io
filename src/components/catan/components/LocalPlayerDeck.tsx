@@ -40,17 +40,17 @@ export function LocalPlayerDeck({}: {}) {
 
     return (
         <div>
-            <div className="relative flex scale-90 gap-4 px-7 pb-1 pt-3 items-center justify-around">
+            <div className="relative flex scale-90 gap-2 px-7 pb-1 pt-3 items-center justify-around">
                 {combine.map((value, index) => {
                     const setting = isReactIcons[index]
                         ? {
                               color: "white",
-                              opacity: 0.65,
+                              opacity: 0.2,
                               size: 25,
                           }
                         : {
                               stroke: "white",
-                              opacity: 0.65,
+                              opacity: 0.2,
                               fill: "white",
                               width: 30,
                               height: 30,
@@ -60,8 +60,8 @@ export function LocalPlayerDeck({}: {}) {
                     return (
                         <Tooltip key={index}>
                             <TooltipTrigger asChild>
-                                <div className="flex flex-col-reverse gap-4 items-center opacity-65">
-                                    <p className="text-2xl font-[Rubik] scale-90">
+                                <div className="flex flex-row-reverse  items-center opacity-65">
+                                    <p className="text-2xl -translate-x-4 translate-y-2 font-[Rubik] font-medium scale-70">
                                         {value}
                                     </p>
                                     {rightIcon}
