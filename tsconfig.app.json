@@ -29,5 +29,5 @@
       ]
     }
   },
-  "include": ["src"]
+  "include": ["src", "src/components/catan/map/Catan2DSkeleton.tsx"]
 }
