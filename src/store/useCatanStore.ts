@@ -1,5 +1,4 @@
 import { handleSocket } from "@/client/client";
-import { nonFunction } from "@/config/objects/nonFunction";
 import { Socket } from "@/server/sockets";
 import { DevcardList, MaterialList } from "@/types/materials";
 import { Player } from "@/types/player";
@@ -97,7 +96,7 @@ const defaultValue: CatanData = {
     turnId: 0,
     dices: [1, 1],
     ui: {
-        mapState: "loading",
+        mapState: "picking area",
         dicesState: "ready",
         events: new EventDispatcher(),
     },

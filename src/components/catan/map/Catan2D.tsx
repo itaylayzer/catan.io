@@ -22,10 +22,10 @@ export default function Catan2D() {
     const {
         materials,
         robberArea,
-        ui: {
-            mapState: { state, callback },
-        },
+        ui: { mapState },
     } = useCatanStore();
+
+    console.log("mapState", mapState);
 
     // Dynamic scaling effect
     useEffect(() => {
@@ -47,7 +47,7 @@ export default function Catan2D() {
         return () => window.removeEventListener("resize", updateScale);
     }, []);
 
-    return state === "loading" ? null : (
+    return mapState === "loading" ? null : (
         <div className="relative w-full h-full overflow-hidden" ref={outerRef}>
             <div
                 className="absolute"
@@ -67,9 +67,9 @@ export default function Catan2D() {
                         {Array.from(materials.entries()).map(
                             ([index, { num, material }]) => {
                                 const className =
-                                    state === "picking area" &&
+                                    mapState === "picking area" &&
                                     robberArea !== index
-                                        ? `animate-pulse hover:animate-none hover:scale-95 transition-transform cursor-pointer z-10`
+                                        ? `animate-pulse opacity-30 hover:opacity-75 hover:animate-none hover:scale-90 scale-95 transition-[transform,opacity] cursor-pointer z-10`
                                         : `pointer-events-none`;
 
                                 return (
@@ -77,8 +77,8 @@ export default function Catan2D() {
                                         onClick={() => {
                                             console.log("picked area:", index);
 
-                                            state === "picking area" &&
-                                                callback(index);
+                                            mapState === "picking area";
+                                            // &&callback(index);
                                         }}
                                         key={index}
                                         color={convertions.matsColors[material]}
@@ -129,12 +129,12 @@ export default function Catan2D() {
                             const color = `#fff${
                                 used.includes(index)
                                     ? "f"
-                                    : state === "picking vertex"
+                                    : mapState === "picking vertex"
                                     ? "8"
                                     : "0"
                             }`;
                             const className =
-                                state === "picking vertex" &&
+                                mapState === "picking vertex" &&
                                 !used.includes(index)
                                     ? "animate-pulse hover:scale-95 hover:animate-none cursor-pointer"
                                     : "pointer-events-none";
@@ -162,8 +162,8 @@ export default function Catan2D() {
                                                 index
                                             );
 
-                                            state === "picking vertex" &&
-                                                callback([index]);
+                                            mapState === "picking vertex";
+                                            // &&callback([index]);
                                         }}
                                     />
                                 </div>
@@ -177,12 +177,12 @@ export default function Catan2D() {
                                 const stroke = `#fff${
                                     used.includes(index)
                                         ? "f"
-                                        : state === "picking edge"
+                                        : mapState === "picking edge"
                                         ? "8"
                                         : "0"
                                 }`;
                                 const className =
-                                    state === "picking edge" &&
+                                    mapState === "picking edge" &&
                                     !used.includes(index)
                                         ? "animate-pulse hover:animate-none cursor-pointer"
                                         : "pointer-events-none";
@@ -198,8 +198,8 @@ export default function Catan2D() {
                                         onClick={() => {
                                             console.log("picked edge:", index);
 
-                                            state === "picking edge" &&
-                                                callback([index, from, to]);
+                                            mapState === "picking edge";
+                                            // &&callback([index, from, to]);
                                         }}
                                     />
                                 );

@@ -44,7 +44,7 @@ export function ActionDeck() {
         },
         {
             icon: STORE_ICONS.devcard,
-            header: "Buy Mistery Card",
+            header: "Buy Development Card",
         },
         {
             icon: FaHandshakeSimple,

@@ -1,6 +1,5 @@
 import { convertions } from "@/components/catan/map/configs";
 import { ClientCodes, ServerCodes } from "@/config/constants/codes";
-import { nonFunction } from "@/config/objects/nonFunction";
 import { Socket } from "@/server/sockets";
 import { CatanStore, UITurnState } from "@/store/useCatanStore";
 import { DevcardList, MaterialList } from "@/types/materials";
@@ -85,10 +84,7 @@ export function handleSocket(
                     id,
                 },
                 ui: {
-                    mapState: {
-                        state: "ready", // point:ready
-                        callback: nonFunction,
-                    },
+                    mapState: "picking area",
                     events: get().ui.events,
                     dicesState: get().ui.dicesState,
                 },
@@ -164,6 +160,13 @@ export function handleSocket(
             local.victoryPoints = data.vp;
 
             set({ local });
+        }
+    );
+
+    socket.on(
+        ClientCodes.BANK_UPDATE,
+        (data: { materials: MaterialList; devcards: DevcardList }) => {
+            set({ bank: data });
         }
     );
 

@@ -15,6 +15,26 @@ export function OnlinePlayerCard({ player }: { player: Player }) {
     console.log("client", "victoryPoints", victoryPoints);
     const list = [victoryPoints, materials, devcards, roads.length];
 
+    const elements = list.flatMap((value, index) => [
+        <Tooltip key={index}>
+            <TooltipTrigger asChild>
+                <div className="flex gap-2 items-center opacity-65">
+                    <p className="text-lg font-[Rubik] scale-90">{value}</p>
+                    {ONLINE_STATS[index].icon({
+                        color: "white",
+                        opacity: 0.65,
+                    })}
+                </div>
+            </TooltipTrigger>
+            <TooltipContent>
+                <p>{ONLINE_STATS[index].name}</p>
+            </TooltipContent>
+        </Tooltip>,
+        <div className="h-2 outline-1" />,
+    ]);
+
+    elements.pop();
+
     return (
         <div className="flex gap-2 px-4 py-1 items-center">
             <PiHouseSimpleFill
@@ -29,24 +49,7 @@ export function OnlinePlayerCard({ player }: { player: Player }) {
                 color={COLORS[color]}
             />
             <h2 className="flex-1 mr-12 text-[20px]">{name}</h2>
-            {list.map((value, index) => (
-                <Tooltip key={index}>
-                    <TooltipTrigger asChild>
-                        <div className="flex gap-2 items-center opacity-65">
-                            <p className="text-lg font-[Rubik] scale-90">
-                                {value}
-                            </p>
-                            {ONLINE_STATS[index].icon({
-                                color: "white",
-                                opacity: 0.65,
-                            })}
-                        </div>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                        <p>{ONLINE_STATS[index].name}</p>
-                    </TooltipContent>
-                </Tooltip>
-            ))}
+            {elements}
         </div>
     );
 }

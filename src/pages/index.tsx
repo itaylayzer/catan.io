@@ -20,17 +20,17 @@ import Catan2DSkeleton from "@/components/catan/map/Catan2DSkeleton";
 export function HomePage() {
     return (
         <>
+            <Button
+                variant="link"
+                onClick={() => {
+                    window.open("https://itaylayzer.github.io/", "_blank");
+                }}
+                className="font-[Rubik] absolute bottom-[1%] z-50 right-[50%] translate-x-[50%] cursor-pointer font-light"
+            >
+                @itaylayzer
+            </Button>
             <div className="absolute z-20 flex flex-col gap-2 justify-center items-start top-0 left-50 w-[30%] h-full">
-                <Button
-                    variant="link"
-                    onClick={() => {
-                        window.open("https://itaylayzer.github.io/", "_blank");
-                    }}
-                    className="font-[Rubik] absolute bottom-8 left-0 cursor-pointer font-light"
-                >
-                    @itaylayzer
-                </Button>
-                <div className="flex gap-2 items-center">
+                <div className="flex gap-2 items-center ">
                     <SVGWood height={80} width={80} fill="#222" />
                     <h1 className="text-8xl font-[Rubik] font-bold">Catan</h1>
                 </div>

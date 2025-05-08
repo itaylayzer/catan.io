@@ -15,7 +15,7 @@ export function BankCard({}: {}) {
             <div className="absolute -top-[50%] left-3 bg-sidebar translate-x-[-50] translate-y-[50%] text-[20px] px-5 font-medium">
                 Bank
             </div>
-            {materials.map((value, index) => (
+            {materials.flatMap((value, index) => [
                 <Tooltip key={index}>
                     <TooltipTrigger asChild>
                         <div className="flex gap-2 items-center opacity-65">
@@ -34,8 +34,9 @@ export function BankCard({}: {}) {
                     <TooltipContent>
                         <p>{MATERIALS[index].name}</p>
                     </TooltipContent>
-                </Tooltip>
-            ))}
+                </Tooltip>,
+                <div className="h-2 outline-1" />,
+            ])}
             <Tooltip>
                 <TooltipTrigger asChild>
                     <div className="flex gap-2 items-center opacity-65">
