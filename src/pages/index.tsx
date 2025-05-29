@@ -1,23 +1,15 @@
+import Catan2DSkeleton from "@/components/catan/map/Catan2DSkeleton";
 import SVGWood from "@/components/svg/custom/SVGWood";
 import { Button } from "@/components/ui/button";
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { FaDoorOpen } from "react-icons/fa";
-import { FaKey } from "react-icons/fa";
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-import Catan2DSkeleton from "@/components/catan/map/Catan2DSkeleton";
+import { FaDoorOpen, FaKey } from "react-icons/fa";
 
-export function HomePage() {
+export default function HomePage() {
     return (
         <>
             <Button

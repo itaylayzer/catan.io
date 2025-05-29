@@ -1,7 +1,7 @@
 import Areas from "@/config/data/ui/areas.json";
 import Roads from "@/config/data/ui/roads.json";
 import Settlements from "@/config/data/ui/settlements.json";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { GoDotFill } from "react-icons/go";
 import { convertions, matsToIcon } from "./configs";
 import { Hex } from "./Hex";
@@ -20,45 +20,6 @@ const MIDDLE_INDEX = 9;
 const state = "" as string;
 const robberArea = MIDDLE_INDEX;
 const callback = (...data: any[]) => {};
-const materials = new Map<number, Record<"num" | "material", number>>();
-
-const materialsNumbers = [
-    Material.WOOD,
-    Material.WOOD,
-    Material.WOOD,
-    Material.WOOD,
-    Material.WOOL,
-    Material.WOOL,
-    Material.WOOL,
-    Material.WOOL,
-    Material.WHEAT,
-    Material.WHEAT,
-    Material.WHEAT,
-    Material.WHEAT,
-    Material.BRICK,
-    Material.BRICK,
-    Material.BRICK,
-    Material.ORE,
-    Material.ORE,
-    Material.ORE,
-];
-const numbers = [2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12];
-
-ArrayShuffle(materialsNumbers);
-ArrayShuffle(numbers);
-
-for (let offset = 0; offset < AREAS - 1; offset++) {
-    const middleOrAfter = offset >= MIDDLE_INDEX;
-
-    materials.set(offset + +middleOrAfter, {
-        material: materialsNumbers.shift()!,
-        num: numbers.shift()!,
-    });
-}
-materials.set(MIDDLE_INDEX, {
-    material: 5,
-    num: 7,
-});
 
 export default function Catan2DSkeleton() {
     const outerRef = useRef<HTMLDivElement>(null);
@@ -83,6 +44,54 @@ export default function Catan2DSkeleton() {
         updateScale();
         window.addEventListener("resize", updateScale);
         return () => window.removeEventListener("resize", updateScale);
+    }, []);
+
+    const { materials } = useMemo(() => {
+        const materials = new Map<number, Record<"num" | "material", number>>();
+
+        const materialsNumbers = [
+            Material.WOOD,
+            Material.WOOD,
+            Material.WOOD,
+            Material.WOOD,
+            Material.WOOL,
+            Material.WOOL,
+            Material.WOOL,
+            Material.WOOL,
+            Material.WHEAT,
+            Material.WHEAT,
+            Material.WHEAT,
+            Material.WHEAT,
+            Material.BRICK,
+            Material.BRICK,
+            Material.BRICK,
+            Material.ORE,
+            Material.ORE,
+            Material.ORE,
+        ];
+        const numbers = [
+            2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12,
+        ];
+
+        ArrayShuffle(materialsNumbers);
+        ArrayShuffle(numbers);
+
+        for (let offset = 0; offset < AREAS - 1; offset++) {
+            const middleOrAfter = offset >= MIDDLE_INDEX;
+
+            materials.set(offset + +middleOrAfter, {
+                material: materialsNumbers.shift()!,
+                num: numbers.shift()!,
+            });
+        }
+        materials.set(MIDDLE_INDEX, {
+            material: 5,
+            num: 7,
+        });
+
+        return {
+            materials,
+        };
     }, []);
 
     return (

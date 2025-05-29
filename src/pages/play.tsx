@@ -13,6 +13,7 @@ import Dices2D from "@/components/catan/dices/Dices2D";
 import Catan2D from "@/components/catan/map/Catan2D";
 import { Button } from "@/components/ui/button";
 import { MdStore } from "react-icons/md";
+import Head from "next/head";
 
 function CatanGame() {
     return (
@@ -57,9 +58,7 @@ function CatanGame() {
     );
 }
 
-export function PlayPage() {
-    document.title = "Catan.io | Play";
-
+export default function PlayPage() {
     const {
         client: { socket },
         setSocket,
@@ -71,5 +70,14 @@ export function PlayPage() {
         });
     }, []);
 
-    return socket ? CatanGame() : null;
+    const children = socket ? CatanGame() : null;
+
+    return (
+        <>
+            <Head>
+                <title>Catan.io | Play</title>
+            </Head>
+            {children}
+        </>
+    );
 }

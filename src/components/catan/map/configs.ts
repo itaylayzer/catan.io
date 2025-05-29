@@ -3,6 +3,7 @@ import SVGOre from "@/components/svg/custom/SVGOre";
 import SVGWheet from "@/components/svg/custom/SVGWheet";
 import SVGWool from "@/components/svg/custom/SVGWhool";
 import SVGWood from "@/components/svg/custom/SVGWood";
+import { JSX } from "react";
 
 export const convertions = {
     matsColors: {
