@@ -333,7 +333,7 @@ class Catan2D extends Component<
                                         used
                                             ? "ff"
                                             : mapState === "picking edge"
-                                            ? "88"
+                                            ? "55"
                                             : "00"
                                     }`;
                                     const className =

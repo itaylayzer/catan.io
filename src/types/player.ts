@@ -7,4 +7,5 @@ export interface Player {
     settlements: number[];
     cities: number[];
     roads: [number, number][];
+    maxRoad: number
 }

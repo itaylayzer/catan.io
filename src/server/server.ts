@@ -52,6 +52,7 @@ export default function createServer(onOpen?: (server: Server) => void) {
                     cities: number[];
                     roads: [number, number][];
                     devcards: number[];
+                    maxRoad: number;
                 }>
             ) => {
                 socket.emit(ClientCodes.PLAYER_UPDATE, {
@@ -79,7 +80,17 @@ export default function createServer(onOpen?: (server: Server) => void) {
                               ),
                           }
                         : {}),
+                    ...(data.maxRoad === undefined
+                        ? {}
+                        : { maxRoad: data.maxRoad }),
                 });
+            };
+
+            const achivementsUpdate = () => {
+                catan.sockets.emit(
+                    ClientCodes.ACHIVEMENTS_UPDATE,
+                    catan.json_achivements()
+                );
             };
 
             socket.on(
@@ -97,9 +108,15 @@ export default function createServer(onOpen?: (server: Server) => void) {
                         )
                     ) {
                         console.log("server", "buy_road", "inside");
+
+                        if (catan.updateLongestRoad()) {
+                            achivementsUpdate();
+                        }
+
                         deckUpdate({
                             amounts: local!.amounts,
                             roads: Array.from(local!.roads.values()),
+                            maxRoad: local!.maxRoad,
                         });
                     }
                 }

@@ -20,6 +20,11 @@ export class Catan {
     private robberArea: number;
     public bank: { materials: number[]; devcards: number[] };
     private turnId: number;
+
+    // Achivements variables
+    private longestRoadColor = -1;
+    private largestArmyColor = -1;
+
     constructor() {
         this.vertecies = Array(AREAS + VERTECIES)
             .fill(undefined)
@@ -172,6 +177,13 @@ export class Catan {
             robberArea,
             bank,
         };
+    }
+
+    public json_achivements() {
+        const { longestRoadColor: longestRoad, largestArmyColor: largestArmy } =
+            this;
+
+        return { longestRoad, largestArmy };
     }
 
     /////////////////// SERVER ACTIONS //////////////////////
@@ -338,5 +350,78 @@ export class Catan {
         player.devcards[index]++;
 
         return true;
+    }
+
+    //////////////////// UPDATE FUNCTIONS ////////////////
+    public updateLongestRoad(): boolean {
+        const oldState = this.longestRoadColor;
+
+        const dfs = (
+            vertexOffset: number,
+            color: number,
+            visited: boolean[]
+        ): number => {
+            const vertex = this.vertecies[vertexOffset];
+
+            if (
+                !this.vertecies[vertexOffset] ||
+                vertex.color == VertexType.AREA ||
+                visited[vertexOffset - AREAS]
+            )
+                return 0;
+
+            visited[vertexOffset - AREAS] = true;
+            let maxChildLength = 0;
+
+            vertex.edges.forEach((edge) => {
+                if (edge.color === color) {
+                    maxChildLength = Math.max(
+                        maxChildLength,
+                        dfs(edge.offset, color, visited)
+                    );
+                }
+            });
+
+            return maxChildLength + 1;
+        };
+
+        const dfsScore = (color: number) => {
+            let maxRoadLength = 0;
+
+            for (
+                let vertexOffset = 0;
+                vertexOffset < VERTECIES;
+                vertexOffset++
+            ) {
+                const visited = Array(VERTECIES).fill(false);
+
+                maxRoadLength = Math.max(
+                    maxRoadLength,
+                    dfs(vertexOffset + AREAS, color, visited) - 1
+                );
+            }
+
+            return maxRoadLength;
+        };
+
+        const lengths = this.players.map((player) => {
+            return (player.maxRoad = dfsScore(player.id));
+        });
+
+        const maxLength = VMath(lengths).max();
+
+        if (VMath(lengths).counts(maxLength) > 1) {
+            return false;
+        }
+
+        if (maxLength < 5) {
+            this.longestRoadColor = -1;
+            return false;
+        }
+
+        this.longestRoadColor = VMath(lengths).maxIndex();
+        const stateChanged = oldState !== this.longestRoadColor;
+
+        return stateChanged;
     }
 }

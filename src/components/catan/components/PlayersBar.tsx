@@ -34,6 +34,7 @@ export default function PlayersBar() {
                 victoryPoints: local.victoryPoints,
                 cities: [],
                 settlements: [],
+                maxRoad: local.maxRoad,
             },
         })
     );

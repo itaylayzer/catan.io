@@ -24,7 +24,7 @@ export const ONLINE_STATS = [
     { name: "Victory Points", icon: FaTrophy },
     { name: "Materials", icon: FaQuestion },
     { name: "Development Cards", icon: FaMagic },
-    { name: "Roads", icon: FaRoad },
+    { name: "Max Roads", icon: FaRoad },
 ];
 
 export const DEVELOPMENTS = [

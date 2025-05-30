@@ -3,17 +3,78 @@ import {
     TooltipTrigger,
     TooltipContent,
 } from "@/components/ui/tooltip";
-import { COLORS, ONLINE_STATS } from "@/config/constants/ui";
+import { COLORS, DEVELOPMENTS, ONLINE_STATS } from "@/config/constants/ui";
+import { useCatanStore } from "@/store/useCatanStore";
 import { Player } from "@/types/player";
 
 // import { IoLogoGameControllerB } from "react-icons/io";
 import { PiHouseSimpleFill } from "react-icons/pi";
 
+import { TbRectangleVerticalFilled } from "react-icons/tb";
+
+const cardsColor = "#111";
+
+export function RoadCard() {
+    return (
+        <Tooltip>
+            <TooltipTrigger asChild>
+                <div className="relative  w-[30px] h-[30px] opacity-80 hover:opacity-100 transition-opacity">
+                    {ONLINE_STATS[3].icon({
+                        size: 15,
+                        color: cardsColor,
+                        className: "absolute top-0 z-20 translate-[7.5px]",
+                    })}
+                    <TbRectangleVerticalFilled
+                        size={30}
+                        opacity={1}
+                        className="absolute top-0 z-10"
+                    />
+                </div>
+            </TooltipTrigger>
+            <TooltipContent>
+                <p>Road Card</p>
+            </TooltipContent>
+        </Tooltip>
+    );
+}
+
+export function KnightCard() {
+    return (
+        <Tooltip>
+            <TooltipTrigger asChild>
+                <div className="relative  w-[30px] h-[30px] opacity-80 hover:opacity-100 transition-opacity">
+                    {DEVELOPMENTS[0].icon({
+                        size: 15,
+                        color: cardsColor,
+                        className: "absolute top-0 z-20 translate-[7.5px]",
+                    })}
+                    <TbRectangleVerticalFilled
+                        size={30}
+                        className="absolute top-0 z-10"
+                    />
+                </div>
+            </TooltipTrigger>
+            <TooltipContent>
+                <p>Knight Card</p>
+            </TooltipContent>
+        </Tooltip>
+    );
+}
+
 export function OnlinePlayerCard({ player }: { player: Player }) {
-    const { materials, devcards, name, victoryPoints, color, roads } = player;
+    const { materials, devcards, name, victoryPoints, color, maxRoad } = player;
+    const { largestArmy, longestRoad } = useCatanStore();
 
     console.log("client", "victoryPoints", victoryPoints);
-    const list = [victoryPoints, materials, devcards, roads.length];
+    console.log("client", "OnlinePlayerCard", "maxRoad", maxRoad);
+
+    const belongLargestArmy = largestArmy === color;
+    const belongLongestRoad = longestRoad === color;
+
+    const vp =
+        victoryPoints + (+belongLargestArmy * 2 + +belongLargestArmy * 2);
+
+    const list = [vp, materials, devcards, maxRoad];
 
     const elements = list.flatMap((value, index) => [
         <Tooltip key={index}>
@@ -36,7 +97,11 @@ export function OnlinePlayerCard({ player }: { player: Player }) {
     elements.pop();
 
     return (
-        <div className="flex gap-2 px-4 py-1 items-center">
+        <div className="flex gap-2 px-4 py-1 items-center relative">
+            <div className="absolute flex gap-0 -left-19">
+                {belongLongestRoad ? <RoadCard /> : null}
+                {belongLargestArmy ? <KnightCard /> : null}
+            </div>
             <PiHouseSimpleFill
                 opacity={1}
                 style={{

@@ -54,6 +54,10 @@ export function ActionDeck() {
 
     const actions = [
         () => {
+            set((old) => ({
+                ui: { ...old.ui, mapState: "ready" },
+            }));
+
             dicesState === "mine"
                 ? socket?.emit(ServerCodes.STOP_TURN)
                 : socket?.emit(ServerCodes.ROLL);
@@ -101,10 +105,18 @@ export function ActionDeck() {
         },
         () => {
             // DEVCARD
+            set((old) => ({
+                ui: { ...old.ui, mapState: "ready" },
+            }));
+
             socket?.emit(ServerCodes.BUY_DEVCARD);
         },
         () => {
             // TRADE
+            set((old) => ({
+                ui: { ...old.ui, mapState: "ready" },
+            }));
+
             socket;
         },
     ];

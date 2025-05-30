@@ -20,4 +20,5 @@ export enum ClientCodes {
     PLAYER_UPDATE = "pu",
     BANK_UPDATE = "bu",
     OTHER_UPDATE = "ou",
+    ACHIVEMENTS_UPDATE = "ao"
 }

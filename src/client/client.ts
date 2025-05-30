@@ -149,6 +149,7 @@ export function handleSocket(
                 roads: [number, number][];
                 materials: MaterialList;
                 devcards: MaterialList;
+                maxRoad: number;
             }> & { vp: number }
         ) => {
             const local = { ...get().local };
@@ -158,6 +159,7 @@ export function handleSocket(
             if (data.roads) local.roads = data.roads;
             if (data.materials) local.materials = data.materials;
             if (data.devcards) local.devcards = data.devcards;
+            if (data.maxRoad) local.maxRoad = data.maxRoad;
             local.victoryPoints = data.vp;
 
             set({ local });
@@ -175,7 +177,10 @@ export function handleSocket(
     socket.on(
         ClientCodes.OTHER_UPDATE,
         (
-            data: Record<"id" | "materials" | "devcards" | "vp", number> &
+            data: Record<
+                "id" | "materials" | "devcards" | "vp" | "maxRoad",
+                number
+            > &
                 Partial<Record<"cities" | "settlements", number[]>> & {
                     roads?: [number, number][];
                 }
@@ -186,10 +191,25 @@ export function handleSocket(
             if (data.roads) player.roads = data.roads;
             if (data.cities) player.cities = data.cities;
             if (data.settlements) player.settlements = data.settlements;
+            if (data.maxRoad) player.maxRoad = data.maxRoad;
+
             player.victoryPoints = data.vp;
 
             get().onlines.set(data.id, { ...player });
             set({ onlines: new Map(get().onlines) });
+        }
+    );
+
+    socket.on(
+        ClientCodes.ACHIVEMENTS_UPDATE,
+        ({
+            largestArmy,
+            longestRoad,
+        }: {
+            longestRoad: number;
+            largestArmy: number;
+        }) => {
+            set({ largestArmy, longestRoad });
         }
     );
 

@@ -12,6 +12,7 @@ export class Player {
     public cities: Set<number>;
     public roads: Set<[number, number]>;
     public knightUsed: number;
+    public maxRoad: number;
     public amounts: Record<"road" | "settlement" | "city", number>;
 
     constructor(public id: number, public name: string, public socket: Socket) {
@@ -29,6 +30,7 @@ export class Player {
             settlement: 5,
         };
         this.knightUsed = 0;
+        this.maxRoad = 0;
     }
 
     public get victoryPoints() {

@@ -18,6 +18,8 @@ export type UIMapState =
 export type UITurnState = "ready" | "rolling" | "mine" | "others";
 
 type CatanData = {
+    largestArmy: number;
+    longestRoad: number;
     harbors: Map<number, number>;
     materials: Map<
         number,
@@ -72,6 +74,8 @@ type CatanActions = {
 };
 
 const defaultValue: CatanData = {
+    longestRoad: -1,
+    largestArmy: -1,
     robberArea: -1,
     harbors: new Map(),
     materials: new Map(),
@@ -97,6 +101,7 @@ const defaultValue: CatanData = {
             road: 15,
             settlement: 5,
         },
+        maxRoad: 0,
     },
     turnId: 0,
     dices: [1, 1],

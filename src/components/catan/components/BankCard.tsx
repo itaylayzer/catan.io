@@ -5,13 +5,20 @@ import {
 } from "@/components/ui/tooltip";
 import { MATERIALS, ONLINE_STATS } from "@/config/constants/ui";
 import { useCatanStore } from "@/store/useCatanStore";
+import { KnightCard, RoadCard } from "./OnlinePlayerCard";
 
 export function BankCard({}: {}) {
     const {
         bank: { devcards, materials },
+        largestArmy,
+        longestRoad,
     } = useCatanStore();
     return (
         <div className="relative flex outline-1 rounded-sm gap-2 px-4 pb-1 pt-2 items-center justify-around">
+            <div className="absolute flex gap-0 -left-19">
+                {longestRoad < 0 ? <RoadCard /> : null}
+                {largestArmy < 0 ? <KnightCard /> : null}
+            </div>
             <div className="absolute -top-[50%] left-3 bg-sidebar translate-x-[-50] translate-y-[50%] text-[20px] px-5 font-medium">
                 Bank
             </div>
