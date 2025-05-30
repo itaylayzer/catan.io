@@ -106,7 +106,7 @@ export function OnlinePlayerCard({ player }: { player: Player }) {
 
     return (
         <div className="flex gap-2 px-4 py-1 items-center relative">
-            <div className="absolute flex gap-0 -left-19">
+            <div className="absolute flex gap-0 pr-3 right-full">
                 {belongLongestRoad ? <RoadCard /> : null}
                 {belongLargestArmy ? <KnightCard /> : null}
             </div>
