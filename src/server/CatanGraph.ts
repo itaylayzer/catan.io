@@ -468,6 +468,11 @@ export class Catan {
             return false;
         }
 
+        if (maxLength < 3) {
+            this.longestRoadColor = -1;
+            return false;
+        }
+
         this.longestRoadColor = VMath(lengths).maxIndex();
         const stateChanged = oldState !== this.longestRoadColor;
 
