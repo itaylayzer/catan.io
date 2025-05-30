@@ -132,6 +132,20 @@ export function handleSocket(
                 ) {
                     get().ui.events.emit("7");
 
+                    set((old) => ({
+                        ui: {
+                            ...old.ui,
+                            mapState: "picking area",
+                        },
+                    }));
+
+                    get().ui.events.once("picked area", (index) => {
+                        socket.emit(ServerCodes.MOVE_ROBBER, {
+                            areaOffset: index,
+                            useDevcard: false,
+                        });
+                    });
+
                     get().ui.events.once("7 give", (values) => {
                         socket.emit(ServerCodes.DROP_MATS, values);
                     });
@@ -145,6 +159,16 @@ export function handleSocket(
             });
         }
     );
+
+    socket.on(ClientCodes.MOVE_ROBBER, (robberArea) => {
+        set({ robberArea });
+        set((old) => ({
+            ui: {
+                ...old.ui,
+                mapState: "ready",
+            },
+        }));
+    });
 
     socket.on(ClientCodes.TURN_SWITCH, (turnId: number) => {
         set({ turnId });

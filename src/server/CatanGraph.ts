@@ -205,7 +205,11 @@ export class Catan {
 
         const areas = this.vertecies
             .filter(({ material }, index) => {
-                return index < AREAS && material?.num === dicesSum;
+                return (
+                    index < AREAS &&
+                    material?.num === dicesSum &&
+                    this.robberArea !== index
+                );
             })
             .flatMap(({ material, edges }) => {
                 const { material: mat } = material!;
@@ -371,8 +375,7 @@ export class Catan {
         VMath(this.bank.materials).sameSize.add(Store.devcard);
         VMath(player.materials).sameSize.sub(Store.devcard);
 
-        // TODO: if its a devcard theres no need for all the players to drop cards (when they have 7 cards or more) rounded by 'floor' and not 'ceil'
-        // but still takes 1 random card from a player that is near the robbed area, only 1 player he choses if theres multiple players around the same area
+        // TODO: take 1 random card from a player that is near the robbed area, only 1 player he choses if theres multiple players around the same area
 
         return true;
     }

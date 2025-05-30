@@ -17,7 +17,7 @@ export function ActionDeck() {
     const {
         client: { socket, id },
         turnId,
-        ui: { dicesState, events },
+        ui: { dicesState, events, mapState },
         local,
         set,
     } = useCatanStore();
@@ -121,7 +121,10 @@ export function ActionDeck() {
         },
     ];
 
-    const allDisabled = turnId !== id || dicesState === "rolling";
+    const allDisabled =
+        mapState === "picking area" ||
+        turnId !== id ||
+        dicesState === "rolling";
     const turnNotMine = dicesState !== "mine";
     const disabled = [
         allDisabled,

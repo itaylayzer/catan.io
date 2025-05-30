@@ -8,7 +8,7 @@ import { MATERIALS } from "@/config/constants/ui";
 import { cn } from "@/lib/utils";
 import { useCatanStore } from "@/store/useCatanStore";
 import VMath from "@/utils/VMath";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { RiBankFill } from "react-icons/ri";
 import { StateOverlay } from "./StateOverlay";
 
@@ -44,10 +44,11 @@ export function SevenMatsDropState() {
 
     return (
         <div
-            style={{ transition: "height 1s ease-out, opacity 1s" }}
             className={cn(
-                " animate-pulse hover:animate-none overflow-y-hidden relative duration-500 ease-in-out w-full z-50 rounded pt-3 pb-2 px-4",
-                hidden ? "h-0" : "outline-1 bg-accent"
+                " hover:animate-none transition-all overflow-y-hidden relative duration-500 ease-in-out w-full z-50 rounded pt-3 pb-2 px-4",
+                hidden
+                    ? "h-0 opacity-0  pointer-events-none"
+                    : "animate-pulse  pointer-events-auto opacity-100 outline-1 bg-accent"
             )}
         >
             <p className="font-[Rubik] text-center mb-2">

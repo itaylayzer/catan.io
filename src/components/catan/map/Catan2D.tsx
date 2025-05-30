@@ -133,12 +133,16 @@ class Catan2D extends Component<
 
                                     return (
                                         <Hex
-                                            onClick={() =>
+                                            onClick={() => {
                                                 console.log(
                                                     "picked area:",
                                                     index
-                                                )
-                                            }
+                                                );
+                                                this.state.events.emit(
+                                                    "picked area",
+                                                    index
+                                                );
+                                            }}
                                             key={index}
                                             color={
                                                 convertions.matsColors[material]
