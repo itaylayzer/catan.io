@@ -110,14 +110,22 @@ export function ActionDeck() {
     ];
 
     const allDisabled = turnId !== id || dicesState === "rolling";
-
+    const turnNotMine = dicesState !== "mine";
     const disabled = [
         allDisabled,
-        allDisabled || !VMath(local.materials).available(Store.road),
-        allDisabled || !VMath(local.materials).available(Store.settlement),
-        allDisabled || !VMath(local.materials).available(Store.city),
-        allDisabled || !VMath(local.materials).available(Store.devcard),
-        allDisabled || false,
+        turnNotMine ||
+            allDisabled ||
+            !VMath(local.materials).available(Store.road),
+        turnNotMine ||
+            allDisabled ||
+            !VMath(local.materials).available(Store.settlement),
+        turnNotMine ||
+            allDisabled ||
+            !VMath(local.materials).available(Store.city),
+        turnNotMine ||
+            allDisabled ||
+            !VMath(local.materials).available(Store.devcard),
+        turnNotMine || allDisabled || false,
     ];
 
     return (
