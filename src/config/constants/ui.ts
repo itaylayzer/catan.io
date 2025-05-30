@@ -30,7 +30,7 @@ export const ONLINE_STATS = [
 export const DEVELOPMENTS = [
     {
         icon: FaChessKnight,
-        name: "Knight",
+        name: "Move Robber",
     },
     ONLINE_STATS[0],
     {

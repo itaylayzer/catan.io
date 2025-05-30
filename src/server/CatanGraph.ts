@@ -1,5 +1,5 @@
 import { AREAS, MAX_PLAYERS, VERTECIES } from "@/config/constants/game";
-import { Material } from "@/types/materials";
+import { Material, MaterialList } from "@/types/materials";
 import { VertexType } from "@/types/vertex";
 import { ArrayShuffle } from "@/utils/ArrayShuffle";
 import { GraphUtils, Vertex } from "./Graph";
@@ -41,7 +41,7 @@ export class Catan {
             materials: [19, 19, 19, 19, 19],
         };
         this.turnId = 0;
-        this.robberArea = 9;
+        this.robberArea = MIDDLE_INDEX;
         this.players = [];
 
         this.prepareCatanEdges();
@@ -200,7 +200,7 @@ export class Catan {
     }
 
     public act_rollDice() {
-        const dices = [randInt(1, 6), randInt(1, 6)];
+        const dices = [3 /* randInt(1, 6) */, 4 /* randInt(1, 6) */];
         const dicesSum = dices[0] + dices[1];
 
         const areas = this.vertecies
@@ -224,20 +224,23 @@ export class Catan {
                 return vertecies;
             });
 
-        const addons = this.players.map(({ id, settlements }) => {
-            const mats = [0, 0, 0, 0, 0];
+        const addons =
+            dicesSum == 7
+                ? []
+                : this.players.map(({ id, settlements }) => {
+                      const mats = [0, 0, 0, 0, 0];
 
-            const materials: number[] = [];
+                      const materials: number[] = [];
 
-            areas.forEach(({ mat, vertex }) => {
-                settlements.has(vertex - AREAS) && materials.push(mat);
-            });
+                      areas.forEach(({ mat, vertex }) => {
+                          settlements.has(vertex - AREAS) &&
+                              materials.push(mat);
+                      });
 
-            VMath(mats).countpicks(materials);
+                      VMath(mats).countpicks(materials);
 
-            return { from: id, mats };
-        });
-
+                      return { from: id, mats };
+                  });
         return {
             dices,
             addons,
@@ -350,6 +353,33 @@ export class Catan {
         player.devcards[index]++;
 
         return true;
+    }
+
+    public act_moveRobber(
+        player: Player,
+        areaOffset: number,
+        useDevcard: boolean
+        // takeFromPlayerIndex
+    ): boolean {
+        // If moved by devcard and theres no enough knight devcards return false
+        if (useDevcard && player.devcards[0] <= 0) return false;
+
+        player.devcards[0] -= +useDevcard;
+        this.robberArea = areaOffset;
+
+        // Move mats
+        VMath(this.bank.materials).sameSize.add(Store.devcard);
+        VMath(player.materials).sameSize.sub(Store.devcard);
+
+        // TODO: if its a devcard theres no need for all the players to drop cards (when they have 7 cards or more) rounded by 'floor' and not 'ceil'
+        // but still takes 1 random card from a player that is near the robbed area, only 1 player he choses if theres multiple players around the same area
+
+        return true;
+    }
+
+    public dropMaterials(player: Player, mats: MaterialList) {
+        VMath(player!.materials).sameSize.sub(mats);
+        VMath(this.bank.materials).sameSize.add(mats);
     }
 
     //////////////////// UPDATE FUNCTIONS ////////////////

@@ -9,6 +9,8 @@ export enum ServerCodes {
     BUY_ROAD = "br",
     BUY_SETTLEMENT = "bs",
     BUY_CITY = "bc",
+    MOVE_ROBBER = "mr",
+    DROP_MATS = "dp",
 }
 // Server to Client
 export enum ClientCodes {
@@ -20,5 +22,6 @@ export enum ClientCodes {
     PLAYER_UPDATE = "pu",
     BANK_UPDATE = "bu",
     OTHER_UPDATE = "ou",
-    ACHIVEMENTS_UPDATE = "ao"
+    ACHIVEMENTS_UPDATE = "ao",
+    MOVE_ROBBER = "mr",
 }

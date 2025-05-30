@@ -125,6 +125,18 @@ export function handleSocket(
                         xplayer && (xplayer.materials += VMath(mats).sum());
                     }
                 });
+
+                if (
+                    dices[0] + dices[1] === 7 &&
+                    VMath(get().local.materials).sum() > 6
+                ) {
+                    get().ui.events.emit("7");
+
+                    get().ui.events.once("7 give", (values) => {
+                        socket.emit(ServerCodes.DROP_MATS, values);
+                    });
+                }
+
                 if (get().turnId === get().local.color) {
                     setTurnState("mine");
                 } else {

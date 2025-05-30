@@ -14,10 +14,13 @@ import Catan2D from "@/components/catan/map/Catan2D";
 import { Button } from "@/components/ui/button";
 import { MdStore } from "react-icons/md";
 import Head from "next/head";
+import { SevenMatsDropState } from "@/components/catan/states/SevenMatsDropState";
+import { StateOverlay } from "@/components/catan/states/StateOverlay";
 
 function CatanGame() {
     return (
         <div className="flex absolute w-[100%] h-[100%] top-0 left-0">
+            <StateOverlay />
             <div className="absolute pt-32 h-full">
                 <div className="flex flex-col gap-3 px-5 w-[333px] h-full">
                     <h1 className="text-6xl text-center font-bold ">Catan</h1>
@@ -30,6 +33,7 @@ function CatanGame() {
                     <div className="h-min">
                         <Dices2D />
                     </div>
+                    <SevenMatsDropState />
                 </div>
             </div>
             <div className="flex-1 flex flex-col gap-3 items-center">

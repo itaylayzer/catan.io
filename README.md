@@ -1,8 +1,13 @@
 TODO:
 
--   animation on getting mats & devcard
--   roads: dijkstra
 -   knight: pick area
+-   devcards buttons with dialogs
 -   achivements
 -   first 2 rounds
--   trade
+-   bank trade
+-   harbors + harbor trade
+-   players trade
+
+ui:
+
+-   animation on getting mats & devcard

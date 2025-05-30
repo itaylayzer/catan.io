@@ -3,6 +3,7 @@ import { Catan } from "./CatanGraph";
 import { Server } from "./sockets";
 import { Player } from "./Player";
 import VMath from "@/utils/VMath";
+import { MaterialList } from "@/types/materials";
 
 export default function createServer(onOpen?: (server: Server) => void) {
     const catan = new Catan();
@@ -45,6 +46,12 @@ export default function createServer(onOpen?: (server: Server) => void) {
                 );
             });
 
+            socket.on(ServerCodes.DROP_MATS, (mats: MaterialList) => {
+                catan.dropMaterials(local!, mats);
+
+                deckUpdate({});
+            });
+
             const deckUpdate = (
                 data: Partial<{
                     amounts: Record<"road" | "settlement" | "city", number>;
@@ -66,7 +73,7 @@ export default function createServer(onOpen?: (server: Server) => void) {
                     id: local!.id,
                     materials: VMath(local!.materials).sum(),
                     devcards: VMath(local!.devcards).sum(),
-                    vp: local!.victoryPoints, // TODO: calculate victory points
+                    vp: local!.victoryPoints,
                     ...(data.roads
                         ? { roads: Array.from(local!.roads.values()) }
                         : {}),
@@ -148,6 +155,27 @@ export default function createServer(onOpen?: (server: Server) => void) {
                     });
                 }
             });
+
+            socket.on(
+                ServerCodes.MOVE_ROBBER,
+                ({
+                    areaOffset,
+                    useDevcard,
+                }: {
+                    areaOffset: number;
+                    useDevcard: boolean;
+                }) => {
+                    if (catan.act_moveRobber(local!, areaOffset, useDevcard)) {
+                        if (useDevcard) {
+                            deckUpdate({
+                                devcards: local!.devcards,
+                            });
+                        }
+
+                        catan.sockets.emit(ClientCodes.MOVE_ROBBER, areaOffset);
+                    }
+                }
+            );
         }
     );
 }

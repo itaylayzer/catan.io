@@ -32,7 +32,7 @@ export function RoadCard() {
                 </div>
             </TooltipTrigger>
             <TooltipContent>
-                <p>Road Card</p>
+                <p>Longest Road Card</p>
             </TooltipContent>
         </Tooltip>
     );
@@ -55,7 +55,7 @@ export function KnightCard() {
                 </div>
             </TooltipTrigger>
             <TooltipContent>
-                <p>Knight Card</p>
+                <p>Largest Army Card</p>
             </TooltipContent>
         </Tooltip>
     );
