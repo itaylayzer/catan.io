@@ -85,6 +85,10 @@ export default function createServer(onOpen?: (server: Server) => void) {
             socket.on(
                 ServerCodes.BUY_ROAD,
                 ([roadFrom, roadTo]: [number, number]) => {
+                    console.log("server", "buy_road", "input", [
+                        roadFrom,
+                        roadTo,
+                    ]);
                     if (
                         catan.act_buyRoad(
                             local!,
@@ -92,6 +96,7 @@ export default function createServer(onOpen?: (server: Server) => void) {
                             Math.max(roadFrom, roadTo)
                         )
                     ) {
+                        console.log("server", "buy_road", "inside");
                         deckUpdate({
                             amounts: local!.amounts,
                             roads: Array.from(local!.roads.values()),

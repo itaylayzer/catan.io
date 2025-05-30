@@ -4,7 +4,9 @@ import { Toaster } from "@/components/ui/sonner";
 export default function Document() {
     return (
         <Html lang="en">
-            <Head />
+            <Head>
+                <link rel="icon" href="/icon.png" />
+            </Head>
             <body className="antialiased dark">
                 <TooltipProvider>
                     <Main />

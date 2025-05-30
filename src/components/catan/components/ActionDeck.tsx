@@ -59,37 +59,45 @@ export function ActionDeck() {
                 : socket?.emit(ServerCodes.ROLL);
         },
         () => {
-            set({
-                ui: {
-                    events,
-                    dicesState,
-                    mapState: "picking edge",
-                },
-            });
             // ROADS
-            socket;
+            set((old) => ({
+                ui: { ...old.ui, mapState: "picking edge" },
+            }));
+
+            events.once("picked edge", (from: number, to: number) => {
+                socket?.emit(ServerCodes.BUY_ROAD, [from, to]);
+
+                set((old) => ({
+                    ui: { ...old.ui, mapState: "ready" },
+                }));
+            });
         },
         () => {
-            set({
-                ui: {
-                    events,
-                    dicesState,
-                    mapState: "picking vertex",
-                },
+            set((old) => ({
+                ui: { ...old.ui, mapState: "picking vertex" },
+            }));
+
+            events.once("picked vertex", (index: number) => {
+                socket?.emit(ServerCodes.BUY_SETTLEMENT, index);
+
+                set((old) => ({
+                    ui: { ...old.ui, mapState: "ready" },
+                }));
             });
-            // HOUSES
-            socket;
         },
         () => {
-            set({
-                ui: {
-                    events,
-                    dicesState,
-                    mapState: "picking vertex",
-                },
+            // CITY
+            set((old) => ({
+                ui: { ...old.ui, mapState: "picking vertex upgrade" },
+            }));
+
+            events.once("picked vertex upgrade", (index: number) => {
+                socket?.emit(ServerCodes.BUY_CITY, index);
+
+                set((old) => ({
+                    ui: { ...old.ui, mapState: "ready" },
+                }));
             });
-            // CITIES
-            socket;
         },
         () => {
             // DEVCARD

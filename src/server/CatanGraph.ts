@@ -4,7 +4,7 @@ import { VertexType } from "@/types/vertex";
 import { ArrayShuffle } from "@/utils/ArrayShuffle";
 import { GraphUtils, Vertex } from "./Graph";
 import AreasArray from "@/config/data/game/areas.json";
-import SettlementsArray from "@/config/data/game/areas.json";
+import SettlementsArray from "@/config/data/game/settlements.json";
 import HarborsArray from "@/config/data/game/harbors.json";
 import { Player } from "./Player";
 import { Socket } from "./sockets";
@@ -244,7 +244,7 @@ export class Catan {
         // check if settlement already bought
         if (
             player.roads.has([roadFrom, roadTo]) ||
-            this.vertecies[roadFrom].edges.get(roadTo)!.color !==
+            this.vertecies[roadFrom]?.edges.get(roadTo)?.color !==
                 VertexType.SETTLEMENT
         )
             return false;
@@ -264,8 +264,8 @@ export class Catan {
         };
 
         // Paint
-        paint(roadFrom + AREAS, roadTo + AREAS, player.id);
-        paint(roadTo + AREAS, roadFrom + AREAS, player.id);
+        paint(roadFrom, roadTo, player.id);
+        paint(roadTo, roadFrom, player.id);
 
         // Add to map
         player.roads.add([roadFrom, roadTo]);

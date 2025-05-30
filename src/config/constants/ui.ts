@@ -10,7 +10,7 @@ import { FaHouse, FaChessKnight } from "react-icons/fa6";
 import { RiPlantFill } from "react-icons/ri";
 import { Fa2Roads } from "@/components/svg/react-icons/Fa2Roads";
 
-export const COLORS = ["#fff", "#3b82f6", "#7f1d1d", "#c2410c"];
+export const COLORS = ["#ffffff", "#3b82f6", "#e34653", "#c2410c"];
 
 export const MATERIALS = [
     { name: "Wood", icon: SVGWood },

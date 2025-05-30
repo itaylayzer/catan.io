@@ -1,3 +1,4 @@
+import Catan2D from "@/components/catan/map/Catan2D";
 import { convertions } from "@/components/catan/map/configs";
 import { ClientCodes, ServerCodes } from "@/config/constants/codes";
 import { Socket } from "@/server/sockets";
@@ -24,13 +25,13 @@ export function handleSocket(
     get: () => CatanStore
 ) {
     const setTurnState = (state: UITurnState) => {
-        set({
+        set((old) => ({
             ui: {
-                events: get().ui.events,
-                mapState: get().ui.mapState,
+                events: old.ui.events,
+                mapState: old.ui.mapState,
                 dicesState: state,
             },
-        });
+        }));
     };
 
     socket.on(
@@ -84,7 +85,7 @@ export function handleSocket(
                     id,
                 },
                 ui: {
-                    mapState: "picking area",
+                    mapState: "ready",
                     events: get().ui.events,
                     dicesState: get().ui.dicesState,
                 },
@@ -160,6 +161,7 @@ export function handleSocket(
             local.victoryPoints = data.vp;
 
             set({ local });
+            Catan2D.instance?.forceUpdate();
         }
     );
 

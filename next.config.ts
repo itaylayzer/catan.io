@@ -3,9 +3,9 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
     /* config options here */
     reactStrictMode: true,
-    basePath: "/catan.io",
+    // basePath: "/catan.io",
     output: "export",
-    trailingSlash: true,
+    // trailingSlash: true,
 };
 
 export default nextConfig;

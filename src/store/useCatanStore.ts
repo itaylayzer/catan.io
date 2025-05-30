@@ -12,7 +12,8 @@ export type UIMapState =
     | "ready"
     | "picking vertex"
     | "picking area"
-    | "picking edge";
+    | "picking edge"
+    | "picking vertex upgrade";
 
 export type UITurnState = "ready" | "rolling" | "mine" | "others";
 
@@ -64,6 +65,10 @@ type CatanActions = {
         ): void;
     };
     setSocket: (socket: Socket) => void;
+    prepareMapSets: () => Record<
+        "settlements" | "roads",
+        Map<number, number>
+    > & { cities: Set<number> };
 };
 
 const defaultValue: CatanData = {
@@ -109,5 +114,28 @@ export const useCatanStore = create<CatanStore>((set, get) => ({
     set,
     setSocket(socket) {
         handleSocket(socket, set, get);
+    },
+    prepareMapSets() {
+        const { local, onlines } = get();
+
+        const roads = new Map<number, number>();
+        const settlements = new Map<number, number>();
+        const cities = new Set<number>();
+
+        [...Array.from(onlines.values()), local].flat().forEach((xplayer) => {
+            xplayer.roads.forEach((road, index) => {
+                roads.set(road[0] * 1000 + road[1], xplayer.color);
+            });
+
+            xplayer.settlements.forEach((settlement) => {
+                settlements.set(settlement, xplayer.color);
+            });
+
+            xplayer.cities.forEach((city) => {
+                cities.add(city);
+            });
+        });
+
+        return { roads, settlements, cities };
     },
 }));
