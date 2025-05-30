@@ -14,8 +14,8 @@ import {
 } from "@/components/ui/tooltip";
 import { UIMapState, useCatanStore } from "@/store/useCatanStore";
 import { EventDispatcher } from "@/utils/EventDispatcher";
-import { COLORS } from "@/config/constants/ui";
-import { MdBuildCircle, MdCircle } from "react-icons/md";
+import { COLORS, STORE_ICONS } from "@/config/constants/ui";
+import { MdCircle } from "react-icons/md";
 class Catan2D extends Component<
     {},
     {
@@ -199,14 +199,15 @@ class Catan2D extends Component<
                                     ? COLORS[settlements.get(index)!]
                                     : "#ffffff";
 
-                                const color = `${baseColor}${
+                                const opacity =
                                     used &&
                                     mapState !== "picking vertex upgrade"
                                         ? "ff"
                                         : mapState === "picking vertex"
                                         ? "88"
-                                        : "00"
-                                }`;
+                                        : "00";
+
+                                const color = `${baseColor}${opacity}`;
                                 const className =
                                     mapState === "picking vertex" && !used
                                         ? "animate-pulse hover:scale-95 hover:animate-none cursor-pointer"
@@ -223,24 +224,35 @@ class Catan2D extends Component<
                                         style={{
                                             translate: `${x}px ${y}px`,
                                         }}
+                                        onClick={() => {
+                                            console.log(
+                                                "picked vertex:",
+                                                index
+                                            );
+                                            this.state.events.emit(
+                                                "picked vertex",
+                                                index
+                                            );
+                                        }}
                                     >
-                                        <GoDotFill
+                                        <MdCircle
                                             color={color}
+                                            className="absolute top-0 left-0"
                                             size={30}
                                             style={{
                                                 translate: `${-15}px ${-15}px`,
                                             }}
-                                            onClick={() => {
-                                                console.log(
-                                                    "picked vertex:",
-                                                    index
-                                                );
-                                                this.state.events.emit(
-                                                    "picked vertex",
-                                                    index
-                                                );
-                                            }}
                                         />
+                                        {STORE_ICONS.settlement({
+                                            size: 15,
+                                            color: `#000000${opacity}`,
+                                            style: {
+                                                translate: `${-15 + 7.5}px ${
+                                                    -15 + 7.5
+                                                }px`,
+                                            },
+                                            className: "absolute top-0 left-0",
+                                        })}
                                     </div>
                                 );
                             })}
@@ -274,33 +286,36 @@ class Catan2D extends Component<
                                         style={{
                                             translate: `${x}px ${y}px`,
                                         }}
+                                        onClick={() => {
+                                            console.log(
+                                                "picked vertex upgrade:",
+                                                index
+                                            );
+                                            this.state.events.emit(
+                                                "picked vertex upgrade",
+                                                index
+                                            );
+                                        }}
                                     >
                                         <MdCircle
-                                            color={`#000000${opacity}`}
-                                            className="absolute top-0 left-0"
-                                            size={30}
-                                            style={{
-                                                translate: `${-15}px ${-15}px`,
-                                            }}
-                                        />
-                                        <MdBuildCircle
-                                            className="absolute top-0 left-0"
                                             color={color}
+                                            className="absolute top-0 left-0"
                                             size={30}
                                             style={{
                                                 translate: `${-15}px ${-15}px`,
                                             }}
-                                            onClick={() => {
-                                                console.log(
-                                                    "picked vertex upgrade:",
-                                                    index
-                                                );
-                                                this.state.events.emit(
-                                                    "picked vertex upgrade",
-                                                    index
-                                                );
-                                            }}
                                         />
+                                        {STORE_ICONS.city({
+                                            size: 15,
+                                            color: `#000000${opacity}`,
+                                            style: {
+                                                translate: `${-15 + 7.5}px ${
+                                                    -15 + 7.5
+                                                }px`,
+                                            },
+                                            className: "absolute top-0 left-0",
+                                        })}
+                                        <div />
                                     </div>
                                 );
                             })}

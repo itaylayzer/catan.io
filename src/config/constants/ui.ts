@@ -27,7 +27,7 @@ export const ONLINE_STATS = [
     { name: "Roads", icon: FaRoad },
 ];
 
-const DEVELOPMENTS = [
+export const DEVELOPMENTS = [
     {
         icon: FaChessKnight,
         name: "Knight",

@@ -5,3 +5,4 @@ TODO:
 -   knight: pick area
 -   achivements
 -   first 2 rounds
+-   trade
