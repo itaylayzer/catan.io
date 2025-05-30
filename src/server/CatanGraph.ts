@@ -200,7 +200,8 @@ export class Catan {
     }
 
     public act_rollDice() {
-        const dices = [3 /* randInt(1, 6) */, 4 /* randInt(1, 6) */];
+        // const dices = [randInt(1, 6), randInt(1, 6)];
+        const dices = [1, 3];
         const dicesSum = dices[0] + dices[1];
 
         const areas = this.vertecies
@@ -211,14 +212,20 @@ export class Catan {
                     this.robberArea !== index
                 );
             })
+
             .flatMap(({ material, edges }) => {
                 const { material: mat } = material!;
 
-                const vertecies: { vertex: number; mat: number }[] = [];
+                const vertecies: {
+                    vertex: number;
+                    mat: number;
+                    color: number;
+                }[] = [];
 
-                edges.forEach(({ color, offset }) => {
-                    if (color === VertexType.SETTLEMENT) {
+                edges.forEach(({ offset, vertex }) => {
+                    if (vertex.color !== VertexType.AREA) {
                         vertecies.push({
+                            color: vertex.color,
                             vertex: offset,
                             mat,
                         });
@@ -226,19 +233,24 @@ export class Catan {
                 });
 
                 return vertecies;
-            });
+            })
+            .filter(({ color }) => color < MAX_PLAYERS);
 
         const addons =
             dicesSum == 7
                 ? []
-                : this.players.map(({ id, settlements }) => {
+                : this.players.map(({ id, cities }) => {
                       const mats = [0, 0, 0, 0, 0];
 
                       const materials: number[] = [];
 
-                      areas.forEach(({ mat, vertex }) => {
-                          settlements.has(vertex - AREAS) &&
+                      areas.forEach(({ mat, color, vertex }) => {
+                          if (color === id) {
+                              if (cities.has(vertex - AREAS)) {
+                                  materials.push(mat);
+                              }
                               materials.push(mat);
+                          }
                       });
 
                       VMath(mats).countpicks(materials);
@@ -288,6 +300,7 @@ export class Catan {
 
         // Add to map
         player.roads.add([roadFrom, roadTo]);
+        player.amounts.road--;
 
         return true;
     }
@@ -316,6 +329,7 @@ export class Catan {
 
         // Add to map
         player.settlements.add(settlementIndex);
+        player.amounts.settlement--;
 
         return true;
     }
@@ -337,6 +351,7 @@ export class Catan {
 
         // Add to map
         player.cities.add(cityIndex);
+        player.amounts.city--;
 
         return true;
     }

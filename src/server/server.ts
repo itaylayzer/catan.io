@@ -154,7 +154,6 @@ export default function createServer(onOpen?: (server: Server) => void) {
             socket.on(ServerCodes.BUY_DEVCARD, () => {
                 if (catan.act_buyDevcard(local!)) {
                     deckUpdate({
-                        amounts: local!.amounts,
                         devcards: local!.devcards,
                     });
                 }
