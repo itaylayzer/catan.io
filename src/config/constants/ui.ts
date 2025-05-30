@@ -20,16 +20,18 @@ export const MATERIALS = [
     { name: "Ore", icon: SVGOre },
 ];
 
+const robberIcon = FaChessKnight;
+
 export const ONLINE_STATS = [
     { name: "Victory Points", icon: FaTrophy },
-    { name: "Materials", icon: FaQuestion },
-    { name: "Development Cards", icon: FaMagic },
+    { name: "Cards", icon: FaQuestion },
+    { name: "Knight Used", icon: robberIcon },
     { name: "Max Roads", icon: FaRoad },
 ];
 
 export const DEVELOPMENTS = [
     {
-        icon: FaChessKnight,
+        icon: robberIcon,
         name: "Move Robber",
     },
     ONLINE_STATS[0],
@@ -53,6 +55,11 @@ export const STORE_ICONS = {
     city: FaCity,
     devcard: FaMagic,
 };
+
+export const BANK_STATS = [
+    { name: "Materials", icon: ONLINE_STATS[1].icon },
+    { name: "Development Cards", icon: STORE_ICONS.devcard },
+];
 
 export const TRADE_MATERIALS = [...MATERIALS, ONLINE_STATS[2]];
 export const LOCAL_DECK_MATERIALS = [...MATERIALS, ...DEVELOPMENTS];

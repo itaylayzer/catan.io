@@ -88,6 +88,7 @@ const defaultValue: CatanData = {
     },
     onlines: new Map(),
     local: {
+        knightUsed: 0,
         materials: MaterialsStarter as MaterialList,
         devcards: DevcardsStarter as MaterialList,
         roads: [],

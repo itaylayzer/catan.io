@@ -35,6 +35,7 @@ export default function PlayersBar() {
                 cities: [],
                 settlements: [],
                 maxRoad: local.maxRoad,
+                knightUsed: local.knightUsed,
             },
         })
     );

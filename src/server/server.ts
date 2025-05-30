@@ -60,6 +60,7 @@ export default function createServer(onOpen?: (server: Server) => void) {
                     roads: [number, number][];
                     devcards: number[];
                     maxRoad: number;
+                    knightUsed: number;
                 }>
             ) => {
                 socket.emit(ClientCodes.PLAYER_UPDATE, {
@@ -90,6 +91,9 @@ export default function createServer(onOpen?: (server: Server) => void) {
                     ...(data.maxRoad === undefined
                         ? {}
                         : { maxRoad: data.maxRoad }),
+                    ...(data.knightUsed === undefined
+                        ? {}
+                        : { knightUsed: data.knightUsed }),
                 });
             };
 
@@ -169,7 +173,12 @@ export default function createServer(onOpen?: (server: Server) => void) {
                         if (useDevcard) {
                             deckUpdate({
                                 devcards: local!.devcards,
+                                knightUsed: local!.knightUsed,
                             });
+
+                            if (catan.updateLargestArmy()) {
+                                achivementsUpdate();
+                            }
                         }
 
                         catan.sockets.emit(ClientCodes.MOVE_ROBBER, areaOffset);

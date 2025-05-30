@@ -62,7 +62,15 @@ export function KnightCard() {
 }
 
 export function OnlinePlayerCard({ player }: { player: Player }) {
-    const { materials, devcards, name, victoryPoints, color, maxRoad } = player;
+    const {
+        materials,
+        devcards,
+        name,
+        victoryPoints,
+        color,
+        maxRoad,
+        knightUsed,
+    } = player;
     const { largestArmy, longestRoad } = useCatanStore();
 
     console.log("client", "victoryPoints", victoryPoints);
@@ -74,7 +82,7 @@ export function OnlinePlayerCard({ player }: { player: Player }) {
     const vp =
         victoryPoints + (+belongLargestArmy * 2 + +belongLargestArmy * 2);
 
-    const list = [vp, materials, devcards, maxRoad];
+    const list = [vp, materials + devcards, knightUsed, maxRoad];
 
     const elements = list.flatMap((value, index) => [
         <Tooltip key={index}>

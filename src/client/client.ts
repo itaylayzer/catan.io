@@ -186,6 +186,7 @@ export function handleSocket(
                 materials: MaterialList;
                 devcards: MaterialList;
                 maxRoad: number;
+                knightUsed: number;
             }> & { vp: number }
         ) => {
             const local = { ...get().local };
@@ -196,6 +197,7 @@ export function handleSocket(
             if (data.materials) local.materials = data.materials;
             if (data.devcards) local.devcards = data.devcards;
             if (data.maxRoad) local.maxRoad = data.maxRoad;
+            if (data.knightUsed) local.knightUsed = data.knightUsed;
             local.victoryPoints = data.vp;
 
             set({ local });
@@ -214,7 +216,12 @@ export function handleSocket(
         ClientCodes.OTHER_UPDATE,
         (
             data: Record<
-                "id" | "materials" | "devcards" | "vp" | "maxRoad",
+                | "id"
+                | "materials"
+                | "devcards"
+                | "vp"
+                | "maxRoad"
+                | "knightUsed",
                 number
             > &
                 Partial<Record<"cities" | "settlements", number[]>> & {
@@ -228,6 +235,7 @@ export function handleSocket(
             if (data.cities) player.cities = data.cities;
             if (data.settlements) player.settlements = data.settlements;
             if (data.maxRoad) player.maxRoad = data.maxRoad;
+            if (data.knightUsed) player.knightUsed = data.knightUsed;
 
             player.victoryPoints = data.vp;
 

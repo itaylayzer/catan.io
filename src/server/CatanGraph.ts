@@ -369,6 +369,7 @@ export class Catan {
         if (useDevcard && player.devcards[0] <= 0) return false;
 
         player.devcards[0] -= +useDevcard;
+        player.knightUsed += +useDevcard;
         this.robberArea = areaOffset;
 
         // Move mats
@@ -449,6 +450,21 @@ export class Catan {
 
         if (maxLength < 5) {
             this.longestRoadColor = -1;
+            return false;
+        }
+
+        this.longestRoadColor = VMath(lengths).maxIndex();
+        const stateChanged = oldState !== this.longestRoadColor;
+
+        return stateChanged;
+    }
+    public updateLargestArmy(): boolean {
+        const oldState = this.largestArmyColor;
+
+        const lengths = this.players.map((player) => player.knightUsed);
+        const maxLength = VMath(lengths).max();
+
+        if (VMath(lengths).counts(maxLength) > 1) {
             return false;
         }
 
