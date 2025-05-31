@@ -1,15 +1,21 @@
-import SVGWood from "@/components/svg/custom/SVGWood";
 import SVGBrick from "@/components/svg/custom/SVGBrick";
+import SVGMonopoly from "@/components/svg/custom/SVGMonopoly";
 import SVGOre from "@/components/svg/custom/SVGOre";
 import SVGWheet from "@/components/svg/custom/SVGWheet";
 import SVGWool from "@/components/svg/custom/SVGWhool";
-import SVGMonopoly from "@/components/svg/custom/SVGMonopoly";
+import SVGWood from "@/components/svg/custom/SVGWood";
 
-import { FaMagic, FaQuestion, FaRoad, FaTrophy, FaCity } from "react-icons/fa";
-import { FaHouse, FaChessKnight } from "react-icons/fa6";
-import { RiPlantFill } from "react-icons/ri";
 import { Fa2Roads } from "@/components/svg/react-icons/Fa2Roads";
-
+import {
+    FaCity,
+    FaInfinity,
+    FaMagic,
+    FaQuestion,
+    FaRoad,
+    FaTrophy,
+} from "react-icons/fa";
+import { FaChessKnight, FaHouse } from "react-icons/fa6";
+import { RiPlantFill } from "react-icons/ri";
 export const COLORS = ["#ffffff", "#3b82f6", "#e34653", "#c2410c"];
 
 export const MATERIALS = [
@@ -18,6 +24,14 @@ export const MATERIALS = [
     { name: "Wheat", icon: SVGWheet },
     { name: "Brick", icon: SVGBrick },
     { name: "Ore", icon: SVGOre },
+];
+
+export const HARBOR_ICONS = [
+    ...MATERIALS,
+    {
+        name: "General",
+        icon: FaInfinity,
+    },
 ];
 
 const robberIcon = FaChessKnight;

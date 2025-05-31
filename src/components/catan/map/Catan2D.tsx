@@ -15,7 +15,12 @@ import {
 } from "@/components/ui/tooltip";
 import { UIMapState, useCatanStore } from "@/store/useCatanStore";
 import { EventDispatcher } from "@/utils/EventDispatcher";
-import { COLORS, MATERIALS, STORE_ICONS } from "@/config/constants/ui";
+import {
+    COLORS,
+    HARBOR_ICONS,
+    MATERIALS,
+    STORE_ICONS,
+} from "@/config/constants/ui";
 import { MdCircle } from "react-icons/md";
 import { FaShip } from "react-icons/fa6";
 
@@ -328,66 +333,97 @@ class Catan2D extends Component<
                             })}
 
                             {Harbors.map(({ x, y }: any, index: number) => {
-                                const materialIndex = index % MATERIALS.length;
-                                const { icon, name } = MATERIALS[materialIndex];
+                                const materialIndex =
+                                    index % HARBOR_ICONS.length;
+                                const { icon, name } =
+                                    HARBOR_ICONS[materialIndex];
                                 const color =
-                                    convertions.matsColors[
-                                        name.toLocaleLowerCase()
-                                    ] + "ff";
+                                    materialIndex < 5
+                                        ? convertions.matsColors[
+                                              name.toLocaleLowerCase()
+                                          ] + "ff"
+                                        : "#ffff";
 
                                 return (
-                                    <div
-                                        key={index}
-                                        data-id={index}
-                                        className={cn(
-                                            "z-2 absolute opacity-50 hover:opacity-100 transition-opacity"
-                                        )}
-                                        style={{
-                                            translate: `${x}px ${y}px`,
-                                        }}
-                                        onClick={() => {
-                                            console.log(
-                                                "picked vertex upgrade:",
-                                                index
-                                            );
-                                            this.state.events.emit(
-                                                "picked vertex upgrade",
-                                                index
-                                            );
-                                        }}
-                                    >
-                                        <MdCircle
-                                            color={"#666"}
-                                            className="absolute top-0 left-0 "
-                                            size={33}
-                                            style={{
-                                                translate: `${-16.5}px ${-16.5}px`,
-                                            }}
-                                        />
-                                        <MdCircle
-                                            color={"var(--background)"}
-                                            className="absolute top-0 left-0"
-                                            size={30}
-                                            style={{
-                                                translate: `${-15}px ${-15}px`,
-                                            }}
-                                        />
-                                        {icon({
-                                            color: color,
-                                            style: {
-                                                translate: `${-15 + 7.5}px ${
-                                                    -15 + 7.5
-                                                }px`,
-                                                stroke: color,
-                                                opacity: 1,
-                                                fill: color,
-                                                width: 15,
-                                                height: 15,
-                                            },
-                                            className: "absolute top-0 left-0",
-                                        })}
-                                        <div />
-                                    </div>
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <div
+                                                key={index}
+                                                data-id={index}
+                                                className={cn(
+                                                    "z-2 absolute opacity-50 hover:opacity-100 transition-opacity"
+                                                )}
+                                                style={{
+                                                    translate: `${x}px ${y}px`,
+                                                }}
+                                                onClick={() => {
+                                                    console.log(
+                                                        "picked vertex upgrade:",
+                                                        index
+                                                    );
+                                                    this.state.events.emit(
+                                                        "picked vertex upgrade",
+                                                        index
+                                                    );
+                                                }}
+                                            >
+                                                <MdCircle
+                                                    color={"#666"}
+                                                    className="absolute top-0 left-0 "
+                                                    size={33}
+                                                    style={{
+                                                        translate: `${-16.5}px ${-16.5}px`,
+                                                    }}
+                                                />
+                                                <MdCircle
+                                                    color={"var(--background)"}
+                                                    className="absolute top-0 left-0"
+                                                    size={30}
+                                                    style={{
+                                                        translate: `${-15}px ${-15}px`,
+                                                    }}
+                                                />
+                                                {icon({
+                                                    color: color,
+                                                    style: {
+                                                        translate: `${
+                                                            -15 + 7.5
+                                                        }px ${-15 + 7.5}px`,
+                                                        stroke: color,
+                                                        opacity: 1,
+                                                        fill: color,
+                                                        width: 15,
+                                                        height: 15,
+                                                    },
+                                                    className:
+                                                        "absolute top-0 left-0",
+                                                })}
+                                                <div />
+                                            </div>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                            <div className="flex justify-center gap-2 items-center">
+                                                {icon({
+                                                    color: color,
+                                                    width: "15",
+                                                    height: "15",
+                                                    stroke: color,
+                                                    fill: color,
+                                                    style: {
+                                                        translate: "0px -2px",
+                                                    },
+                                                })}
+                                                <h1 className="text-mid text-center font-[Rubik]">
+                                                    {name} Deal
+                                                </h1>
+                                            </div>
+                                            <p className="text-sm opacity-50 font-[Geist]">
+                                                {materialIndex < 5
+                                                    ? `Give 2 ${name} For 1 Material`
+                                                    : `Give 3 of the Same Material For 1 Material`}
+                                            </p>
+                                        </TooltipContent>
+                                    </Tooltip>
                                 );
                             })}
 
