@@ -90,8 +90,13 @@ export function OnlinePlayerCard({ player }: { player: Player }) {
                 <div className="flex gap-2 items-center opacity-65">
                     <p className="text-lg font-[Rubik] scale-90">{value}</p>
                     {ONLINE_STATS[index].icon({
-                        color: "white",
+                        color: ONLINE_STATS[index].color ?? "white",
                         opacity: 0.65,
+                        style: ONLINE_STATS[index].shadow
+                            ? {
+                                  filter: ONLINE_STATS[index].shadow,
+                              }
+                            : {},
                     })}
                 </div>
             </TooltipTrigger>

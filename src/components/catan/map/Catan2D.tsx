@@ -502,6 +502,7 @@ class Catan2D extends Component<
 
                                             return [
                                                 <line
+                                                    className="animate-pulse"
                                                     key={index}
                                                     stroke={color}
                                                     strokeWidth={strokeWidth}
@@ -522,6 +523,7 @@ class Catan2D extends Component<
                                                 //     color={color}
                                                 // />,
                                                 <circle
+                                                    className="animate-pulse"
                                                     cx={to.x + 400}
                                                     cy={to.y + 50}
                                                     r={

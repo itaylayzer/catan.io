@@ -37,7 +37,12 @@ export const HARBOR_ICONS = [
 const robberIcon = FaChessKnight;
 
 export const ONLINE_STATS = [
-    { name: "Victory Points", icon: FaTrophy },
+    {
+        name: "Victory Points",
+        icon: FaTrophy,
+        color: "#fca503",
+        shadow: "drop-shadow(0px 0px 5px #fca50366)",
+    },
     { name: "Cards", icon: FaQuestion },
     { name: "Knight Used", icon: robberIcon },
     { name: "Max Roads", icon: FaRoad },
@@ -47,19 +52,23 @@ export const DEVELOPMENTS = [
     {
         icon: robberIcon,
         name: "Move Robber",
+        color: "#85387e",
     },
     ONLINE_STATS[0],
     {
         icon: Fa2Roads,
         name: "2 Roads",
+        color: "#28b31e",
     },
     {
         icon: RiPlantFill,
         name: "2 Year of Plant",
+        color: "#42f581",
     },
     {
         icon: SVGMonopoly,
         name: "Monopol",
+        color: "#0f6922",
     },
 ];
 
