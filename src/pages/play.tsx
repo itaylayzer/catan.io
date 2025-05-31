@@ -16,6 +16,7 @@ import { MdStore } from "react-icons/md";
 import Head from "next/head";
 import { SevenMatsDropState } from "@/components/catan/states/SevenMatsDropState";
 import { StateOverlay } from "@/components/catan/states/StateOverlay";
+import { TwoYearOfPlentyState } from "@/components/catan/states/TwoYearOfPlentyState";
 
 function CatanGame() {
     return (
@@ -34,6 +35,7 @@ function CatanGame() {
                         <Dices2D />
                     </div>
                     <SevenMatsDropState />
+                    <TwoYearOfPlentyState />
                 </div>
             </div>
             <div className="flex-1 flex flex-col gap-3 items-center">

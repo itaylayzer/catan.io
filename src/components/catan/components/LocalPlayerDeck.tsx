@@ -46,13 +46,13 @@ export function LocalPlayerDeck({}: {}) {
     const turnNotMine = dicesState !== "mine";
 
     const disabled = [
-        false,
-        false,
-        false,
-        false,
-        false,
+        true,
+        true,
+        true,
+        true,
+        true,
         turnNotMine,
-        turnNotMine,
+        true,
         turnNotMine,
         turnNotMine,
         turnNotMine,
@@ -77,7 +77,13 @@ export function LocalPlayerDeck({}: {}) {
         },
         () => {},
         () => {},
-        () => {},
+        () => {
+            events.emit("plenty");
+
+            events.once("plenty give", (values) => {
+                socket?.emit(ServerCodes.DEV_YEAROFPLENTY, values);
+            });
+        },
         () => {},
     ];
 
@@ -113,11 +119,9 @@ export function LocalPlayerDeck({}: {}) {
                         <Tooltip key={index}>
                             <TooltipTrigger asChild>
                                 <button
-                                    disabled={disabled[index]}
+                                    disabled={disabled[index] || value === 0}
                                     onClick={() => {
-                                        if (index > 4) {
-                                            actions[index - 5]();
-                                        }
+                                        actions[index - 5]();
                                     }}
                                     className={cn(
                                         "flex flex-row-reverse  items-center hover:opacity-100 opacity-65",

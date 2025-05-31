@@ -398,6 +398,22 @@ export class Catan {
         VMath(this.bank.materials).sameSize.add(mats);
     }
 
+    public dev_yearOfPlenty(player: Player, mats: MaterialList) {
+        // check if player has enough devcards
+        if (player.devcards[3] <= 0) return false;
+
+        // check if theres enough materials
+        if (!VMath(player.materials).available(mats)) return false;
+
+        player.devcards[3]--;
+
+        // Move mats
+        VMath(this.bank.materials).sameSize.sub(mats);
+        VMath(player.materials).sameSize.add(mats);
+
+        return true;
+    }
+
     //////////////////// UPDATE FUNCTIONS ////////////////
     public updateLongestRoad(): boolean {
         const oldState = this.longestRoadColor;

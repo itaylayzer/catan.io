@@ -1,13 +1,13 @@
 type EventCallback = (...args: any[]) => void;
 
 class EventDispatcher {
-    private events: Record<string, EventCallback[]> = {};
+    private events: Record<string, Set<EventCallback>> = {};
 
     on(event: string, callback: EventCallback) {
         if (!this.events[event]) {
-            this.events[event] = [];
+            this.events[event] = new Set();
         }
-        this.events[event].push(callback);
+        this.events[event].add(callback);
     }
 
     once(event: string, callback: EventCallback) {
@@ -20,7 +20,7 @@ class EventDispatcher {
 
     off(event: string, callback: EventCallback) {
         if (!this.events[event]) return;
-        this.events[event] = this.events[event].filter((cb) => cb !== callback);
+        this.events[event].delete(callback);
     }
 
     emit(event: string, ...args: any[]) {

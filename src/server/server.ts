@@ -184,6 +184,14 @@ export default function createServer(onOpen?: (server: Server) => void) {
                     }
                 }
             );
+
+            socket.on(ServerCodes.DEV_YEAROFPLENTY, (mats: MaterialList) => {
+                if (catan.dev_yearOfPlenty(local!, mats)) {
+                    deckUpdate({
+                        devcards: local!.devcards,
+                    });
+                }
+            });
         }
     );
 }

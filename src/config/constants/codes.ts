@@ -11,6 +11,7 @@ export enum ServerCodes {
     BUY_CITY = "bc",
     MOVE_ROBBER = "mr",
     DROP_MATS = "dp",
+    DEV_YEAROFPLENTY = "dyop",
 }
 // Server to Client
 export enum ClientCodes {
