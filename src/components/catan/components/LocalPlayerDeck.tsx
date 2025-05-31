@@ -3,13 +3,22 @@ import {
     TooltipTrigger,
     TooltipContent,
 } from "@/components/ui/tooltip";
-import { LOCAL_DECK_MATERIALS } from "@/config/constants/ui";
+import {
+    DEVELOPMENTS,
+    DEVELOPMENTS_DESCRIPTIONS,
+    LOCAL_DECK_MATERIALS,
+} from "@/config/constants/ui";
 import { useRender } from "@/hooks/useRender";
 import { useCatanStore } from "@/store/useCatanStore";
-import { useEffect } from "react";
+import { ReactNode, useEffect } from "react";
 import { convertions } from "../map/configs";
 import { cn } from "@/lib/utils";
 import { ServerCodes } from "@/config/constants/codes";
+import {
+    HoverCard,
+    HoverCardContent,
+    HoverCardTrigger,
+} from "@/components/ui/hover-card";
 
 const isReactIcons = [
     false,
@@ -91,15 +100,18 @@ export function LocalPlayerDeck({}: {}) {
         <div>
             <div className="relative flex scale-90 gap-2 px-7 pb-1 pt-3 items-center justify-around">
                 {combine.map((value, index) => {
-                    const color =
-                        index < 5
-                            ? convertions.matsColors[
-                                  LOCAL_DECK_MATERIALS[
-                                      index
-                                  ].name.toLocaleLowerCase()
-                              ]
-                            : //   @ts-ignore
-                              LOCAL_DECK_MATERIALS[index].color!;
+                    const isDevCard = index > 4;
+                    const { name, icon } = LOCAL_DECK_MATERIALS[index];
+
+                    const color = !isDevCard
+                        ? convertions.matsColors[
+                              LOCAL_DECK_MATERIALS[
+                                  index
+                              ].name.toLocaleLowerCase()
+                          ]
+                        : //   @ts-ignore
+                          LOCAL_DECK_MATERIALS[index].color!;
+
                     const setting = isReactIcons[index]
                         ? {
                               color: color,
@@ -113,33 +125,63 @@ export function LocalPlayerDeck({}: {}) {
                               width: 30,
                               height: 30,
                           };
+
                     const rightIcon = LOCAL_DECK_MATERIALS[index].icon(setting);
 
-                    return (
+                    const element = (
+                        <button
+                            disabled={disabled[index] || value === 0}
+                            onClick={() => {
+                                actions[index - 5]();
+                            }}
+                            className={cn(
+                                "flex flex-row-reverse  items-center hover:opacity-100 opacity-65",
+                                index > 4 &&
+                                    "not-disabled:cursor-pointer not-disabled:hover:scale-110 transition-transform not-disabled:hover:-translate-y-1"
+                            )}
+                        >
+                            <p className="text-2xl w-5 -translate-x-4 translate-y-2 font-[Rubik] font-medium scale-70">
+                                {value}
+                            </p>
+                            {rightIcon}
+                        </button>
+                    );
+
+                    const tooltip = (
                         <Tooltip key={index}>
-                            <TooltipTrigger asChild>
-                                <button
-                                    disabled={disabled[index] || value === 0}
-                                    onClick={() => {
-                                        actions[index - 5]();
-                                    }}
-                                    className={cn(
-                                        "flex flex-row-reverse  items-center hover:opacity-100 opacity-65",
-                                        index > 4 &&
-                                            "not-disabled:cursor-pointer not-disabled:hover:scale-110 transition-transform not-disabled:hover:-translate-y-1"
-                                    )}
-                                >
-                                    <p className="text-2xl w-5 -translate-x-4 translate-y-2 font-[Rubik] font-medium scale-70">
-                                        {value}
-                                    </p>
-                                    {rightIcon}
-                                </button>
-                            </TooltipTrigger>
+                            <TooltipTrigger asChild>{element}</TooltipTrigger>
                             <TooltipContent>
-                                <p>{LOCAL_DECK_MATERIALS[index].name}</p>
+                                <p>{name}</p>
                             </TooltipContent>
                         </Tooltip>
                     );
+
+                    const cardParent = (
+                        <HoverCard openDelay={0.5} closeDelay={0} key={index}>
+                            <HoverCardTrigger asChild>
+                                {element}
+                            </HoverCardTrigger>
+                            <HoverCardContent className="bg-accent w-60 flex gap-1 flex-col">
+                                <div className="flex justify-center gap-3">
+                                    <div className="scale-70">{rightIcon}</div>
+                                    <p className="font-[Rubik]">{name}</p>
+                                </div>
+                                <div className="px-7 mb-3">
+                                    <hr />
+                                </div>
+                                <p className="flex-1 px-2 font-light font-[Geist] text-center text-pretty text-sm opacity-60 flex justify-center items-center">
+                                    {DEVELOPMENTS_DESCRIPTIONS[index - 5]}
+                                </p>
+                                <div className="px-7 mt-1">
+                                    <hr />
+                                </div>
+                                <p className="text-center text-xs font-[Rubik] opacity-35">
+                                    Development card
+                                </p>
+                            </HoverCardContent>
+                        </HoverCard>
+                    );
+                    return isDevCard ? cardParent : tooltip;
                 })}
             </div>
         </div>
