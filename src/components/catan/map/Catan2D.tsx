@@ -351,10 +351,12 @@ class Catan2D extends Component<
                                                 key={index}
                                                 data-id={index}
                                                 className={cn(
-                                                    "z-2 absolute opacity-50 hover:opacity-100 transition-opacity"
+                                                    "z-2 absolute opacity-50 hover:opacity-100 hover:scale-110 w-[33px] h-[33px] transition-[opacity,scale]"
                                                 )}
                                                 style={{
-                                                    translate: `${x}px ${y}px`,
+                                                    translate: `${x - 16.5}px ${
+                                                        y - 16.5
+                                                    }px`,
                                                 }}
                                                 onClick={() => {
                                                     console.log(
@@ -371,24 +373,24 @@ class Catan2D extends Component<
                                                     color={"#666"}
                                                     className="absolute top-0 left-0 "
                                                     size={33}
-                                                    style={{
-                                                        translate: `${-16.5}px ${-16.5}px`,
-                                                    }}
+                                                    // style={{
+                                                    // translate: `${-16.5}px ${-16.5}px`,
+                                                    // }}
                                                 />
                                                 <MdCircle
                                                     color={"var(--background)"}
                                                     className="absolute top-0 left-0"
                                                     size={30}
                                                     style={{
-                                                        translate: `${-15}px ${-15}px`,
+                                                        translate: `${1.5}px ${1.5}px`,
                                                     }}
                                                 />
                                                 {icon({
                                                     color: color,
                                                     style: {
                                                         translate: `${
-                                                            -15 + 7.5
-                                                        }px ${-15 + 7.5}px`,
+                                                            1.5 + 7.5
+                                                        }px ${1.5 + 7.5}px`,
                                                         stroke: color,
                                                         opacity: 1,
                                                         fill: color,

@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import { BsHexagonFill } from "react-icons/bs";
 let delayNumber = 0;
 export const hexSize = 150;
@@ -12,7 +12,7 @@ export function Hex(
     const { color, children, ...others } = props;
     const padding = 5;
 
-    delayNumber++;
+    const [delay] = useState(delayNumber++);
 
     return (
         <div className="relative " {...others}>
@@ -38,7 +38,7 @@ export function Hex(
                     color={color}
                     size={hexSize}
                     className="animate-pulse"
-                    style={{ animationDelay: `${delayNumber / 3}s` }}
+                    style={{ animationDelay: `${delay / 3}s` }}
                     filter={`drop-shadow(0px 0px 25px ${color}7f)`}
                 />
             </div>
