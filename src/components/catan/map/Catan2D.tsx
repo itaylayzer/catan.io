@@ -1,5 +1,6 @@
 import React, { Component, createRef } from "react";
 import Areas from "@/config/data/ui/areas.json";
+import Harbors from "@/config/data/ui/harbors.json";
 import Roads from "@/config/data/ui/roads.json";
 import Settlements from "@/config/data/ui/settlements.json";
 import { GoDotFill } from "react-icons/go";
@@ -14,8 +15,10 @@ import {
 } from "@/components/ui/tooltip";
 import { UIMapState, useCatanStore } from "@/store/useCatanStore";
 import { EventDispatcher } from "@/utils/EventDispatcher";
-import { COLORS, STORE_ICONS } from "@/config/constants/ui";
+import { COLORS, MATERIALS, STORE_ICONS } from "@/config/constants/ui";
 import { MdCircle } from "react-icons/md";
+import { FaShip } from "react-icons/fa6";
+
 class Catan2D extends Component<
     {},
     {
@@ -324,6 +327,70 @@ class Catan2D extends Component<
                                 );
                             })}
 
+                            {Harbors.map(({ x, y }: any, index: number) => {
+                                const materialIndex = index % MATERIALS.length;
+                                const { icon, name } = MATERIALS[materialIndex];
+                                const color =
+                                    convertions.matsColors[
+                                        name.toLocaleLowerCase()
+                                    ] + "ff";
+
+                                return (
+                                    <div
+                                        key={index}
+                                        data-id={index}
+                                        className={cn(
+                                            "z-2 absolute opacity-50 hover:opacity-100 transition-opacity"
+                                        )}
+                                        style={{
+                                            translate: `${x}px ${y}px`,
+                                        }}
+                                        onClick={() => {
+                                            console.log(
+                                                "picked vertex upgrade:",
+                                                index
+                                            );
+                                            this.state.events.emit(
+                                                "picked vertex upgrade",
+                                                index
+                                            );
+                                        }}
+                                    >
+                                        <MdCircle
+                                            color={"#666"}
+                                            className="absolute top-0 left-0 "
+                                            size={33}
+                                            style={{
+                                                translate: `${-16.5}px ${-16.5}px`,
+                                            }}
+                                        />
+                                        <MdCircle
+                                            color={"var(--background)"}
+                                            className="absolute top-0 left-0"
+                                            size={30}
+                                            style={{
+                                                translate: `${-15}px ${-15}px`,
+                                            }}
+                                        />
+                                        {icon({
+                                            color: color,
+                                            style: {
+                                                translate: `${-15 + 7.5}px ${
+                                                    -15 + 7.5
+                                                }px`,
+                                                stroke: color,
+                                                opacity: 1,
+                                                fill: color,
+                                                width: 15,
+                                                height: 15,
+                                            },
+                                            className: "absolute top-0 left-0",
+                                        })}
+                                        <div />
+                                    </div>
+                                );
+                            })}
+
                             <svg className="absolute -top-[50px] -left-[400px] w-[1000px] h-[1000px]">
                                 {Roads.map(({ from, to }, index: number) => {
                                     const hash = from.index * 1000 + to.index;
@@ -369,6 +436,68 @@ class Catan2D extends Component<
                                         />
                                     );
                                 })}
+
+                                {Harbors.flatMap(
+                                    ({ x, y, settlements }, index: number) => {
+                                        const color = "#666";
+                                        return settlements.flatMap((index) => {
+                                            const vertex = Settlements[index];
+
+                                            const strokeWidth = 1;
+                                            const p = (
+                                                k: number,
+                                                l: number
+                                            ) => {
+                                                return {
+                                                    x:
+                                                        (l * x + k * vertex.x) /
+                                                        (k + l),
+                                                    y:
+                                                        (l * y + k * vertex.y) /
+                                                        (k + l),
+                                                };
+                                            };
+
+                                            const from = p(7, 10);
+                                            const to = p(10, 7);
+                                            const circleLineStrokeM = 0.7;
+
+                                            return [
+                                                <line
+                                                    key={index}
+                                                    stroke={color}
+                                                    strokeWidth={strokeWidth}
+                                                    x1={from.x + 400}
+                                                    x2={to.x + 400}
+                                                    y1={from.y + 50}
+                                                    y2={to.y + 50}
+                                                />,
+                                                // <circle
+                                                //     cx={from.x + 400}
+                                                //     cy={from.y + 50}
+                                                //     r={
+                                                //         strokeWidth /
+                                                //         circleLineStrokeM
+                                                //     }
+                                                //     fill={color}
+                                                //     stroke={color}
+                                                //     color={color}
+                                                // />,
+                                                <circle
+                                                    cx={to.x + 400}
+                                                    cy={to.y + 50}
+                                                    r={
+                                                        strokeWidth /
+                                                        circleLineStrokeM
+                                                    }
+                                                    fill={color}
+                                                    stroke={color}
+                                                    color={color}
+                                                />,
+                                            ];
+                                        });
+                                    }
+                                )}
                             </svg>
                         </div>
                     </div>

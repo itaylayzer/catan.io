@@ -8,7 +8,8 @@
         "start": "next start",
         "lint": "next lint",
         "peer": "bunx peer --port 9000",
-        "generate": "bun src/scripts/ui/settlements.ts > src/config/data/ui/settlements.json; bun src/scripts/ui/roads.ts > src/config/data/ui/roads.json"
+        "generate": "bun src/scripts/ui/settlements.ts > src/config/data/ui/settlements.json; bun src/scripts/ui/roads.ts > src/config/data/ui/roads.json",
+        "generate:harbors": "bun /home/itay/coding/js/next/catan.io/src/scripts/ui/harbors.ts > src/config/data/ui/harbors.json"
     },
     "dependencies": {
         "@radix-ui/react-dialog": "^1.1.14",
