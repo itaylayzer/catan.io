@@ -61,7 +61,7 @@ export function LocalPlayerDeck({}: {}) {
                         <Tooltip key={index}>
                             <TooltipTrigger asChild>
                                 <div className="flex flex-row-reverse  items-center opacity-65">
-                                    <p className="text-2xl -translate-x-4 translate-y-2 font-[Rubik] font-medium scale-70">
+                                    <p className="text-2xl w-5 -translate-x-4 translate-y-2 font-[Rubik] font-medium scale-70">
                                         {value}
                                     </p>
                                     {rightIcon}

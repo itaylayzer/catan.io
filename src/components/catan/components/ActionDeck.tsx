@@ -12,6 +12,7 @@ import { RiDiceFill } from "react-icons/ri";
 import { FaHandshakeSimple } from "react-icons/fa6";
 import VMath from "@/utils/VMath";
 import Store from "@/config/data/game/store.json";
+import { MaterialNotify } from "../notifications/MaterialNotify";
 
 export function ActionDeck() {
     const {
@@ -145,7 +146,9 @@ export function ActionDeck() {
 
     return (
         <div>
-            <div className="relative z-10 flex flex-row-reverse border-1 rounded-2xl bg-accent gap-5 px-4 pb-1 pt-2 scale-110 items-center justify-around">
+            <MaterialNotify />
+
+            <div className="relative z-30 flex flex-row-reverse border-1 rounded-2xl bg-accent gap-5 px-4 pb-1 pt-2 scale-110 items-center justify-around">
                 {ACTION_DECK_BUTTONS.map(({ header, icon, count }, index) => {
                     return (
                         <Tooltip key={header}>

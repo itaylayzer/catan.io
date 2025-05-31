@@ -201,8 +201,8 @@ export class Catan {
 
     public act_rollDice() {
         // const dices = [randInt(1, 6), randInt(1, 6)];
-        const dices = [1, 6];
-        // const dices = [1, 3];
+        // const dices = [1, 6];
+        const dices = [1, 3];
         const dicesSum = dices[0] + dices[1];
 
         const areas = this.vertecies

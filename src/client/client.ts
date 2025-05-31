@@ -1,5 +1,6 @@
 import Catan2D from "@/components/catan/map/Catan2D";
 import { convertions } from "@/components/catan/map/configs";
+import { MaterialNotify } from "@/components/catan/notifications/MaterialNotify";
 import { ClientCodes, ServerCodes } from "@/config/constants/codes";
 import { Socket } from "@/server/sockets";
 import { CatanStore, UITurnState } from "@/store/useCatanStore";
@@ -120,6 +121,8 @@ export function handleSocket(
                         VMath(get().local.materials).sameSize.add(mats);
 
                         get().ui.events.emit("render decks");
+                        if (VMath(mats).sum() > 0)
+                            MaterialNotify.instance.wake(mats);
                     } else {
                         const xplayer = get().onlines.get(from);
                         xplayer && (xplayer.materials += VMath(mats).sum());
