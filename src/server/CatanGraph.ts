@@ -201,7 +201,8 @@ export class Catan {
 
     public act_rollDice() {
         // const dices = [randInt(1, 6), randInt(1, 6)];
-        const dices = [1, 3];
+        const dices = [1, 6];
+        // const dices = [1, 3];
         const dicesSum = dices[0] + dices[1];
 
         const areas = this.vertecies
@@ -473,6 +474,7 @@ export class Catan {
 
         return stateChanged;
     }
+
     public updateLargestArmy(): boolean {
         const oldState = this.largestArmyColor;
 
@@ -484,12 +486,12 @@ export class Catan {
         }
 
         if (maxLength < 3) {
-            this.longestRoadColor = -1;
+            this.largestArmyColor = -1;
             return false;
         }
 
-        this.longestRoadColor = VMath(lengths).maxIndex();
-        const stateChanged = oldState !== this.longestRoadColor;
+        this.largestArmyColor = VMath(lengths).maxIndex();
+        const stateChanged = oldState !== this.largestArmyColor;
 
         return stateChanged;
     }

@@ -6,6 +6,7 @@ TODO:
 -   harbors + harbor trade
 -   players trade
 -   win state
+-   validation on settlements & roads placing
 
 when multiplayer checking:
 
