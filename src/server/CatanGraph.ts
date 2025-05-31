@@ -200,9 +200,9 @@ export class Catan {
     }
 
     public act_rollDice() {
-        // const dices = [randInt(1, 6), randInt(1, 6)];
+        const dices = [randInt(1, 6), randInt(1, 6)];
         // const dices = [1, 6];
-        const dices = [1, 3];
+        // const dices = [1, 3];
         const dicesSum = dices[0] + dices[1];
 
         const areas = this.vertecies
@@ -387,10 +387,6 @@ export class Catan {
         player.devcards[0] -= +useDevcard;
         player.knightUsed += +useDevcard;
         this.robberArea = areaOffset;
-
-        // Move mats
-        VMath(this.bank.materials).sameSize.add(Store.devcard);
-        VMath(player.materials).sameSize.sub(Store.devcard);
 
         // TODO: take 1 random card from a player that is near the robbed area, only 1 player he choses if theres multiple players around the same area
 
