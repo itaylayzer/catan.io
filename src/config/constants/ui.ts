@@ -62,7 +62,7 @@ export const DEVELOPMENTS = [
     },
     {
         icon: RiPlantFill,
-        name: "2 Year of Plant",
+        name: "Year of plenty",
         color: "#42f581",
     },
     {
