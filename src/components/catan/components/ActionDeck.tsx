@@ -125,18 +125,25 @@ export function ActionDeck() {
 
     const turnNotMine = dicesState !== "mine";
     const allDisabled =
-        // turnNotMine||
         mapState === "picking area" ||
         mapState === "picking 2 edges" ||
         turnId !== id ||
         dicesState === "rolling";
     const disabled = [
         allDisabled,
-        allDisabled || !VMath(local.materials).available(Store.road),
-        allDisabled || !VMath(local.materials).available(Store.settlement),
-        allDisabled || !VMath(local.materials).available(Store.city),
-        allDisabled || !VMath(local.materials).available(Store.devcard),
-        allDisabled || false,
+        turnNotMine ||
+            allDisabled ||
+            !VMath(local.materials).available(Store.road),
+        turnNotMine ||
+            allDisabled ||
+            !VMath(local.materials).available(Store.settlement),
+        turnNotMine ||
+            allDisabled ||
+            !VMath(local.materials).available(Store.city),
+        turnNotMine ||
+            allDisabled ||
+            !VMath(local.materials).available(Store.devcard),
+        turnNotMine || allDisabled || false,
     ];
 
     return (
