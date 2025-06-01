@@ -1,20 +1,20 @@
 import { Button } from "@/components/ui/button";
 import {
     Tooltip,
-    TooltipTrigger,
     TooltipContent,
+    TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { ServerCodes } from "@/config/constants/codes";
 import { STORE_ICONS } from "@/config/constants/ui";
-import { useCatanStore } from "@/store/useCatanStore";
-import { FaStopwatch } from "react-icons/fa";
-import { RiDiceFill } from "react-icons/ri";
-import { FaHandshakeSimple } from "react-icons/fa6";
-import VMath from "@/utils/VMath";
 import Store from "@/config/data/game/store.json";
+import { useCatanStore } from "@/store/useCatanStore";
+import VMath from "@/utils/VMath";
+import { ReactNode } from "react";
+import { FaStopwatch } from "react-icons/fa";
+import { FaHandshakeSimple } from "react-icons/fa6";
+import { RiDiceFill } from "react-icons/ri";
 import { MaterialNotify } from "../notifications/MaterialNotify";
 import { TradeButton } from "./TradeButton";
-import { ReactNode } from "react";
 
 export function ActionDeck() {
     const {
@@ -55,7 +55,7 @@ export function ActionDeck() {
         },
     ];
 
-    const noParent = (children: ReactNode) => children;
+    const noParent = (children: ReactNode, disabled: boolean) => children;
     const { parent } = TradeButton();
     const parents = [noParent, noParent, noParent, noParent, noParent, parent];
 
@@ -172,7 +172,8 @@ export function ActionDeck() {
                             <TooltipContent>
                                 <p>{header}</p>
                             </TooltipContent>
-                        </Tooltip>
+                        </Tooltip>,
+                        disabled[index]
                     );
                 })}
             </div>

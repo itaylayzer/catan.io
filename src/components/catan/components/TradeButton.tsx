@@ -123,7 +123,7 @@ function StateCarosul({ trades }: { trades: Deal[] }) {
                         </div>
                     ))}
                 </div>
-                <div className="flex gap-5">
+                <div className="flex flex-col items-center gap-5">
                     {dealArr.map((count) => (
                         <div
                             className="flex gap-2 hover:scale-90 transition-[opacity,scale] hover:opacity-75 cursor-pointer"
@@ -165,7 +165,7 @@ function StateCarosul({ trades }: { trades: Deal[] }) {
 }
 
 export function TradeButton(): {
-    parent: (children: ReactNode) => ReactNode;
+    parent: (children: ReactNode, disabled: boolean) => ReactNode;
 } {
     const {
         ui: { events },
@@ -173,7 +173,7 @@ export function TradeButton(): {
     } = useCatanStore();
     const [trades, setTrades] = useState<Deal[]>();
 
-    const buttonRef = useRef<HTMLDivElement>(null);
+    const buttonRef = useRef<HTMLButtonElement>(null);
     const togglePop = () => {
         try {
             buttonRef.current!.click();
@@ -186,7 +186,7 @@ export function TradeButton(): {
         setTrades(trades);
     });
 
-    const parent = (children: ReactNode): ReactNode => (
+    const parent = (children: ReactNode, disabled: boolean): ReactNode => (
         <Popover
             onOpenChange={(open) => {
                 if (open === true) {
@@ -207,7 +207,9 @@ export function TradeButton(): {
             }}
         >
             <PopoverTrigger asChild>
-                <div ref={buttonRef}>{children}</div>
+                <button disabled={disabled} ref={buttonRef}>
+                    {children}
+                </button>
             </PopoverTrigger>
             <PopoverContent className="flex flex-col justify-center items-center gap-2">
                 <h1 className="font-medium text-xl font-[Rubik] text-center">
