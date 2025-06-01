@@ -43,6 +43,10 @@ export class Player {
             this.cities.size,
             this.devcards[1]
         );
-        return this.settlements.size + this.cities.size + this.devcards[1];
+        return this.settlements.size + this.cities.size;
+    }
+
+    public get realVictoryPoints() {
+        return this.victoryPoints + this.devcards[1];
     }
 }

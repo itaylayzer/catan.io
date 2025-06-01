@@ -40,7 +40,7 @@ export function LocalPlayerDeck({}: {}) {
             devcards,
             amounts: { road: roudsAmounts },
         },
-        ui: { events, dicesState },
+        ui: { events, dicesState, mapState },
         set,
         client: { socket },
     } = useCatanStore();
@@ -56,19 +56,18 @@ export function LocalPlayerDeck({}: {}) {
 
     const combine = [...materials, ...devcards];
 
-    const turnNotMine = dicesState !== "mine";
-
+    const allDisabled = dicesState !== "mine" || mapState === "picking 2 edges";
     const disabled = [
         true,
         true,
         true,
         true,
         true,
-        turnNotMine,
+        allDisabled,
         true,
-        turnNotMine || roudsAmounts === 0,
-        turnNotMine,
-        turnNotMine,
+        allDisabled || roudsAmounts === 0,
+        allDisabled,
+        allDisabled,
     ];
 
     const actions = [
