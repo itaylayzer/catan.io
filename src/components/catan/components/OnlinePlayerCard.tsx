@@ -79,10 +79,7 @@ export function OnlinePlayerCard({ player }: { player: Player }) {
     const belongLargestArmy = largestArmy === color;
     const belongLongestRoad = longestRoad === color;
 
-    const vp =
-        victoryPoints + (+belongLargestArmy * 2 + +belongLargestArmy * 2);
-
-    const list = [vp, materials + devcards, knightUsed, maxRoad];
+    const list = [victoryPoints, materials + devcards, knightUsed, maxRoad];
 
     const elements = list.flatMap((value, index) => [
         <Tooltip key={index}>

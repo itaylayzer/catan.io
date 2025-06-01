@@ -152,7 +152,7 @@ export class Catan {
     }
 
     public playerJoin(name: string, socket: Socket): Player {
-        const player = new Player(this.playerCount, name, socket);
+        const player = new Player(this.playerCount, name, socket, this);
         this.players.push(player);
 
         return player;

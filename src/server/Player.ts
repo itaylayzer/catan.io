@@ -3,6 +3,7 @@ import { Socket } from "./sockets";
 
 import MaterialsStarter from "@/config/data/starter/materials.json";
 import DevcardsStarter from "@/config/data/starter/devcards.json";
+import { Catan } from "./CatanGraph";
 
 export class Player {
     public victory: number;
@@ -16,7 +17,12 @@ export class Player {
     public amounts: Record<"road" | "settlement" | "city", number>;
     public twoRoadsState: boolean;
 
-    constructor(public id: number, public name: string, public socket: Socket) {
+    constructor(
+        public id: number,
+        public name: string,
+        public socket: Socket,
+        private game: Catan
+    ) {
         this.victory = 0;
         this.materials = MaterialsStarter as MaterialList;
         this.devcards = DevcardsStarter as DevcardList;
@@ -36,14 +42,16 @@ export class Player {
     }
 
     public get victoryPoints() {
-        console.log(
-            "server",
-            "victory point",
-            this.settlements.size,
-            this.cities.size,
-            this.devcards[1]
+        const achivements = this.game.json_achivements();
+
+        const ownLargestArmy = achivements.largestArmy === this.id;
+        const ownLongestRoad = achivements.longestRoad === this.id;
+
+        return (
+            this.settlements.size +
+            this.cities.size +
+            (+ownLargestArmy + +ownLongestRoad) * 2
         );
-        return this.settlements.size + this.cities.size;
     }
 
     public get realVictoryPoints() {
