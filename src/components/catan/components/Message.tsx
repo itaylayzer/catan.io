@@ -8,11 +8,10 @@ export function Message({
     message: string;
 }) {
     return (
-        <p>
-            <span className="font-extralight text-gray-400">[{time}]</span>{" "}
-            {"<"}
-            <span>{name}</span>
-            {">"} {message}
-        </p>
+        <div className="flex gap-1 font-[Rubik]">
+            <p className="font-extralight text-gray-400 opacity-75">{time}</p>
+            <p className="font-medium font-[Rubik] mr-1">{name}</p>
+            <p>{message}</p>
+        </div>
     );
 }

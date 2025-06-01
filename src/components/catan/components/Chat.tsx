@@ -102,6 +102,7 @@ export function Chat(props: React.HTMLAttributes<HTMLDivElement>) {
                                 .toLocaleTimeString([], {
                                     minute: "2-digit",
                                     hour: "2-digit",
+                                    hour12: false,
                                 })
                                 .replace(":", ":"),
                             name,
@@ -131,7 +132,7 @@ export function Chat(props: React.HTMLAttributes<HTMLDivElement>) {
                             }
                         }}
                         placeholder="Write something to your friends"
-                        className="bg-background focus:outline-0"
+                        className=" focus:outline-0 font-[Rubik] bg-accent"
                     />
                 </div>
             </div>
