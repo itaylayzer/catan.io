@@ -93,7 +93,13 @@ export function LocalPlayerDeck({}: {}) {
                 socket?.emit(ServerCodes.DEV_YEAROFPLENTY, values);
             });
         },
-        () => {},
+        () => {
+            events.emit("monopoly");
+
+            events.once("monopoly give", (values) => {
+                socket?.emit(ServerCodes.DEV_MONOPOL, values);
+            });
+        },
     ];
 
     return (

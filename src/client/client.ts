@@ -216,6 +216,13 @@ export function handleSocket(
     );
 
     socket.on(
+        ClientCodes.DEV_MONOPOL,
+        ({ from, mat }: Record<"from" | "mat", number>) => {
+            get().ui.events.emit("monopol show", from, mat);
+        }
+    );
+
+    socket.on(
         ClientCodes.OTHER_UPDATE,
         (
             data: Record<

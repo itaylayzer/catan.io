@@ -16,7 +16,7 @@ const MIDDLE_INDEX = 9;
 
 export class Catan {
     private vertecies: Vertex[];
-    private players: Player[];
+    public players: Player[];
     private robberArea: number;
     public bank: { materials: number[]; devcards: number[] };
     private turnId: number;
@@ -410,6 +410,26 @@ export class Catan {
         // Move mats
         VMath(this.bank.materials).sameSize.sub(mats);
         VMath(player.materials).sameSize.add(mats);
+
+        return true;
+    }
+
+    public dev_monopol(local: Player, mat: number) {
+        // check if player has enough devcards
+        if (local.devcards[4] <= 0) return false;
+
+        // pay
+        local.devcards[4]--;
+
+        // Move from each player to the local player
+        for (const xplayer of this.players) {
+            if (xplayer.id === local.id) continue;
+
+            const matCount = xplayer.materials[mat];
+            xplayer.materials[mat] = 0;
+
+            local.materials[mat] += matCount;
+        }
 
         return true;
     }

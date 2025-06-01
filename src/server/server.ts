@@ -61,30 +61,31 @@ export default function createServer(onOpen?: (server: Server) => void) {
                     devcards: number[];
                     maxRoad: number;
                     knightUsed: number;
-                }>
+                }>,
+                player: Player = local!
             ) => {
                 socket.emit(ClientCodes.PLAYER_UPDATE, {
                     ...data,
-                    vp: local!.victoryPoints,
-                    materials: local!.materials,
+                    vp: player.victoryPoints,
+                    materials: player.materials,
                 });
                 catan.sockets.emit(ClientCodes.BANK_UPDATE, catan.bank);
 
-                catan.sockets.emitExcept(local!.id, ClientCodes.OTHER_UPDATE, {
-                    id: local!.id,
-                    materials: VMath(local!.materials).sum(),
-                    devcards: VMath(local!.devcards).sum(),
-                    vp: local!.victoryPoints,
+                catan.sockets.emitExcept(player.id, ClientCodes.OTHER_UPDATE, {
+                    id: player.id,
+                    materials: VMath(player.materials).sum(),
+                    devcards: VMath(player.devcards).sum(),
+                    vp: player.victoryPoints,
                     ...(data.roads
-                        ? { roads: Array.from(local!.roads.values()) }
+                        ? { roads: Array.from(player.roads.values()) }
                         : {}),
                     ...(data.cities
-                        ? { cities: Array.from(local!.cities.values()) }
+                        ? { cities: Array.from(player.cities.values()) }
                         : {}),
                     ...(data.settlements
                         ? {
                               settlements: Array.from(
-                                  local!.settlements.values()
+                                  player.settlements.values()
                               ),
                           }
                         : {}),
@@ -189,6 +190,24 @@ export default function createServer(onOpen?: (server: Server) => void) {
                 if (catan.dev_yearOfPlenty(local!, mats)) {
                     deckUpdate({
                         devcards: local!.devcards,
+                    });
+                }
+            });
+
+            socket.on(ServerCodes.DEV_MONOPOL, (matIndex: number) => {
+                if (catan.dev_monopol(local!, matIndex)) {
+                    deckUpdate({
+                        devcards: local!.devcards,
+                    });
+
+                    catan.players.forEach((xplayer) => {
+                        deckUpdate({}, xplayer);
+                    });
+
+                    // TODO: ui updates all player that monopoly has taken in action!!
+                    catan.sockets.emit(ClientCodes.DEV_MONOPOL, {
+                        from: local!.id,
+                        mat: matIndex,
                     });
                 }
             });
