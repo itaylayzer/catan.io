@@ -359,7 +359,7 @@ export class Catan {
         return true;
     }
 
-    public act_buyDevcard(player: Player) {
+    public act_buyDevcard(player: Player): false | number {
         const index = randIndexBasedValues(this.bank.devcards);
         if (index === -1) return false;
 
@@ -374,7 +374,7 @@ export class Catan {
         this.bank.devcards[index]--;
         player.devcards[index]++;
 
-        return true;
+        return index;
     }
 
     public act_moveRobber(

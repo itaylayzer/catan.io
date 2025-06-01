@@ -11,4 +11,4 @@ when multiplayer checking:
 
 ui:
 
--   animation on getting mats & devcard
+-   lobby

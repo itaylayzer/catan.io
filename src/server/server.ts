@@ -5,6 +5,8 @@ import { Player } from "./Player";
 import VMath from "@/utils/VMath";
 import { MaterialList } from "@/types/materials";
 
+const empty = [0, 0, 0, 0, 0];
+
 export default function createServer(onOpen?: (server: Server) => void) {
     const catan = new Catan();
 
@@ -169,10 +171,15 @@ export default function createServer(onOpen?: (server: Server) => void) {
             });
 
             socket.on(ServerCodes.BUY_DEVCARD, () => {
-                if (catan.act_buyDevcard(local!)) {
+                const state = catan.act_buyDevcard(local!);
+                if (state !== false) {
                     deckUpdate({
                         devcards: local!.devcards,
                     });
+
+                    const devs = [0, 0, 0, 0, 0];
+                    devs[state]++;
+                    socket.emit(ClientCodes.MATS_NOTIFICATION, [empty, devs]);
                 }
             });
 
@@ -208,7 +215,7 @@ export default function createServer(onOpen?: (server: Server) => void) {
                         devcards: local!.devcards,
                     });
 
-                    socket.emit(ClientCodes.MATS_NOTIFICATION, mats);
+                    socket.emit(ClientCodes.MATS_NOTIFICATION, [mats, empty]);
                 }
             });
 
@@ -233,7 +240,7 @@ export default function createServer(onOpen?: (server: Server) => void) {
                     const addon = [0, 0, 0, 0, 0];
                     addon[matIndex] = current - old;
 
-                    socket.emit(ClientCodes.MATS_NOTIFICATION, addon);
+                    socket.emit(ClientCodes.MATS_NOTIFICATION, [addon, empty]);
                 }
             });
 

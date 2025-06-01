@@ -1,11 +1,12 @@
 import { cn } from "@/lib/utils";
-import { MaterialList } from "@/types/materials";
+import { DevcardList, MaterialList } from "@/types/materials";
 import { Component, createRef, ReactNode } from "react";
 import { MatsCountsViewer } from "../components/MaterialList";
+import { DevcardssCountsViewer } from "../components/DevcardList";
 
 export class MaterialNotify extends Component<
     any,
-    { mats: MaterialList; hidden: boolean },
+    { mats: MaterialList; devs: DevcardList; hidden: boolean },
     any
 > {
     private static _instance: MaterialNotify | null = null;
@@ -16,26 +17,37 @@ export class MaterialNotify extends Component<
 
     constructor() {
         super({});
-        this.state = { ...this.state, mats: [0, 0, 0, 0, 0], hidden: true };
+        this.state = {
+            ...this.state,
+            mats: [0, 0, 0, 0, 0],
+            hidden: true,
+            devs: [0, 0, 0, 0, 0],
+        };
         MaterialNotify._instance = this;
     }
 
     containerRef = createRef<HTMLDivElement>();
 
-    wake(mats: MaterialList) {
+    wake({
+        mats = [0, 0, 0, 0, 0],
+        devs = [0, 0, 0, 0, 0],
+    }: {
+        mats?: MaterialList;
+        devs?: DevcardList;
+    }) {
         if (!this.state.hidden) {
             this.setState((old) => ({ ...old, hidden: true }));
 
             setTimeout(() => {
-                this.setState((old) => ({ ...old, mats, hidden: false }));
+                this.setState((old) => ({ ...old, mats, devs, hidden: false }));
             }, 70);
         } else {
-            this.setState((old) => ({ ...old, mats, hidden: false }));
+            this.setState((old) => ({ ...old, mats, devs, hidden: false }));
         }
     }
 
     render(): ReactNode {
-        const { hidden, mats } = this.state;
+        const { hidden, mats, devs } = this.state;
         return (
             <div
                 onAnimationEnd={() => {
@@ -57,6 +69,7 @@ export class MaterialNotify extends Component<
                     }}
                 >
                     <MatsCountsViewer colorize shadowed mats={mats} />
+                    <DevcardssCountsViewer colorize shadowed devs={devs} />
                 </div>
             </div>
         );

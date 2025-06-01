@@ -122,7 +122,7 @@ export function handleSocket(
 
                         get().ui.events.emit("render decks");
                         if (VMath(mats).sum() > 0)
-                            MaterialNotify.instance.wake(mats);
+                            MaterialNotify.instance.wake({ mats });
                     } else {
                         const xplayer = get().onlines.get(from);
                         xplayer && (xplayer.materials += VMath(mats).sum());
@@ -163,9 +163,12 @@ export function handleSocket(
         }
     );
 
-    socket.on(ClientCodes.MATS_NOTIFICATION, (mats: MaterialList) => {
-        MaterialNotify.instance.wake(mats);
-    });
+    socket.on(
+        ClientCodes.MATS_NOTIFICATION,
+        ([mats, devs]: [MaterialList, DevcardList]) => {
+            MaterialNotify.instance.wake({ mats, devs });
+        }
+    );
 
     socket.on(
         ClientCodes.WIN,
