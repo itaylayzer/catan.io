@@ -45,7 +45,7 @@ type CatanData = {
         amounts: Record<"road" | "settlement" | "city", number>;
     };
     turnId: number;
-    dices: [number, number];
+    dices: undefined | [number, number];
     ui: {
         mapState: UIMapState;
         dicesState: UITurnState;
@@ -106,7 +106,7 @@ const defaultValue: CatanData = {
         maxRoad: 0,
     },
     turnId: 0,
-    dices: [1, 1],
+    dices: undefined,
     ui: {
         mapState: "picking area",
         dicesState: "ready",

@@ -19,7 +19,9 @@ const icons = [
     RiDice6Fill,
 ];
 
-function Dice({ num, fired }: { num: number; fired: () => void }) {
+function Dice({ num, fired }: { num: number | undefined; fired: () => void }) {
+    if (num === undefined) return;
+
     const [fakeNum, setFakeNum] = useState<number>(1);
     const [scaleClass, setScaleClass] = useState("");
 
@@ -93,13 +95,13 @@ export default function Dices2D() {
                 fired={() => {
                     setTimes((old) => old + 1);
                 }}
-                num={dices[0]}
+                num={dices === undefined ? undefined : dices[0]}
             />
             <Dice
                 fired={() => {
                     setTimes((old) => old + 1);
                 }}
-                num={dices[1]}
+                num={dices === undefined ? undefined : dices[1]}
             />
         </div>
     );
