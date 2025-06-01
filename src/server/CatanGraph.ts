@@ -271,7 +271,8 @@ export class Catan {
     public act_buyRoad(
         player: Player,
         roadFrom: number,
-        roadTo: number
+        roadTo: number,
+        useMoney: boolean = true
     ): boolean {
         // check if settlement already bought
         if (
@@ -285,11 +286,12 @@ export class Catan {
         if (player.amounts.road <= 0) return false;
 
         // check if theres enough materials
-        if (!VMath(player.materials).available(Store.road)) return false;
+        if (useMoney && !VMath(player.materials).available(Store.road))
+            return false;
 
         // Move mats
-        VMath(this.bank.materials).sameSize.add(Store.road);
-        VMath(player.materials).sameSize.sub(Store.road);
+        useMoney && VMath(this.bank.materials).sameSize.add(Store.road);
+        useMoney && VMath(player.materials).sameSize.sub(Store.road);
 
         const paint = (from: number, to: number, color: number) => {
             this.vertecies[from].edges.get(to)!.color = color;
@@ -430,6 +432,24 @@ export class Catan {
 
             local.materials[mat] += matCount;
         }
+
+        return true;
+    }
+
+    public dev_road(
+        player: Player,
+        firstFrom: number,
+        firstTo: number,
+        secondFrom: number,
+        secondTo: number
+    ) {
+        // check if player has enough devcards
+        if (player.devcards[2] <= 0) return false;
+
+        player.devcards[2]--;
+
+        this.act_buyRoad(player, firstFrom, firstTo, false);
+        this.act_buyRoad(player, secondFrom, secondTo, false);
 
         return true;
     }

@@ -35,7 +35,11 @@ const isReactIcons = [
 
 export function LocalPlayerDeck({}: {}) {
     const {
-        local: { materials, devcards },
+        local: {
+            materials,
+            devcards,
+            amounts: { road: roudsAmounts },
+        },
         ui: { events, dicesState },
         set,
         client: { socket },
@@ -62,7 +66,7 @@ export function LocalPlayerDeck({}: {}) {
         true,
         turnNotMine,
         true,
-        turnNotMine,
+        turnNotMine || roudsAmounts === 0,
         turnNotMine,
         turnNotMine,
     ];
@@ -85,7 +89,38 @@ export function LocalPlayerDeck({}: {}) {
             });
         },
         () => {},
-        () => {},
+        () => {
+            // ROADS
+            set((old) => ({
+                ui: { ...old.ui, mapState: "picking edge" },
+            }));
+
+            events.once("picked edge", (from: number, to: number) => {
+                set((old) => ({
+                    ui: { ...old.ui, mapState: "ready" },
+                }));
+
+                const first = [from, to];
+
+                setTimeout(() => {
+                    set((old) => ({
+                        ui: { ...old.ui, mapState: "picking edge" },
+                    }));
+
+                    events.once("picked edge", (from: number, to: number) => {
+                        socket?.emit(ServerCodes.DEV_ROADS, [
+                            ...first,
+                            from,
+                            to,
+                        ]);
+
+                        set((old) => ({
+                            ui: { ...old.ui, mapState: "ready" },
+                        }));
+                    });
+                }, 200);
+            });
+        },
         () => {
             events.emit("plenty");
 

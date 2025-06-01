@@ -13,6 +13,7 @@ export enum ServerCodes {
     DROP_MATS = "dp",
     DEV_YEAROFPLENTY = "dyop",
     DEV_MONOPOL = "dm",
+    DEV_ROADS = "dr",
 }
 // Server to Client
 export enum ClientCodes {

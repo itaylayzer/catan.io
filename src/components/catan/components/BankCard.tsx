@@ -15,7 +15,7 @@ export function BankCard({}: {}) {
     } = useCatanStore();
     return (
         <div className="relative flex outline-1 rounded-sm gap-2 px-4 pb-1 pt-2 items-center justify-around">
-            <div className="absolute flex gap-0 -left-19">
+            <div className="absolute flex gap-0 pr-1 right-full">
                 {longestRoad < 0 ? <RoadCard /> : null}
                 {largestArmy < 0 ? <KnightCard /> : null}
             </div>

@@ -119,8 +119,6 @@ export default function createServer(onOpen?: (server: Server) => void) {
                             Math.max(roadFrom, roadTo)
                         )
                     ) {
-                        console.log("server", "buy_road", "inside");
-
                         if (catan.updateLongestRoad()) {
                             achivementsUpdate();
                         }
@@ -204,13 +202,38 @@ export default function createServer(onOpen?: (server: Server) => void) {
                         deckUpdate({}, xplayer);
                     });
 
-                    // TODO: ui updates all player that monopoly has taken in action!!
                     catan.sockets.emit(ClientCodes.DEV_MONOPOL, {
                         from: local!.id,
                         mat: matIndex,
                     });
                 }
             });
+
+            socket.on(
+                ServerCodes.DEV_ROADS,
+                ([firstFrom, firstTo, secondFrom, secondTo]) => {
+                    if (
+                        catan.dev_road(
+                            local!,
+                            firstFrom,
+                            firstTo,
+                            secondFrom,
+                            secondTo
+                        )
+                    ) {
+                        if (catan.updateLongestRoad()) {
+                            achivementsUpdate();
+                        }
+
+                        deckUpdate({
+                            amounts: local!.amounts,
+                            roads: Array.from(local!.roads.values()),
+                            maxRoad: local!.maxRoad,
+                            devcards: local!.devcards,
+                        });
+                    }
+                }
+            );
         }
     );
 }
