@@ -100,19 +100,15 @@ export function LocalPlayerDeck({}: {}) {
                     ui: { ...old.ui, mapState: "ready" },
                 }));
 
-                const first = [from, to];
+                socket?.emit(ServerCodes.DEV_ROADS, [from, to]);
 
                 setTimeout(() => {
                     set((old) => ({
-                        ui: { ...old.ui, mapState: "picking edge" },
+                        ui: { ...old.ui, mapState: "picking 2 edges" },
                     }));
 
                     events.once("picked edge", (from: number, to: number) => {
-                        socket?.emit(ServerCodes.DEV_ROADS, [
-                            ...first,
-                            from,
-                            to,
-                        ]);
+                        socket?.emit(ServerCodes.DEV_ROADS, [from, to]);
 
                         set((old) => ({
                             ui: { ...old.ui, mapState: "ready" },

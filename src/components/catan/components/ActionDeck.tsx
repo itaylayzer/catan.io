@@ -124,6 +124,7 @@ export function ActionDeck() {
 
     const allDisabled =
         mapState === "picking area" ||
+        mapState === "picking 2 edges" ||
         turnId !== id ||
         dicesState === "rolling";
     const turnNotMine = dicesState !== "mine";

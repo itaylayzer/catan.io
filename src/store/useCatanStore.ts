@@ -13,7 +13,8 @@ export type UIMapState =
     | "picking vertex"
     | "picking area"
     | "picking edge"
-    | "picking vertex upgrade";
+    | "picking vertex upgrade"
+    | "picking 2 edges";
 
 export type UITurnState = "ready" | "rolling" | "mine" | "others";
 

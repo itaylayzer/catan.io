@@ -209,31 +209,20 @@ export default function createServer(onOpen?: (server: Server) => void) {
                 }
             });
 
-            socket.on(
-                ServerCodes.DEV_ROADS,
-                ([firstFrom, firstTo, secondFrom, secondTo]) => {
-                    if (
-                        catan.dev_road(
-                            local!,
-                            firstFrom,
-                            firstTo,
-                            secondFrom,
-                            secondTo
-                        )
-                    ) {
-                        if (catan.updateLongestRoad()) {
-                            achivementsUpdate();
-                        }
-
-                        deckUpdate({
-                            amounts: local!.amounts,
-                            roads: Array.from(local!.roads.values()),
-                            maxRoad: local!.maxRoad,
-                            devcards: local!.devcards,
-                        });
+            socket.on(ServerCodes.DEV_ROADS, ([from, to]) => {
+                if (catan.dev_road(local!, from, to)) {
+                    if (catan.updateLongestRoad()) {
+                        achivementsUpdate();
                     }
+
+                    deckUpdate({
+                        amounts: local!.amounts,
+                        roads: Array.from(local!.roads.values()),
+                        maxRoad: local!.maxRoad,
+                        devcards: local!.devcards,
+                    });
                 }
-            );
+            });
         }
     );
 }

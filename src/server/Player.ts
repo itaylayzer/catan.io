@@ -14,6 +14,7 @@ export class Player {
     public knightUsed: number;
     public maxRoad: number;
     public amounts: Record<"road" | "settlement" | "city", number>;
+    public twoRoadsState: boolean;
 
     constructor(public id: number, public name: string, public socket: Socket) {
         this.victory = 0;
@@ -31,6 +32,7 @@ export class Player {
         };
         this.knightUsed = 0;
         this.maxRoad = 0;
+        this.twoRoadsState = false;
     }
 
     public get victoryPoints() {

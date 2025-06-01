@@ -436,20 +436,14 @@ export class Catan {
         return true;
     }
 
-    public dev_road(
-        player: Player,
-        firstFrom: number,
-        firstTo: number,
-        secondFrom: number,
-        secondTo: number
-    ) {
+    public dev_road(player: Player, from: number, to: number) {
         // check if player has enough devcards
         if (player.devcards[2] <= 0) return false;
 
-        player.devcards[2]--;
+        player.devcards[2] -= +player.twoRoadsState;
+        player.twoRoadsState = !player.twoRoadsState;
 
-        this.act_buyRoad(player, firstFrom, firstTo, false);
-        this.act_buyRoad(player, secondFrom, secondTo, false);
+        this.act_buyRoad(player, from, to, false);
 
         return true;
     }

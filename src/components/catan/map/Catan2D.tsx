@@ -438,15 +438,20 @@ class Catan2D extends Component<
                                         ? COLORS[roads.get(hash)!]
                                         : "#ffffff";
 
+                                    const insidePickingState = [
+                                        "picking edge",
+                                        "picking 2 edges",
+                                    ].includes(mapState);
+
                                     const stroke = `${color}${
                                         used
                                             ? "ff"
-                                            : mapState === "picking edge"
+                                            : insidePickingState
                                             ? "55"
                                             : "00"
                                     }`;
                                     const className =
-                                        mapState === "picking edge" && !used
+                                        insidePickingState && !used
                                             ? "animate-pulse hover:animate-none cursor-pointer"
                                             : "pointer-events-none";
 
