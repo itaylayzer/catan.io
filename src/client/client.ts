@@ -163,6 +163,10 @@ export function handleSocket(
         }
     );
 
+    socket.on(ClientCodes.MATS_NOTIFICATION, (mats: MaterialList) => {
+        MaterialNotify.instance.wake(mats);
+    });
+
     socket.on(
         ClientCodes.WIN,
         ({

@@ -29,4 +29,5 @@ export enum ClientCodes {
     MOVE_ROBBER = "mr",
     DEV_MONOPOL = "dm",
     WIN = "w",
+    MATS_NOTIFICATION = "mn"
 }

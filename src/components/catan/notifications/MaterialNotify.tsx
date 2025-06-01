@@ -23,7 +23,15 @@ export class MaterialNotify extends Component<
     containerRef = createRef<HTMLDivElement>();
 
     wake(mats: MaterialList) {
-        this.setState((old) => ({ ...old, mats, hidden: false }));
+        if (!this.state.hidden) {
+            this.setState((old) => ({ ...old, hidden: true }));
+
+            setTimeout(() => {
+                this.setState((old) => ({ ...old, mats, hidden: false }));
+            }, 70);
+        } else {
+            this.setState((old) => ({ ...old, mats, hidden: false }));
+        }
     }
 
     render(): ReactNode {

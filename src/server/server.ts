@@ -207,11 +207,16 @@ export default function createServer(onOpen?: (server: Server) => void) {
                     deckUpdate({
                         devcards: local!.devcards,
                     });
+
+                    socket.emit(ClientCodes.MATS_NOTIFICATION, mats);
                 }
             });
 
             socket.on(ServerCodes.DEV_MONOPOL, (matIndex: number) => {
+                const old = local!.materials[matIndex];
                 if (catan.dev_monopol(local!, matIndex)) {
+                    const current = local!.materials[matIndex];
+
                     deckUpdate({
                         devcards: local!.devcards,
                     });
@@ -224,6 +229,11 @@ export default function createServer(onOpen?: (server: Server) => void) {
                         from: local!.id,
                         mat: matIndex,
                     });
+
+                    const addon = [0, 0, 0, 0, 0];
+                    addon[matIndex] = current - old;
+
+                    socket.emit(ClientCodes.MATS_NOTIFICATION, addon);
                 }
             });
 
