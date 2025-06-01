@@ -23,9 +23,11 @@ function Dice({
 }: {
     texturePaths: string[];
     position?: Vector3;
-    num: number;
+    num: number | undefined;
     fired: () => void;
 }) {
+    if (num === undefined) return null;
+
     const ref = useRef<Mesh>(null);
 
     const [fakeNum, setFakeNum] = useState<number>(1);
@@ -131,7 +133,7 @@ export default function Dices3D() {
                         }}
                         texturePaths={diceTextures}
                         position={new Vector3(-0.2, 0, 0)}
-                        num={dices[0]}
+                        num={dices === undefined ? undefined : dices[0]}
                     />
                     <Dice
                         fired={() => {
@@ -139,7 +141,7 @@ export default function Dices3D() {
                         }}
                         texturePaths={diceTextures}
                         position={new Vector3(0.2, 0, 0)}
-                        num={dices[1]}
+                        num={dices === undefined ? undefined : dices[1]}
                     />
                 </group>
                 <OrbitControls />
