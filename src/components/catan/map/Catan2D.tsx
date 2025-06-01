@@ -43,6 +43,7 @@ class Catan2D extends Component<
             roads: Map<number, number>;
             cities: Set<number>;
         };
+        harbors: number[];
     },
     {}
 > {
@@ -64,6 +65,7 @@ class Catan2D extends Component<
             robberArea,
             ui: { mapState, events },
             prepareMapSets,
+            harbors,
         } = useCatanStore.getState();
 
         this.state = {
@@ -74,6 +76,7 @@ class Catan2D extends Component<
             events,
             scale: 1,
             sets: prepareMapSets(),
+            harbors,
         };
 
         // Listen for store updates
@@ -84,6 +87,7 @@ class Catan2D extends Component<
                 mapState: newState.ui.mapState,
                 events: newState.ui.events,
                 sets: newState.prepareMapSets(),
+                harbors: newState.harbors,
             });
         });
     }
@@ -110,10 +114,11 @@ class Catan2D extends Component<
     };
 
     render() {
-        const { scale, mapState, materials, robberArea, sets } = this.state;
+        const { scale, mapState, materials, robberArea, sets, harbors } =
+            this.state;
         const { roads, settlements, cities } = sets;
 
-        if (mapState === "loading") return null;
+        if (mapState === "loading" || harbors.length === 0) return null;
         console.log("mapState", mapState);
         return (
             <div
@@ -333,8 +338,7 @@ class Catan2D extends Component<
                             })}
 
                             {Harbors.map(({ x, y }: any, index: number) => {
-                                const materialIndex =
-                                    index % HARBOR_ICONS.length;
+                                const materialIndex = harbors[index];
                                 const { icon, name } =
                                     HARBOR_ICONS[materialIndex];
                                 const color =

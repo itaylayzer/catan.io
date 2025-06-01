@@ -13,6 +13,8 @@ import { FaHandshakeSimple } from "react-icons/fa6";
 import VMath from "@/utils/VMath";
 import Store from "@/config/data/game/store.json";
 import { MaterialNotify } from "../notifications/MaterialNotify";
+import { TradeButton } from "./TradeButton";
+import { ReactNode } from "react";
 
 export function ActionDeck() {
     const {
@@ -52,6 +54,10 @@ export function ActionDeck() {
             header: "Trade",
         },
     ];
+
+    const noParent = (children: ReactNode) => children;
+    const { parent } = TradeButton();
+    const parents = [noParent, noParent, noParent, noParent, noParent, parent];
 
     const actions = [
         () => {
@@ -113,36 +119,24 @@ export function ActionDeck() {
             socket?.emit(ServerCodes.BUY_DEVCARD);
         },
         () => {
-            // TRADE
-            set((old) => ({
-                ui: { ...old.ui, mapState: "ready" },
-            }));
-
-            socket;
+            socket?.emit(ServerCodes.REQUEST_TRADES);
         },
     ];
 
+    const turnNotMine = dicesState !== "mine";
     const allDisabled =
+        // turnNotMine||
         mapState === "picking area" ||
         mapState === "picking 2 edges" ||
         turnId !== id ||
         dicesState === "rolling";
-    const turnNotMine = dicesState !== "mine";
     const disabled = [
         allDisabled,
-        turnNotMine ||
-            allDisabled ||
-            !VMath(local.materials).available(Store.road),
-        turnNotMine ||
-            allDisabled ||
-            !VMath(local.materials).available(Store.settlement),
-        turnNotMine ||
-            allDisabled ||
-            !VMath(local.materials).available(Store.city),
-        turnNotMine ||
-            allDisabled ||
-            !VMath(local.materials).available(Store.devcard),
-        turnNotMine || allDisabled || false,
+        allDisabled || !VMath(local.materials).available(Store.road),
+        allDisabled || !VMath(local.materials).available(Store.settlement),
+        allDisabled || !VMath(local.materials).available(Store.city),
+        allDisabled || !VMath(local.materials).available(Store.devcard),
+        allDisabled || false,
     ];
 
     return (
@@ -151,9 +145,9 @@ export function ActionDeck() {
 
             <div className="relative z-30 flex flex-row-reverse border-1 rounded-2xl bg-accent gap-5 px-4 pb-1 pt-2 scale-110 items-center justify-around">
                 {ACTION_DECK_BUTTONS.map(({ header, icon, count }, index) => {
-                    return (
+                    return parents[index](
                         <Tooltip key={header}>
-                            <TooltipTrigger>
+                            <TooltipTrigger asChild>
                                 <Button
                                     variant="ghost"
                                     className="hover:animate-pulse cursor-pointer aspect-square hover:scale-125"

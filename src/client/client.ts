@@ -44,7 +44,7 @@ export function handleSocket(
             id,
             robberArea,
         }: {
-            harbors: [number, number][];
+            harbors: number[];
             materials: [
                 number,
                 {
@@ -59,8 +59,6 @@ export function handleSocket(
             id: number;
             robberArea: number;
         }) => {
-            const harborMap = new Map(harbors);
-
             const materialsMap = new Map(
                 materials.map(([index, { num, material }]) => {
                     return [
@@ -74,7 +72,7 @@ export function handleSocket(
             );
 
             set({
-                harbors: harborMap,
+                harbors,
                 materials: materialsMap,
                 robberArea,
                 bank: {
@@ -288,6 +286,10 @@ export function handleSocket(
             set({ largestArmy, longestRoad });
         }
     );
+
+    socket.on(ClientCodes.GET_TRADES, (trades) => {
+        get().ui.events.emit("trade requests", trades);
+    });
 
     socket.emit(ServerCodes.INIT, name);
 

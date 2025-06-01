@@ -14,6 +14,8 @@ export enum ServerCodes {
     DEV_YEAROFPLENTY = "dyop",
     DEV_MONOPOL = "dm",
     DEV_ROADS = "dr",
+    REQUEST_TRADES = "rt",
+    APPLY_TRADE = "at",
 }
 // Server to Client
 export enum ClientCodes {
@@ -29,5 +31,6 @@ export enum ClientCodes {
     MOVE_ROBBER = "mr",
     DEV_MONOPOL = "dm",
     WIN = "w",
-    MATS_NOTIFICATION = "mn"
+    MATS_NOTIFICATION = "mn",
+    GET_TRADES = "gt",
 }

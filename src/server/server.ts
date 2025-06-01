@@ -258,6 +258,29 @@ export default function createServer(onOpen?: (server: Server) => void) {
                     });
                 }
             });
+
+            socket.on(ServerCodes.REQUEST_TRADES, () => {
+                const trades = catan.calculateTrades(local!);
+
+                socket.emit(ClientCodes.GET_TRADES, trades);
+            });
+
+            socket.on(
+                ServerCodes.APPLY_TRADE,
+                ({ from, to, count }: Record<string, number>) => {
+                    if (catan.applyTrade(local!, from, to, count)) {
+                        deckUpdate({});
+
+                        const addon = [0, 0, 0, 0, 0];
+                        addon[to] = 1;
+
+                        socket.emit(ClientCodes.MATS_NOTIFICATION, [
+                            addon,
+                            empty,
+                        ]);
+                    }
+                }
+            );
         }
     );
 }

@@ -12,6 +12,7 @@ import { randInt } from "three/src/math/MathUtils.js";
 import VMath from "@/utils/VMath";
 import Store from "@/config/data/game/store.json";
 import { randIndexBasedValues } from "@/utils/randIndexBasedValues";
+import { Deal } from "@/types/deal";
 const MIDDLE_INDEX = 9;
 
 export class Catan {
@@ -20,6 +21,7 @@ export class Catan {
     private robberArea: number;
     public bank: { materials: number[]; devcards: number[] };
     private turnId: number;
+    private harborsMats: number[];
 
     // Achivements variables
     private longestRoadColor = -1;
@@ -43,6 +45,18 @@ export class Catan {
         this.turnId = 0;
         this.robberArea = MIDDLE_INDEX;
         this.players = [];
+
+        this.harborsMats = [
+            Material.WOOD,
+            Material.WOOL,
+            Material.WHEAT,
+            Material.BRICK,
+            Material.ORE,
+            Material.GENERAL_DEAL,
+            Material.GENERAL_DEAL,
+            Material.GENERAL_DEAL,
+            Material.GENERAL_DEAL,
+        ];
 
         this.prepareCatanEdges();
         this.prepareCatanLands();
@@ -126,24 +140,12 @@ export class Catan {
     }
 
     private prepareCatanHarbors() {
-        const mats = [
-            Material.WOOD,
-            Material.WOOL,
-            Material.WHEAT,
-            Material.BRICK,
-            Material.ORE,
-            Material.GENERAL_DEAL,
-            Material.GENERAL_DEAL,
-            Material.GENERAL_DEAL,
-            Material.GENERAL_DEAL,
-        ];
+        ArrayShuffle(this.harborsMats);
 
-        ArrayShuffle(mats);
-
-        for (let offset = 0; offset < mats.length; offset++) {
+        for (let offset = 0; offset < this.harborsMats.length; offset++) {
             this.vertecies[HarborsArray[offset * 2] + AREAS].harbor =
                 this.vertecies[HarborsArray[offset * 2 + 1] + AREAS].harbor =
-                    mats[offset];
+                    this.harborsMats[offset];
         }
     }
     /////////////////// PLAYER /////////////////
@@ -161,10 +163,9 @@ export class Catan {
     /////////////////// EXPORT /////////////////
     public json() {
         const { robberArea, bank } = this;
+
         return {
-            harbors: this.vertecies
-                .filter((v) => v.harbor !== undefined)
-                .map((v, i) => [i - AREAS, v.harbor!]),
+            harbors: this.harborsMats,
             materials: this.vertecies
                 .filter((v) => v.material !== undefined)
                 .map(
@@ -405,7 +406,7 @@ export class Catan {
         if (player.devcards[3] <= 0) return false;
 
         // check if theres enough materials
-        if (!VMath(player.materials).available(mats)) return false;
+        if (!VMath(this.bank.materials).available(mats)) return false;
 
         player.devcards[3]--;
 
@@ -551,5 +552,90 @@ export class Catan {
 
         const maxIndex = VMath(vps).maxIndex();
         return this.players[maxIndex].id;
+    }
+
+    public calculateTrades(player: Player): Deal[] {
+        const harbors = new Set(
+            Array.from(player.settlements.values())
+                .filter(
+                    (vertex) =>
+                        this.vertecies[vertex + AREAS].harbor !== undefined
+                )
+                .map((vertex) => this.vertecies[vertex + AREAS].harbor!)
+        );
+
+        const deals: Deal[] = [];
+
+        for (let matIndex = 0; matIndex < 5; matIndex++) {
+            const specificHarbor = [
+                harbors.has(matIndex) && player.materials[matIndex] > 1,
+                2,
+            ];
+            const generalHarbor = [
+                harbors.has(5) && player.materials[matIndex] > 2,
+                3,
+            ];
+            const bankDeal = [player.materials[matIndex] > 3, 4];
+
+            for (const [condition, count] of [
+                specificHarbor,
+                generalHarbor,
+                bankDeal,
+            ] as [boolean, number][]) {
+                condition &&
+                    deals.push({
+                        from: matIndex,
+                        count,
+                    });
+            }
+        }
+
+        return deals;
+    }
+
+    public applyTrade(player: Player, from: number, to: number, count: number) {
+        let allowed = true;
+
+        if (count < 4) {
+            const harbors = new Set(
+                Array.from(player.settlements.values())
+                    .filter(
+                        (vertex) =>
+                            this.vertecies[vertex + AREAS].harbor !== undefined
+                    )
+                    .map((vertex) => this.vertecies[vertex + AREAS].harbor!)
+            );
+
+            switch (count) {
+                case 3:
+                    allowed = harbors.has(5);
+                    break;
+                case 2:
+                    allowed = harbors.has(from);
+                    break;
+                default:
+                    return false;
+            }
+        }
+
+        if (!allowed) return false;
+
+        const give = [0, 0, 0, 0, 0];
+        give[from] = count;
+
+        const get = [0, 0, 0, 0, 0];
+        get[to] = 1;
+
+        // if player and bank dont have those materials
+        if (!VMath(player.materials).available(give)) return false;
+        if (!VMath(this.bank.materials).available(get)) return false;
+
+        VMath(this.bank.materials).sameSize.add(give);
+        VMath(player.materials).sameSize.sub(give);
+
+        VMath(this.bank.materials).sameSize.sub(get);
+        VMath(player.materials).sameSize.add(get);
+
+        return true;
     }
 }

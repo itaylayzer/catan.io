@@ -1,7 +1,6 @@
 TODO:
 
 -   first 2 rounds
--   trades: bank trade, harbors + harbor trade
 -   players trade
 -   validation on settlements & roads placing
 

@@ -21,7 +21,7 @@ export type UITurnState = "ready" | "rolling" | "mine" | "others";
 type CatanData = {
     largestArmy: number;
     longestRoad: number;
-    harbors: Map<number, number>;
+    harbors: number[];
     materials: Map<
         number,
         {
@@ -78,7 +78,7 @@ const defaultValue: CatanData = {
     longestRoad: -1,
     largestArmy: -1,
     robberArea: -1,
-    harbors: new Map(),
+    harbors: [],
     materials: new Map(),
     bank: {
         devcards: [0, 0, 0, 0, 0],
