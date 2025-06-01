@@ -83,11 +83,13 @@ export function handleSocket(
                     socket,
                     id,
                 },
-                ui: {
-                    mapState: "ready",
-                    events: get().ui.events,
-                    dicesState: get().ui.dicesState,
-                },
+            });
+            requestAnimationFrame(function animate() {
+                if (get().harbors.length > 0) {
+                    set((old) => ({ ui: { ...old.ui, mapState: "ready" } }));
+                } else {
+                    requestAnimationFrame(animate);
+                }
             });
         }
     );

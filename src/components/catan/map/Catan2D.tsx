@@ -339,6 +339,8 @@ class Catan2D extends Component<
 
                             {Harbors.map(({ x, y }: any, index: number) => {
                                 const materialIndex = harbors[index];
+                                if (materialIndex === undefined) return null;
+
                                 const { icon, name } =
                                     HARBOR_ICONS[materialIndex];
                                 const color =
