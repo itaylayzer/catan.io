@@ -167,7 +167,27 @@ export function LocalPlayerDeck({}: {}) {
                               height: 30,
                           };
 
+                    const cardSetting = isReactIcons[index]
+                        ? {
+                              color: color,
+                              opacity: 1,
+                              size: 25,
+                          }
+                        : {
+                              stroke: color,
+                              opacity: 1,
+                              fill: color,
+                              width: 30,
+                              height: 30,
+                          };
+
                     const rightIcon = LOCAL_DECK_MATERIALS[index].icon(setting);
+                    const cardIcon = LOCAL_DECK_MATERIALS[index].icon({
+                        ...cardSetting,
+                        style: {
+                            filter: `drop-shadow(0px 0px 20px ${color})`,
+                        },
+                    });
 
                     const element = (
                         <button
@@ -204,7 +224,7 @@ export function LocalPlayerDeck({}: {}) {
                             </HoverCardTrigger>
                             <HoverCardContent className="bg-accent w-60 flex gap-1 flex-col">
                                 <div className="flex justify-center gap-3">
-                                    <div className="scale-70">{rightIcon}</div>
+                                    <div className="scale-70">{cardIcon}</div>
                                     <p className="font-[Rubik]">{name}</p>
                                 </div>
                                 <div className="px-7 mb-3">
