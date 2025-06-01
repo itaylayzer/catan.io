@@ -19,12 +19,14 @@ import { StateOverlay } from "@/components/catan/states/StateOverlay";
 import { TwoYearOfPlentyState } from "@/components/catan/states/TwoYearOfPlentyState";
 import { MonopolyState } from "@/components/catan/states/MonopolyState";
 import { MonopolyStateShow } from "@/components/catan/states/MonopolyShowState";
+import { WinState } from "@/components/catan/states/WinState";
 
 function CatanGame() {
     return (
         <div className="flex absolute w-[100%] h-[100%] top-0 left-0">
             <StateOverlay />
             <MonopolyStateShow />
+            <WinState />
 
             <div className="absolute pt-32 h-full">
                 <div className="flex flex-col gap-3 px-5 w-[333px] h-full">

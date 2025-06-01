@@ -80,9 +80,13 @@ export class Socket {
             } catch {}
         });
     }
+
+    public middleware(handler: () => void) {
+        this.client.on("data", handler);
+    }
+
     public on(event_name: string | "disconnect", handler: (args: any) => void) {
         this.events.set(event_name, handler);
-        this.client.on("data", () => {});
     }
     public emit(event_name: string, args?: any) {
         this.client.send(

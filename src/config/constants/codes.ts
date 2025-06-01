@@ -28,4 +28,5 @@ export enum ClientCodes {
     ACHIVEMENTS_UPDATE = "ao",
     MOVE_ROBBER = "mr",
     DEV_MONOPOL = "dm",
+    WIN = "w",
 }

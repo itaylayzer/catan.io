@@ -163,6 +163,21 @@ export function handleSocket(
         }
     );
 
+    socket.on(
+        ClientCodes.WIN,
+        ({
+            id,
+            players,
+        }: {
+            id: number;
+            players: { id: number; vp: number; vpdc: number }[];
+        }) => {
+            console.log("winner.client");
+
+            get().ui.events.emit("win", id, players);
+        }
+    );
+
     socket.on(ClientCodes.MOVE_ROBBER, (robberArea) => {
         set({ robberArea });
         set((old) => ({

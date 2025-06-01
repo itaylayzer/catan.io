@@ -14,6 +14,24 @@ export default function createServer(onOpen?: (server: Server) => void) {
         },
         (socket) => {
             let local: Player | null = null;
+
+            socket.middleware(() => {
+                const state = catan.checkWin();
+
+                if (state !== false) {
+                    const players = catan.players.map(
+                        ({ id, devcards, victoryPoints }) => ({
+                            id,
+                            vp: victoryPoints,
+                            vpdc: devcards[1],
+                        })
+                    );
+
+                    console.log("winner.server");
+                    catan.sockets.emit(ClientCodes.WIN, { id: state, players });
+                }
+            });
+
             socket.on(ServerCodes.INIT, (name: string) => {
                 local = catan.playerJoin(name, socket);
 

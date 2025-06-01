@@ -541,4 +541,15 @@ export class Catan {
 
         return stateChanged;
     }
+
+    public checkWin(): false | number {
+        const vps = this.players.map((p) => p.realVictoryPoints);
+        console.log("server.vps", vps);
+        const maxValue = VMath(vps).max();
+
+        if (maxValue < 10) return false;
+
+        const maxIndex = VMath(vps).maxIndex();
+        return this.players[maxIndex].id;
+    }
 }
