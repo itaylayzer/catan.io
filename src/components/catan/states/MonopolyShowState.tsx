@@ -55,7 +55,7 @@ export function MonopolyStateShow() {
             )}
         >
             <div
-                className="flex justify-center items-center flex-col"
+                className="flex justify-center opacity-0 items-center flex-col"
                 style={{
                     animation: hidden ? "" : "hop 4s cubic-bezier(0,.96,1,1)",
                 }}
