@@ -1,9 +1,7 @@
 TODO:
 
--   devcards buttons with dialogs
 -   first 2 rounds
--   bank trade
--   harbors + harbor trade
+-   trades: bank trade, harbors + harbor trade
 -   players trade
 -   win state
 -   validation on settlements & roads placing
