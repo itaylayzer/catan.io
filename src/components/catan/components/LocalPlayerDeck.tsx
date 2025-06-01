@@ -217,7 +217,7 @@ export function LocalPlayerDeck({}: {}) {
                             <HoverCardTrigger asChild>
                                 {element}
                             </HoverCardTrigger>
-                            <HoverCardContent className="bg-accent w-60 flex gap-1 flex-col">
+                            <HoverCardContent className="pointer-events-none bg-accent w-60 flex gap-1 flex-col">
                                 <div className="flex justify-center gap-3">
                                     <div className="scale-70">{cardIcon}</div>
                                     <p className="font-[Rubik]">{name}</p>
