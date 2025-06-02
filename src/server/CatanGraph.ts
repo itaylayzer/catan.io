@@ -63,22 +63,6 @@ export class Catan {
         this.prepareCatanHarbors();
     }
 
-    public get sockets() {
-        return {
-            emit: (eventName: string, args?: any) => {
-                this.players.forEach(({ socket }) =>
-                    socket.emit(eventName, args)
-                );
-            },
-            emitExcept: (exceptId: number, eventName: string, args?: any) => {
-                this.players.forEach(
-                    ({ socket, id }) =>
-                        id !== exceptId && socket.emit(eventName, args)
-                );
-            },
-        };
-    }
-
     ////////////////////// PREPARE ///////////////////
     private prepareCatanEdges() {
         const arr = [
@@ -259,6 +243,11 @@ export class Catan {
 
                       return { from: id, mats };
                   });
+
+        // notify all players they have to give materials, once!
+        dicesSum == 7 &&
+            this.players.forEach((player) => (player.sevenNeedToGive = true));
+
         return {
             dices,
             addons,
@@ -397,8 +386,18 @@ export class Catan {
     }
 
     public dropMaterials(player: Player, mats: MaterialList) {
+        // check if player have those materials
+        if (!VMath(player.materials).available(mats)) return false;
+
+        // check if player needs to drop materials
+        if (!player.sevenNeedToGive) return false;
+
         VMath(player!.materials).sameSize.sub(mats);
         VMath(this.bank.materials).sameSize.add(mats);
+
+        player.sevenNeedToGive = false;
+
+        return true;
     }
 
     public dev_yearOfPlenty(player: Player, mats: MaterialList) {
@@ -428,8 +427,11 @@ export class Catan {
         for (const xplayer of this.players) {
             if (xplayer.id === local.id) continue;
 
-            const matCount = xplayer.materials[mat];
-            xplayer.materials[mat] = 0;
+            const materials = [...xplayer.materials] as MaterialList;
+            const matCount = materials[mat];
+            materials[mat] = 0;
+
+            xplayer.materials = materials;
 
             local.materials[mat] += matCount;
         }

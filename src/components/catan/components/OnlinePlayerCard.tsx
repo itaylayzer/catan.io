@@ -61,7 +61,15 @@ export function KnightCard() {
     );
 }
 
-export function OnlinePlayerCard({ player }: { player: Player }) {
+export function OnlinePlayerCard({
+    player,
+    largestArmy,
+    longestRoad,
+}: {
+    player: Player;
+    largestArmy: number;
+    longestRoad: number;
+}) {
     const {
         materials,
         devcards,
@@ -71,7 +79,6 @@ export function OnlinePlayerCard({ player }: { player: Player }) {
         maxRoad,
         knightUsed,
     } = player;
-    const { largestArmy, longestRoad } = useCatanStore();
 
     console.log("client", "victoryPoints", victoryPoints);
     console.log("client", "OnlinePlayerCard", "maxRoad", maxRoad);

@@ -3,7 +3,7 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "dev": "concurrently --kill-others-on-fail \"bunx peer --port 9000\" \"next dev\"",
+        "dev": "concurrently --kill-others-on-fail \"bunx peer --port 9000\" \"next dev --turbo\"",
         "build": "next build",
         "start": "next start",
         "lint": "next lint",

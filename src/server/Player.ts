@@ -16,6 +16,7 @@ export class Player {
     public maxRoad: number;
     public amounts: Record<"road" | "settlement" | "city", number>;
     public twoRoadsState: boolean;
+    public sevenNeedToGive: boolean;
 
     constructor(
         public id: number,
@@ -24,12 +25,14 @@ export class Player {
         private game: Catan
     ) {
         this.victory = 0;
-        this.materials = MaterialsStarter as MaterialList;
-        this.devcards = DevcardsStarter as DevcardList;
+        this.materials = [...MaterialsStarter] as MaterialList;
+        this.devcards = [...DevcardsStarter] as DevcardList;
 
         this.settlements = new Set();
         this.roads = new Set();
         this.cities = new Set();
+
+        this.sevenNeedToGive = false;
 
         this.amounts = {
             city: 4,

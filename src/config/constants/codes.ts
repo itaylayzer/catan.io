@@ -19,6 +19,9 @@ export enum ServerCodes {
 }
 // Server to Client
 export enum ClientCodes {
+    PLAYER_JOIN = "pj",
+    STOP = "st",
+    DISCONNECTED = "dis",
     STATUS = "s",
     INIT = "i",
     TURN_DICE = "t",

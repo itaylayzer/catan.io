@@ -43,6 +43,7 @@ export function handleSocket(
             bank,
             id,
             robberArea,
+            onlines: xplayers,
         }: {
             harbors: number[];
             materials: [
@@ -58,7 +59,14 @@ export function handleSocket(
             };
             id: number;
             robberArea: number;
+            onlines: {
+                id: number;
+                name: string;
+                materials: number;
+                devcards: number;
+            }[];
         }) => {
+            console.log("client INIT id", id);
             const materialsMap = new Map(
                 materials.map(([index, { num, material }]) => {
                     return [
@@ -71,7 +79,7 @@ export function handleSocket(
                 })
             );
 
-            set({
+            set((old) => ({
                 harbors,
                 materials: materialsMap,
                 robberArea,
@@ -83,7 +91,11 @@ export function handleSocket(
                     socket,
                     id,
                 },
-            });
+                local: {
+                    ...old.local,
+                    color: id,
+                },
+            }));
             requestAnimationFrame(function animate() {
                 if (get().harbors.length > 0) {
                     set((old) => ({ ui: { ...old.ui, mapState: "ready" } }));
@@ -91,6 +103,56 @@ export function handleSocket(
                     requestAnimationFrame(animate);
                 }
             });
+
+            const { onlines } = get();
+            for (const xplayer of xplayers) {
+                const { devcards, id, materials, name } = xplayer;
+
+                console.log("client player INIT", xplayer);
+
+                onlines.set(id, {
+                    devcards,
+                    color: id,
+                    materials,
+                    name,
+                    cities: [],
+                    knightUsed: 0,
+                    maxRoad: 0,
+                    roads: [],
+                    settlements: [],
+                    victoryPoints: 0,
+                });
+            }
+            set({ onlines: new Map(onlines) });
+        }
+    );
+
+    socket.on(
+        ClientCodes.PLAYER_JOIN,
+        (xplayer: {
+            id: number;
+            name: string;
+            materials: number;
+            devcards: number;
+        }) => {
+            console.log("client player PLAYER_JOIN", xplayer);
+            const { onlines } = get();
+            const { devcards, id, materials, name } = xplayer;
+
+            onlines.set(id, {
+                devcards,
+                color: id,
+                materials,
+                name,
+                cities: [],
+                knightUsed: 0,
+                maxRoad: 0,
+                roads: [],
+                settlements: [],
+                victoryPoints: 0,
+            });
+
+            set({ onlines: new Map(onlines) });
         }
     );
 
@@ -129,30 +191,33 @@ export function handleSocket(
                     }
                 });
 
-                if (
-                    dices[0] + dices[1] === 7 &&
-                    VMath(get().local.materials).sum() > 6
-                ) {
-                    get().ui.events.emit("7");
+                if (dices[0] + dices[1] === 7) {
+                    // If local is the current turn then move robber
+                    if (get().turnId === get().local.color) {
+                        set((old) => ({
+                            ui: {
+                                ...old.ui,
+                                mapState: "picking area",
+                            },
+                        }));
 
-                    set((old) => ({
-                        ui: {
-                            ...old.ui,
-                            mapState: "picking area",
-                        },
-                    }));
-
-                    get().ui.events.once("picked area", (index) => {
-                        get().ui.events.emit('dock 7 free');
-                        socket.emit(ServerCodes.MOVE_ROBBER, {
-                            areaOffset: index,
-                            useDevcard: false,
+                        get().ui.events.once("picked area", (index) => {
+                            get().ui.events.emit("dock 7 free");
+                            socket.emit(ServerCodes.MOVE_ROBBER, {
+                                areaOffset: index,
+                                useDevcard: false,
+                            });
                         });
-                    });
+                    }
 
-                    get().ui.events.once("7 give", (values) => {
-                        socket.emit(ServerCodes.DROP_MATS, values);
-                    });
+                    // If local materials are bigger then 6 then drop mats
+                    if (VMath(get().local.materials).sum() > 6) {
+                        get().ui.events.emit("7");
+
+                        get().ui.events.once("7 give", (values) => {
+                            socket.emit(ServerCodes.DROP_MATS, values);
+                        });
+                    }
                 }
 
                 if (get().turnId === get().local.color) {
@@ -294,7 +359,7 @@ export function handleSocket(
         get().ui.events.emit("trade requests", trades);
     });
 
-    socket.emit(ServerCodes.INIT, name);
+    socket.emit(ServerCodes.INIT, get().local.name);
 
     set({ client: { socket, id: -1 } });
 }

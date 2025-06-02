@@ -4,17 +4,19 @@ import { Server } from "./sockets";
 import { Player } from "./Player";
 import VMath from "@/utils/VMath";
 import { MaterialList } from "@/types/materials";
+import { Lobby } from "./Lobby";
 
 const empty = [0, 0, 0, 0, 0];
 
 export default function createServer(onOpen?: (server: Server) => void) {
     const catan = new Catan();
+    const lobby = new Lobby();
 
     new Server(
         (self) => {
             onOpen?.(self);
         },
-        (socket) => {
+        (socket, server) => {
             let local: Player | null = null;
 
             socket.middleware(() => {
@@ -30,7 +32,7 @@ export default function createServer(onOpen?: (server: Server) => void) {
                     );
 
                     console.log("winner.server");
-                    catan.sockets.emit(ClientCodes.WIN, { id: state, players });
+                    lobby.sockets.emit(ClientCodes.WIN, { id: state, players });
                 }
             });
 
@@ -40,6 +42,23 @@ export default function createServer(onOpen?: (server: Server) => void) {
                 socket.emit(ClientCodes.INIT, {
                     ...catan.json(),
                     id: local.id,
+                    onlines: catan.players
+                        .filter((v) => v.id !== local!.id)
+                        .map(({ id, materials, devcards, name }) => ({
+                            id,
+                            name,
+                            materials: VMath(materials).sum(),
+                            devcards: VMath(devcards).sum(),
+                        })),
+                });
+
+                console.log("local.name", local.name);
+
+                lobby.sockets.emitExcept(socket, ClientCodes.PLAYER_JOIN, {
+                    id: local.id,
+                    name: local.name,
+                    materials: VMath(local.materials).sum(),
+                    devcards: VMath(local.devcards).sum(),
                 });
             });
 
@@ -48,11 +67,11 @@ export default function createServer(onOpen?: (server: Server) => void) {
             });
 
             socket.on(ServerCodes.ROLL, () => {
-                socket.emit(ClientCodes.TURN_DICE, catan.act_rollDice());
+                lobby.sockets.emit(ClientCodes.TURN_DICE, catan.act_rollDice());
             });
 
             socket.on(ServerCodes.MESSAGE, (message) => {
-                catan.sockets.emit(ClientCodes.MESSAGE, {
+                lobby.sockets.emit(ClientCodes.MESSAGE, {
                     from: local!.id,
                     date: new Date().getTime(),
                     message,
@@ -60,16 +79,10 @@ export default function createServer(onOpen?: (server: Server) => void) {
             });
 
             socket.on(ServerCodes.STOP_TURN, () => {
-                catan.sockets.emit(
+                lobby.sockets.emit(
                     ClientCodes.TURN_SWITCH,
                     catan.act_stopTurn()
                 );
-            });
-
-            socket.on(ServerCodes.DROP_MATS, (mats: MaterialList) => {
-                catan.dropMaterials(local!, mats);
-
-                deckUpdate({});
             });
 
             const deckUpdate = (
@@ -84,46 +97,73 @@ export default function createServer(onOpen?: (server: Server) => void) {
                 }>,
                 player: Player = local!
             ) => {
-                socket.emit(ClientCodes.PLAYER_UPDATE, {
+                player.socket.emit(ClientCodes.PLAYER_UPDATE, {
                     ...data,
                     vp: player.victoryPoints,
                     materials: player.materials,
                 });
-                catan.sockets.emit(ClientCodes.BANK_UPDATE, catan.bank);
+                lobby.sockets.emit(ClientCodes.BANK_UPDATE, catan.bank);
 
-                catan.sockets.emitExcept(player.id, ClientCodes.OTHER_UPDATE, {
-                    id: player.id,
-                    materials: VMath(player.materials).sum(),
-                    devcards: VMath(player.devcards).sum(),
-                    vp: player.victoryPoints,
-                    ...(data.roads
-                        ? { roads: Array.from(player.roads.values()) }
-                        : {}),
-                    ...(data.cities
-                        ? { cities: Array.from(player.cities.values()) }
-                        : {}),
-                    ...(data.settlements
-                        ? {
-                              settlements: Array.from(
-                                  player.settlements.values()
-                              ),
-                          }
-                        : {}),
-                    ...(data.maxRoad === undefined
-                        ? {}
-                        : { maxRoad: data.maxRoad }),
-                    ...(data.knightUsed === undefined
-                        ? {}
-                        : { knightUsed: data.knightUsed }),
-                });
+                lobby.sockets.emitExcept(
+                    player.socket,
+                    ClientCodes.OTHER_UPDATE,
+                    {
+                        id: player.id,
+                        materials: VMath(player.materials).sum(),
+                        devcards: VMath(player.devcards).sum(),
+                        vp: player.victoryPoints,
+                        ...(data.roads
+                            ? { roads: Array.from(player.roads.values()) }
+                            : {}),
+                        ...(data.cities
+                            ? { cities: Array.from(player.cities.values()) }
+                            : {}),
+                        ...(data.settlements
+                            ? {
+                                  settlements: Array.from(
+                                      player.settlements.values()
+                                  ),
+                              }
+                            : {}),
+                        ...(data.maxRoad === undefined
+                            ? {}
+                            : { maxRoad: data.maxRoad }),
+                        ...(data.knightUsed === undefined
+                            ? {}
+                            : { knightUsed: data.knightUsed }),
+                    }
+                );
             };
 
             const achivementsUpdate = () => {
-                catan.sockets.emit(
+                lobby.sockets.emit(
                     ClientCodes.ACHIVEMENTS_UPDATE,
                     catan.json_achivements()
                 );
             };
+
+            socket.on(ServerCodes.DROP_MATS, (mats: MaterialList) => {
+                console.log(
+                    "server ServerCodes.DROP_MATS before",
+                    mats,
+                    "from local",
+                    local!.id,
+                    local!.materials,
+                    local!.sevenNeedToGive
+                );
+
+                const state = catan.dropMaterials(local!, mats);
+                console.log(
+                    "server ServerCodes.DROP_MATS after",
+                    mats,
+                    "from local",
+                    local!.id,
+                    local!.materials,
+                    local!.sevenNeedToGive,
+                    state
+                );
+                state && deckUpdate({});
+            });
 
             socket.on(
                 ServerCodes.BUY_ROAD,
@@ -204,7 +244,7 @@ export default function createServer(onOpen?: (server: Server) => void) {
                             });
                         }
 
-                        catan.sockets.emit(ClientCodes.MOVE_ROBBER, areaOffset);
+                        lobby.sockets.emit(ClientCodes.MOVE_ROBBER, areaOffset);
                     }
                 }
             );
@@ -224,6 +264,11 @@ export default function createServer(onOpen?: (server: Server) => void) {
                 if (catan.dev_monopol(local!, matIndex)) {
                     const current = local!.materials[matIndex];
 
+                    console.log(
+                        "server.dev_monopol local",
+                        local!.materials,
+                        local!.materials[matIndex]
+                    );
                     deckUpdate({
                         devcards: local!.devcards,
                     });
@@ -232,7 +277,7 @@ export default function createServer(onOpen?: (server: Server) => void) {
                         deckUpdate({}, xplayer);
                     });
 
-                    catan.sockets.emit(ClientCodes.DEV_MONOPOL, {
+                    lobby.sockets.emit(ClientCodes.DEV_MONOPOL, {
                         from: local!.id,
                         mat: matIndex,
                     });
@@ -281,6 +326,26 @@ export default function createServer(onOpen?: (server: Server) => void) {
                     }
                 }
             );
+            socket.on("disconnect", () => {
+                if (lobby.ready) {
+                    lobby.sockets.emitExcept(socket, ClientCodes.STOP);
+                    server.stop();
+                } else {
+                    lobby.sockets.emitExcept(
+                        socket,
+                        ClientCodes.DISCONNECTED,
+                        local!.id
+                    );
+
+                    lobby.disconnect(socket);
+
+                    if (lobby.size <= 0) {
+                        server.stop();
+                    }
+                }
+            });
+
+            lobby.join(socket);
         }
     );
 }

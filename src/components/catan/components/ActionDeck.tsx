@@ -22,13 +22,12 @@ export function ActionDeck() {
         turnId,
         ui: { dicesState, events, mapState },
         local,
-        dices,
         set,
     } = useCatanStore();
-    const [sevenMode, setSevenMode] = useState(false);
 
+    const [sevenMode, setSevenMode] = useState(false);
     const cancelPickingDisabled =
-        sevenMode || ["ready", "loading"].includes(mapState);
+        sevenMode || ["ready", "loading", "picking 2 edges"].includes(mapState);
 
     events.on("dock 7 free", () => {
         setSevenMode(false);
@@ -135,6 +134,8 @@ export function ActionDeck() {
             socket?.emit(ServerCodes.REQUEST_TRADES);
         },
     ];
+
+    console.log("dicesState", dicesState);
 
     const turnNotMine = dicesState !== "mine";
     const allDisabled =

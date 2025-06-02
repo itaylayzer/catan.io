@@ -8,6 +8,8 @@ export default function PlayersBar() {
     const {
         onlines,
         local,
+        largestArmy,
+        longestRoad,
         ui: { events },
     } = useCatanStore();
 
@@ -19,14 +21,18 @@ export default function PlayersBar() {
             events.off("render decks", render);
         };
     }, [render]);
+
     const list: ReactNode[] = [];
     onlines.forEach((player) =>
-        list.push(OnlinePlayerCard({ player: player }), <hr />)
+        list.push(
+            OnlinePlayerCard({ player, largestArmy, longestRoad }),
+            <hr />
+        )
     );
     list.push(
         OnlinePlayerCard({
             player: {
-                color: 0,
+                color: local.color,
                 devcards: VMath(local.devcards).sum(),
                 materials: VMath(local.materials).sum(),
                 name: local.name,
@@ -37,6 +43,8 @@ export default function PlayersBar() {
                 maxRoad: local.maxRoad,
                 knightUsed: local.knightUsed,
             },
+            largestArmy,
+            longestRoad,
         })
     );
 

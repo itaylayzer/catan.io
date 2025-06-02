@@ -7,10 +7,46 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
+import createServer from "@/server/server";
+import { useCatanStore } from "@/store/useCatanStore";
+import { ClassValue } from "clsx";
 import Head from "next/head";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 import { FaDoorOpen, FaKey } from "react-icons/fa";
 
+const inputClassName: string = "border-0 border-b rounded-none  ";
+
 export default function HomePage() {
+    const router = useRouter();
+    const { set } = useCatanStore();
+
+    const [name, setName] = useState("");
+    const [code, setCode] = useState("");
+
+    const updateName = () =>
+        set((old) => ({
+            local: {
+                ...old.local,
+                name,
+            },
+        }));
+
+    const join = () => {
+        updateName();
+
+        router.push(`/lobby/${code}/`);
+    };
+    const host = () => {
+        updateName();
+
+        createServer(async ({ code: serverCode }) => {
+            router.push(`/lobby/${serverCode}/`);
+        });
+    };
+
+    useEffect(() => {}, [name]);
+
     return (
         <>
             <Head>
@@ -38,15 +74,23 @@ export default function HomePage() {
                                 variant="link"
                                 className="cursor-pointer text-xl"
                             >
-                                <FaDoorOpen /> host
+                                <FaDoorOpen /> Host
                             </Button>
                         </PopoverTrigger>
-                        <PopoverContent>
+                        <PopoverContent className="border-0">
                             <div className="flex flex-col gap-3">
-                                <Input placeholder="enter name"></Input>
+                                <Input
+                                    className={inputClassName}
+                                    onInput={({ currentTarget: { value } }) =>
+                                        setName(value)
+                                    }
+                                    defaultValue={name}
+                                    placeholder="Enter Name"
+                                ></Input>
                                 <div className="flex justify-end">
                                     <Button
-                                        variant="outline"
+                                        onClick={host}
+                                        variant="link"
                                         className="cursor-pointer"
                                     >
                                         <FaDoorOpen />
@@ -62,16 +106,31 @@ export default function HomePage() {
                                 variant="link"
                                 className="cursor-pointer text-xl"
                             >
-                                <FaKey /> join
+                                <FaKey /> Join
                             </Button>
                         </PopoverTrigger>
-                        <PopoverContent>
+                        <PopoverContent className="border-0">
                             <div className="flex flex-col gap-3">
-                                <Input placeholder="enter name"></Input>
-                                <Input placeholder="enter code"></Input>
+                                <Input
+                                    className={inputClassName}
+                                    onInput={({ currentTarget: { value } }) =>
+                                        setName(value)
+                                    }
+                                    defaultValue={name}
+                                    placeholder="Enter Name"
+                                ></Input>
+                                <Input
+                                    className={inputClassName}
+                                    onInput={({ currentTarget: { value } }) =>
+                                        setCode(value)
+                                    }
+                                    defaultValue={code}
+                                    placeholder="Enter Code"
+                                ></Input>
                                 <div className="flex justify-end">
                                     <Button
-                                        variant="outline"
+                                        onClick={join}
+                                        variant="link"
                                         className="cursor-pointer"
                                     >
                                         <FaKey /> Join

@@ -90,14 +90,14 @@ const defaultValue: CatanData = {
     onlines: new Map(),
     local: {
         knightUsed: 0,
-        materials: MaterialsStarter as MaterialList,
-        devcards: DevcardsStarter as MaterialList,
+        materials: [...MaterialsStarter] as MaterialList,
+        devcards: [...DevcardsStarter] as MaterialList,
         roads: [],
         cities: [],
         settlements: [],
         victoryPoints: 0,
         color: 0,
-        name: "shani",
+        name: "",
         amounts: {
             city: 4,
             road: 15,
