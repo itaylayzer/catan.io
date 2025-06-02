@@ -143,6 +143,7 @@ export function handleSocket(
                     }));
 
                     get().ui.events.once("picked area", (index) => {
+                        get().ui.events.emit('dock 7 free');
                         socket.emit(ServerCodes.MOVE_ROBBER, {
                             areaOffset: index,
                             useDevcard: false,

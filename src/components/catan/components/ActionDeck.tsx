@@ -9,7 +9,7 @@ import { STORE_ICONS } from "@/config/constants/ui";
 import Store from "@/config/data/game/store.json";
 import { useCatanStore } from "@/store/useCatanStore";
 import VMath from "@/utils/VMath";
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import { FaStopwatch } from "react-icons/fa";
 import { FaHandshakeSimple } from "react-icons/fa6";
 import { RiDiceFill } from "react-icons/ri";
@@ -22,8 +22,21 @@ export function ActionDeck() {
         turnId,
         ui: { dicesState, events, mapState },
         local,
+        dices,
         set,
     } = useCatanStore();
+    const [sevenMode, setSevenMode] = useState(false);
+
+    const cancelPickingDisabled =
+        sevenMode || ["ready", "loading"].includes(mapState);
+
+    events.on("dock 7 free", () => {
+        setSevenMode(false);
+    });
+
+    events.on("7", () => {
+        setSevenMode(true);
+    });
 
     const ACTION_DECK_BUTTONS = [
         {
@@ -151,6 +164,20 @@ export function ActionDeck() {
             <MaterialNotify />
 
             <div className="relative z-30 flex flex-row-reverse border-1 rounded-2xl bg-accent gap-5 px-4 pb-1 pt-2 scale-110 items-center justify-around">
+                <div className="absolute -top-[32px]">
+                    <Button
+                        variant="link"
+                        className="cursor-pointer disabled:pointer-events-none disabled:opacity-0 opacity-50 hover:opacity-80 transition-opacity"
+                        disabled={cancelPickingDisabled}
+                        onClick={() => {
+                            set((old) => ({
+                                ui: { ...old.ui, mapState: "ready" },
+                            }));
+                        }}
+                    >
+                        cancel picking
+                    </Button>
+                </div>
                 {ACTION_DECK_BUTTONS.map(({ header, icon, count }, index) => {
                     return parents[index](
                         <Tooltip key={header}>
