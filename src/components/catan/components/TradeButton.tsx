@@ -13,6 +13,7 @@ import { ReactNode, useRef, useState } from "react";
 import { BiTransfer } from "react-icons/bi";
 import { FaAngleLeft, FaHandshakeSimple } from "react-icons/fa6";
 import { convertions } from "../map/configs";
+import SpinnerCircleDemo from "@/components/customized/spinner/spinner-02";
 
 function RenderMaterial(matIndex: number, matCount: number) {
     try {
@@ -216,7 +217,7 @@ export function TradeButton(): {
                     Trades
                 </h1>
                 {trades === undefined ? (
-                    <p> TODO: loading icon</p>
+                    <SpinnerCircleDemo />
                 ) : (
                     <StateCarosul trades={trades!} />
                 )}

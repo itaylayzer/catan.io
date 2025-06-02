@@ -23,6 +23,7 @@ import {
 } from "@/config/constants/ui";
 import { MdCircle } from "react-icons/md";
 import { FaShip } from "react-icons/fa6";
+import SpinnerCircleDemo from "@/components/customized/spinner/spinner-02";
 
 class Catan2D extends Component<
     {},
@@ -118,7 +119,12 @@ class Catan2D extends Component<
             this.state;
         const { roads, settlements, cities } = sets;
 
-        if (mapState === "loading" || harbors.length === 0) return null;
+        if (mapState === "loading" || harbors.length === 0)
+            return (
+                <div className="h-100 flex justify-center items-center">
+                    <SpinnerCircleDemo />
+                </div>
+            );
         console.log("mapState", mapState);
         return (
             <div
@@ -339,7 +345,6 @@ class Catan2D extends Component<
 
                             {Harbors.map(({ x, y }: any, index: number) => {
                                 const materialIndex = harbors[index];
-                                if (materialIndex === undefined) return null;
 
                                 const { icon, name } =
                                     HARBOR_ICONS[materialIndex];
