@@ -194,14 +194,14 @@ export default function createServer(onOpen?: (server: Server) => void) {
                 }) => {
                     if (catan.act_moveRobber(local!, areaOffset, useDevcard)) {
                         if (useDevcard) {
+                            if (catan.updateLargestArmy()) {
+                                achivementsUpdate();
+                            }
+
                             deckUpdate({
                                 devcards: local!.devcards,
                                 knightUsed: local!.knightUsed,
                             });
-
-                            if (catan.updateLargestArmy()) {
-                                achivementsUpdate();
-                            }
                         }
 
                         catan.sockets.emit(ClientCodes.MOVE_ROBBER, areaOffset);
