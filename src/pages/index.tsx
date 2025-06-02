@@ -7,11 +7,15 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
+import Head from "next/head";
 import { FaDoorOpen, FaKey } from "react-icons/fa";
 
 export default function HomePage() {
     return (
         <>
+            <Head>
+                <title>Catan.io</title>
+            </Head>
             <Button
                 variant="link"
                 onClick={() => {
