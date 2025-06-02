@@ -112,17 +112,19 @@ function StateCarosul({ trades }: { trades: Deal[] }) {
                 }
             >
                 <div className="flex gap-5">
-                    {offerArr.map((count, index) => (
-                        <div
-                            className="flex gap-2 hover:scale-90 transition-[opacity,scale] hover:opacity-75 cursor-pointer"
-                            onClick={() => {
-                                setOffer(index);
-                            }}
-                        >
-                            {" "}
-                            {RenderMaterial(index, count)}{" "}
-                        </div>
-                    ))}
+                    {offerArr.map((count, index) =>
+                        count === 0 ? null : (
+                            <div
+                                className="flex gap-2 hover:scale-90 transition-[opacity,scale] hover:opacity-75 cursor-pointer"
+                                onClick={() => {
+                                    setOffer(index);
+                                }}
+                            >
+                                {" "}
+                                {RenderMaterial(index, count)}{" "}
+                            </div>
+                        )
+                    )}
                 </div>
                 <div className="flex flex-col items-center gap-5">
                     {dealArr.map((count) => (
