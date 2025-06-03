@@ -34,11 +34,9 @@ jobs:
 
             - name: Write config.ts from secret
               run: |
-                  echo "${{ secrets.CONFIG_TS }}" | base64 --decode > ./src/config.ts
-              run: |
-                echo "$CONFIG_TS" | base64 --decode > ./src/config.ts
+                  echo "$CONFIG_TS" | base64 --decode > ./src/config.ts
               env:
-                CONFIG_TS: ${{ vars.CONFIG_TS }}
+                  CONFIG_TS: ${{ vars.CONFIG_TS }}
 
             - name: Detect package manager
               id: detect-package-manager
