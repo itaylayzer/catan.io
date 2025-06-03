@@ -5,12 +5,12 @@
     "scripts": {
         "dev": "concurrently --kill-others-on-fail \"bunx peer --port 9000\" \"next dev --turbo\"",
         "build": "next build",
-        "export": "NEXT_EXPORT=1 next build && cp _config.yaml docs/_config.yaml",
         "start": "next start",
         "lint": "next lint",
         "peer": "bunx peer --port 9000",
         "generate": "bun src/scripts/ui/settlements.ts > src/config/data/ui/settlements.json; bun src/scripts/ui/roads.ts > src/config/data/ui/roads.json",
-        "generate:harbors": "bun /home/itay/coding/js/next/catan.io/src/scripts/ui/harbors.ts > src/config/data/ui/harbors.json"
+        "generate:harbors": "bun /home/itay/coding/js/next/catan.io/src/scripts/ui/harbors.ts > src/config/data/ui/harbors.json",
+        "secret": "base64 src/config.ts"
     },
     "dependencies": {
         "@radix-ui/react-dialog": "^1.1.14",
