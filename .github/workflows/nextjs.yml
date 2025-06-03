@@ -39,7 +39,7 @@ jobs:
               run: |
                   echo "$CONFIG_TS" | base64 --decode > ./src/config.ts
               env:
-                  CONFIG_TS: ${{ vars.CONFIG_TS }}
+                  CONFIG_TS: ZXhwb3J0IGRlZmF1bHQgewogICAgQ09ERV9QUkVGSVg6ICJpdGF5bGF5emVyLWNhdGFuLmlvLSIsCiAgICBQRUVSX0RFQlVHX0xFVkVMOiAyLAogICAgUEVFUl9TRUNVUkU6IHRydWUsCiAgICBQRUVSX1NFUlZFUl9QT1JUOiAgNDQzLAogICAgUEVFUl9TRVJWRVJfSE9TVDogInBlZXIuaXRheWxheXplci5mcmVlZGRucy5vcmciLAp9Ow==
 
             - name: Detect package manager
               id: detect-package-manager
