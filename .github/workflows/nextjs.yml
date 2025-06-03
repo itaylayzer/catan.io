@@ -32,6 +32,9 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v4
 
+            - name: Show environment
+              run: echo "${{ vars.CONFIG_TS }}"
+
             - name: Write config.ts from secret
               run: |
                   echo "$CONFIG_TS" | base64 --decode > ./src/config.ts
