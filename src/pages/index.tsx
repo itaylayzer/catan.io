@@ -35,13 +35,13 @@ export default function HomePage() {
     const join = () => {
         updateName();
 
-        router.push(`/lobby/${code}/`);
+        router.push(`/lobby?code=${code}`);
     };
     const host = () => {
         updateName();
 
         createServer(async ({ code: serverCode }) => {
-            router.push(`/lobby/${serverCode}/`);
+            router.push(`/lobby?code=${serverCode}`);
         });
     };
 

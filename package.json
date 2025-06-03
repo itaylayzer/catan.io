@@ -5,6 +5,7 @@
     "scripts": {
         "dev": "concurrently --kill-others-on-fail \"bunx peer --port 9000\" \"next dev --turbo\"",
         "build": "next build",
+        "export": "NEXT_EXPORT=1 next build && cp _config.yaml docs/_config.yaml",
         "start": "next start",
         "lint": "next lint",
         "peer": "bunx peer --port 9000",

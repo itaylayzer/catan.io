@@ -5,12 +5,13 @@ import { io } from "@/server/sockets";
 import { useCatanStore } from "@/store/useCatanStore";
 import { TranslateCode } from "@/utils/code";
 import Head from "next/head";
+import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 export default function LobbyPage() {
     const router = useRouter();
-    const { code } = router.query as Record<string, string>;
+    const code = useSearchParams().get("code")!;
 
     const {
         client: { socket },
