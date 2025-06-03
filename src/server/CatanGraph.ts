@@ -13,11 +13,14 @@ import VMath from "@/utils/VMath";
 import Store from "@/config/data/game/store.json";
 import { randIndexBasedValues } from "@/utils/randIndexBasedValues";
 import { Deal } from "@/types/deal";
+import { ListSet } from "@/structs/list-set";
 const MIDDLE_INDEX = 9;
 
 export class Catan {
     private vertecies: Vertex[];
+
     public players: Player[];
+    public availableIds: ListSet<number>;
     private robberArea: number;
     public bank: { materials: number[]; devcards: number[] };
     private turnId: number;
@@ -42,6 +45,9 @@ export class Catan {
             devcards: [14, 5, 2, 2, 2],
             materials: [19, 19, 19, 19, 19],
         };
+
+        this.availableIds = new ListSet([0, 1, 2, 3], (a, b) => b - a);
+
         this.turnId = 0;
         this.robberArea = MIDDLE_INDEX;
         this.players = [];
@@ -137,11 +143,30 @@ export class Catan {
         return this.players.length;
     }
 
-    public playerJoin(name: string, socket: Socket): Player {
-        const player = new Player(this.playerCount, name, socket, this);
+    public playerJoin(name: string, socket: Socket): Player | null {
+        const id = this.availableIds.pop();
+        if (id === undefined) return null;
+
+        console.log("server.playerJoin.id.pop", id);
+
+        const player = new Player(id, name, socket, this);
         this.players.push(player);
 
         return player;
+    }
+
+    public disconnect(player: Player) {
+        try {
+            console.log("server.catan.disconnect before", this.players);
+            const { id } = player;
+            console.log("server.catan.disconnect id", id);
+            this.availableIds.add(id);
+
+            this.players = this.players.filter((p) => p.id !== id);
+            console.log("server.catan.disconnect after", this.players);
+        } catch (err) {
+            console.error("server.catan.disconnect error", err);
+        }
     }
 
     /////////////////// EXPORT /////////////////

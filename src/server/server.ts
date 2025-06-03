@@ -37,7 +37,28 @@ export default function createServer(onOpen?: (server: Server) => void) {
             });
 
             socket.on(ServerCodes.INIT, (name: string) => {
+                if (lobby.ready) {
+                    socket.emit(ClientCodes.STATUS, 2);
+
+                    return socket.disconnect();
+                }
                 local = catan.playerJoin(name, socket);
+
+                if (local === null) {
+                    socket.emit(
+                        ClientCodes.STATUS,
+                        catan.playerCount < 4 ? 0 : 1
+                    );
+
+                    return socket.disconnect();
+                }
+
+                lobby.join(socket);
+
+                console.log(
+                    "disconnect.server.init.size",
+                    catan.players.length
+                );
 
                 socket.emit(ClientCodes.INIT, {
                     ...catan.json(),
@@ -62,10 +83,6 @@ export default function createServer(onOpen?: (server: Server) => void) {
                 });
             });
 
-            socket.on(ServerCodes.STATUS, () => {
-                socket.emit(ClientCodes.STATUS, catan.playerCount < 4);
-            });
-
             socket.on(ServerCodes.ROLL, () => {
                 lobby.sockets.emit(ClientCodes.TURN_DICE, catan.act_rollDice());
             });
@@ -83,6 +100,17 @@ export default function createServer(onOpen?: (server: Server) => void) {
                     ClientCodes.TURN_SWITCH,
                     catan.act_stopTurn()
                 );
+            });
+
+            socket.on(ServerCodes.READY, () => {
+                lobby.sockets.emit(ClientCodes.READY, [
+                    local!.id,
+                    lobby.toggleReady(socket),
+                ]);
+
+                if (lobby.ready) {
+                    lobby.sockets.emit(ClientCodes.START_GAME);
+                }
             });
 
             const deckUpdate = (
@@ -327,10 +355,13 @@ export default function createServer(onOpen?: (server: Server) => void) {
                 }
             );
             socket.on("disconnect", () => {
+                if (!lobby.has(socket)) return;
+
                 if (lobby.ready) {
                     lobby.sockets.emitExcept(socket, ClientCodes.STOP);
                     server.stop();
                 } else {
+                    console.log("server.socket.disconnect");
                     lobby.sockets.emitExcept(
                         socket,
                         ClientCodes.DISCONNECTED,
@@ -338,14 +369,13 @@ export default function createServer(onOpen?: (server: Server) => void) {
                     );
 
                     lobby.disconnect(socket);
+                    local && catan.disconnect(local);
 
                     if (lobby.size <= 0) {
                         server.stop();
                     }
                 }
             });
-
-            lobby.join(socket);
         }
     );
 }

@@ -19,7 +19,18 @@ const inputClassName: string = "border-0 border-b rounded-none  ";
 
 export default function HomePage() {
     const router = useRouter();
-    const { set } = useCatanStore();
+    const {
+        set,
+        resetToDefaults,
+        client: { socket },
+    } = useCatanStore();
+
+    useEffect(() => {
+        if (socket) {
+            socket.disconnect();
+        }
+        resetToDefaults();
+    }, []);
 
     const [name, setName] = useState("");
     const [code, setCode] = useState("");

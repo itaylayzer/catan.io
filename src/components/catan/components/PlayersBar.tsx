@@ -1,8 +1,8 @@
-import { useCatanStore } from "@/store/useCatanStore";
-import { OnlinePlayerCard } from "./OnlinePlayerCard";
-import { ReactNode, useEffect } from "react";
 import { useRender } from "@/hooks/useRender";
+import { useCatanStore } from "@/store/useCatanStore";
 import VMath from "@/utils/VMath";
+import { ReactNode, useEffect } from "react";
+import { OnlinePlayerCard } from "./OnlinePlayerCard";
 
 export default function PlayersBar() {
     const {
@@ -42,6 +42,7 @@ export default function PlayersBar() {
                 settlements: [],
                 maxRoad: local.maxRoad,
                 knightUsed: local.knightUsed,
+                ready: local!.ready,
             },
             largestArmy,
             longestRoad,

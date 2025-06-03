@@ -72,7 +72,7 @@ export function WinState() {
     );
 
     useEffect(() => {
-        setHidden(false);
+        setHidden(true);
         StateOverlay.instance?.hide(key);
     }, []);
 

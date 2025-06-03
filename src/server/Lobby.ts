@@ -22,9 +22,16 @@ export class Lobby {
         this.ready = Array.from(this.readies.values()).every(
             (ready) => ready === true
         );
+
+        return !old;
+    }
+
+    public has(socket: Socket) {
+        return this.clients.has(socket);
     }
 
     public disconnect(socket: Socket) {
+        console.log("server.lobby.disconnect");
         this.readies.delete(socket);
         this.clients.delete(socket);
     }

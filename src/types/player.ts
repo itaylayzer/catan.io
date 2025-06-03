@@ -9,4 +9,5 @@ export interface Player {
     roads: [number, number][];
     maxRoad: number;
     knightUsed: number;
+    ready: boolean;
 }

@@ -28,8 +28,7 @@ export function handleSocket(
     const setTurnState = (state: UITurnState) => {
         set((old) => ({
             ui: {
-                events: old.ui.events,
-                mapState: old.ui.mapState,
+                ...old.ui,
                 dicesState: state,
             },
         }));
@@ -105,6 +104,10 @@ export function handleSocket(
             });
 
             const { onlines } = get();
+            console.log("onlines.clear before", onlines);
+            onlines.forEach((_, key) => onlines.delete(key));
+            console.log("onlines.clear after", onlines);
+
             for (const xplayer of xplayers) {
                 const { devcards, id, materials, name } = xplayer;
 
@@ -121,11 +124,63 @@ export function handleSocket(
                     roads: [],
                     settlements: [],
                     victoryPoints: 0,
+                    ready: false,
                 });
             }
             set({ onlines: new Map(onlines) });
         }
     );
+
+    socket.on(
+        ClientCodes.READY,
+        ([playerId, readyState]: [number, boolean]) => {
+            if (playerId === get().local.color) {
+                set((old) => ({
+                    local: {
+                        ...old.local,
+                        ready: readyState,
+                    },
+                }));
+            } else {
+                const { onlines } = get();
+
+                const xplayer = onlines.get(playerId);
+                if (xplayer) {
+                    xplayer.ready = readyState;
+
+                    onlines.set(playerId, xplayer);
+
+                    set({ onlines: new Map(onlines) });
+                }
+            }
+        }
+    );
+
+    socket.on(ClientCodes.DISCONNECTED, (playerId) => {
+        const { onlines } = get();
+
+        if (onlines.delete(playerId)) {
+            set({ onlines: new Map(onlines) });
+        }
+    });
+
+    socket.on(ClientCodes.STOP, () => {
+        get().ui.events.emit("stop midgame");
+    });
+
+    socket.on(ClientCodes.STATUS, (code: number) => {
+        const message = [
+            "unkown error",
+            "max players amount has reached his limit",
+            "game has started",
+        ][code];
+
+        get().ui.events.emit("status", message);
+    });
+
+    socket.on(ClientCodes.START_GAME, () => {
+        set((old) => ({ ui: { ...old.ui, gameStarted: true } }));
+    });
 
     socket.on(
         ClientCodes.PLAYER_JOIN,
@@ -150,6 +205,7 @@ export function handleSocket(
                 roads: [],
                 settlements: [],
                 victoryPoints: 0,
+                ready: false,
             });
 
             set({ onlines: new Map(onlines) });

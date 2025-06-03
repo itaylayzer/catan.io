@@ -89,15 +89,22 @@ export class Socket {
         this.events.set(event_name, handler);
     }
     public emit(event_name: string, args?: any) {
-        this.client.send(
-            encrypt(
-                JSON.stringify({ event: event_name, args: args ?? undefined })
-            )
-        );
+        try {
+            this.client.send(
+                encrypt(
+                    JSON.stringify({
+                        event: event_name,
+                        args: args ?? undefined,
+                    })
+                )
+            );
+        } catch {}
     }
     public disconnect() {
         this.emit("disconnect");
-        this.client.close();
+        setTimeout(() => {
+            this.client.close();
+        }, 500);
     }
 }
 
@@ -144,7 +151,7 @@ export class Server {
                 onf?.(socket, this);
             });
         });
-    }
+        }
     public set OnLogs(v: (...data: any[]) => void) {
         this.logFunction = v;
     }

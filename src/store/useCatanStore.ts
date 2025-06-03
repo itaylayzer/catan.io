@@ -47,6 +47,7 @@ type CatanData = {
     turnId: number;
     dices: undefined | [number, number];
     ui: {
+        gameStarted: boolean;
         mapState: UIMapState;
         dicesState: UITurnState;
         events: EventDispatcher;
@@ -72,6 +73,7 @@ type CatanActions = {
         "settlements" | "roads",
         Map<number, number>
     > & { cities: Set<number> };
+    resetToDefaults: () => void;
 };
 
 const defaultValue: CatanData = {
@@ -104,10 +106,12 @@ const defaultValue: CatanData = {
             settlement: 5,
         },
         maxRoad: 0,
+        ready: false,
     },
     turnId: 0,
     dices: undefined,
     ui: {
+        gameStarted: false,
         mapState: "picking area",
         dicesState: "ready",
         events: new EventDispatcher(),
@@ -144,5 +148,20 @@ export const useCatanStore = create<CatanStore>((set, get) => ({
         });
 
         return { roads, settlements, cities };
+    },
+    resetToDefaults() {
+        set((old) => ({
+            ...defaultValue,
+            onlines: new Map(),
+            materials: new Map(),
+            bank: {
+                devcards: [0, 0, 0, 0, 0],
+                materials: [0, 0, 0, 0, 0],
+            },
+            local: {
+                ...defaultValue.local,
+                name: old.local.name,
+            },
+        }));
     },
 }));
