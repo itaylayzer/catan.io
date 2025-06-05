@@ -11,6 +11,7 @@ export default function PlayersBar() {
         largestArmy,
         longestRoad,
         ui: { events },
+        turnId
     } = useCatanStore();
 
     const render = useRender();
@@ -25,7 +26,7 @@ export default function PlayersBar() {
     const list: ReactNode[] = [];
     onlines.forEach((player) =>
         list.push(
-            OnlinePlayerCard({ player, largestArmy, longestRoad }),
+            OnlinePlayerCard({ player, largestArmy, longestRoad, turnId }),
             <hr />
         )
     );
@@ -46,6 +47,7 @@ export default function PlayersBar() {
             },
             largestArmy,
             longestRoad,
+            turnId
         })
     );
 

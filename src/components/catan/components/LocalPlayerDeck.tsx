@@ -43,6 +43,7 @@ export function LocalPlayerDeck({}: {}) {
         ui: { events, dicesState, mapState },
         set,
         client: { socket },
+        firstRounds,
     } = useCatanStore();
 
     const render = useRender();
@@ -133,9 +134,16 @@ export function LocalPlayerDeck({}: {}) {
     ];
 
     return (
-        <div>
+        <div
+            className={cn(
+                "transition-[opacity,scale] duration-1000",
+                firstRounds && "opacity-0 scale-80 pointer-events-none"
+            )}
+        >
             <div className="relative flex scale-90 gap-2 px-7 pb-1 pt-3 items-center justify-around">
                 {combine.map((value, index) => {
+                    if (LOCAL_DECK_MATERIALS[index] === undefined) return null;
+
                     const isDevCard = index > 4;
                     const { name, icon } = LOCAL_DECK_MATERIALS[index];
 
@@ -176,8 +184,8 @@ export function LocalPlayerDeck({}: {}) {
                               height: 30,
                           };
 
-                    const rightIcon = LOCAL_DECK_MATERIALS[index].icon(setting);
-                    const cardIcon = LOCAL_DECK_MATERIALS[index].icon({
+                    const rightIcon = icon(setting);
+                    const cardIcon = icon({
                         ...cardSetting,
                         style: {
                             filter: `drop-shadow(0px 0px 20px ${color})`,

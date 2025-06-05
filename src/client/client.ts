@@ -317,10 +317,71 @@ export function handleSocket(
         }));
     });
 
-    socket.on(ClientCodes.TURN_SWITCH, (turnId: number) => {
-        set({ turnId });
-        setTurnState(get().turnId === get().local.color ? "ready" : "others");
-    });
+    socket.on(
+        ClientCodes.TURN_SWITCH,
+        ({ turnId, round }: { turnId: number; round: number }) => {
+            console.log("client.turn turn=", turnId, "round=", round);
+            const myTurn = turnId === get().local.color;
+
+            if (round === 2) {
+                set({ firstRounds: false });
+            }
+
+            if (myTurn) {
+                switch (round) {
+                    case 0:
+                    case 1: {
+                        const { events } = get().ui;
+
+                        set((old) => ({
+                            ui: { ...old.ui, mapState: "picking vertex" },
+                        }));
+
+                        // pick vertex
+                        events.once("picked vertex", (index) => {
+                            socket?.emit(ServerCodes.BUY_SETTLEMENT, index);
+
+                            set((old) => ({
+                                ui: { ...old.ui, mapState: "ready" },
+                            }));
+
+                            setTimeout(() => {
+                                set((old) => ({
+                                    ui: { ...old.ui, mapState: "picking edge" },
+                                }));
+
+                                // pick edge (TODO: that is near that vertex!)
+                                events.once(
+                                    "picked edge",
+                                    (from: number, to: number) => {
+                                        socket.emit(ServerCodes.BUY_ROAD, [
+                                            from,
+                                            to,
+                                        ]);
+
+                                        set((old) => ({
+                                            ui: {
+                                                ...old.ui,
+                                                mapState: "ready",
+                                            },
+                                        }));
+
+                                        setTimeout(() => {
+                                            socket.emit(ServerCodes.STOP_TURN);
+                                        }, 100);
+                                    }
+                                );
+                            }, 100);
+                        });
+                        break;
+                    }
+                }
+            }
+
+            set({ turnId });
+            setTurnState(turnId === get().local.color ? "ready" : "others");
+        }
+    );
 
     socket.on(
         ClientCodes.PLAYER_UPDATE,

@@ -110,6 +110,11 @@ export default function createServer(onOpen?: (server: Server) => void) {
 
                 if (lobby.ready) {
                     lobby.sockets.emit(ClientCodes.START_GAME);
+
+                    lobby.sockets.emit(
+                        ClientCodes.TURN_SWITCH,
+                        catan.act_stopTurn()
+                    );
                 }
             });
 

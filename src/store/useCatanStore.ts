@@ -52,6 +52,7 @@ type CatanData = {
         dicesState: UITurnState;
         events: EventDispatcher;
     };
+    firstRounds: boolean;
 };
 
 type CatanActions = {
@@ -116,6 +117,7 @@ const defaultValue: CatanData = {
         dicesState: "ready",
         events: new EventDispatcher(),
     },
+    firstRounds: true,
 };
 
 export type CatanStore = CatanData & CatanActions;
