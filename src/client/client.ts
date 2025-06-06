@@ -206,6 +206,21 @@ export function handleSocket(
         }
     );
 
+    socket.on(ClientCodes.KNIGHT_PICKS, (pickables: number[]) => {
+        get().ui.events.emit("knight pick", pickables);
+
+        get().ui.events.once("knight picked", (stealId: number) => {
+            socket.emit(ServerCodes.KNIGHT_PICK, stealId);
+        });
+    });
+
+    socket.on(
+        ClientCodes.KNIGHT_FROM,
+        ({ from, mat }: { from: number; mat: number }) => {
+            get().ui.events.emit("knight steal", from, mat);
+        }
+    );
+
     socket.on(
         ClientCodes.TURN_DICE,
         ({

@@ -17,6 +17,7 @@ export enum ServerCodes {
     REQUEST_TRADES = "rt",
     APPLY_TRADE = "at",
     READY = "rea",
+    KNIGHT_PICK = "kp",
 }
 // Server to Client
 export enum ClientCodes {
@@ -39,4 +40,6 @@ export enum ClientCodes {
     GET_TRADES = "gt",
     READY = "rea",
     START_GAME = "sg",
+    KNIGHT_FROM = "kf", // TODO:
+    KNIGHT_PICKS = "kp",
 }

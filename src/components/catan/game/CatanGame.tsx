@@ -1,4 +1,3 @@
-
 import { ActionDeck } from "@/components/catan/components/ActionDeck";
 import { BankCard } from "@/components/catan/components/BankCard";
 import { Chat } from "@/components/catan/components/Chat";
@@ -14,6 +13,8 @@ import { TwoYearOfPlentyState } from "@/components/catan/states/TwoYearOfPlentyS
 import { WinState } from "@/components/catan/states/WinState";
 import { Button } from "@/components/ui/button";
 import { MdStore } from "react-icons/md";
+import { KnightPickPlayer } from "../states/KnightPickPlayer";
+import { KnightSteal } from "../states/KnightSteal";
 import { StopMidgameState } from "../states/StopMidgameState";
 
 export default function CatanGame() {
@@ -23,6 +24,7 @@ export default function CatanGame() {
             <MonopolyStateShow />
             <WinState />
             <StopMidgameState />
+            <KnightSteal />
 
             <div className="absolute pt-32 h-full">
                 <div className="flex flex-col gap-3 px-5 w-[333px] h-full">
@@ -37,6 +39,7 @@ export default function CatanGame() {
                         <Dices2D />
                     </div>
                     <SevenMatsDropState />
+                    <KnightPickPlayer />
                     <TwoYearOfPlentyState />
                     <MonopolyState />
                 </div>
