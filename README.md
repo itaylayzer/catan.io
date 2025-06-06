@@ -3,5 +3,4 @@
 TODO:
 
 -   players trade
--   validation on settlements & roads placing
 -   knight: get a material from an area nearby player
