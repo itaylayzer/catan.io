@@ -27,7 +27,3 @@ npx peer --port 9000
 
 -   players trade: global offer
 -   players trade: private offer
-
-```
-
-```
