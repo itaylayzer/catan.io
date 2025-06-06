@@ -482,7 +482,6 @@ export class Catan {
         player.knightUsed += +useDevcard;
         this.robberArea = areaOffset;
 
-        // TODO: take 1 random card from a player that is near the robbed area, only 1 player he choses if theres multiple players around the same area
         const picksSet = new Set<number>();
 
         this.vertecies[areaOffset].edges.forEach(({ vertex }) => {
