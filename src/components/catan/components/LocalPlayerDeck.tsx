@@ -194,7 +194,12 @@ export function LocalPlayerDeck({}: {}) {
 
                     const element = (
                         <button
-                            disabled={disabled[index] || value === 0}
+                            disabled={
+                                disabled[index] ||
+                                value === 0 ||
+                                value === undefined ||
+                                value === null
+                            }
                             onClick={() => {
                                 actions[index - 5]();
                             }}
@@ -205,7 +210,7 @@ export function LocalPlayerDeck({}: {}) {
                             )}
                         >
                             <p className="text-2xl w-5 -translate-x-4 translate-y-2 font-[Rubik] font-medium scale-70">
-                                {value}
+                                {value ?? 0}
                             </p>
                             {rightIcon}
                         </button>
