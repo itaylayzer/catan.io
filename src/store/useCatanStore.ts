@@ -6,6 +6,8 @@ import { EventDispatcher } from "@/utils/EventDispatcher";
 import { create } from "zustand";
 import MaterialsStarter from "@/config/data/starter/materials.json";
 import DevcardsStarter from "@/config/data/starter/devcards.json";
+import Settlements from "@/config/data/game/settlements.json";
+import { AREAS, VERTECIES } from "@/config/constants/game";
 
 export type UIMapState =
     | "loading"
@@ -52,6 +54,8 @@ type CatanData = {
         dicesState: UITurnState;
         events: EventDispatcher;
     };
+    secondSettlement?: number | undefined;
+
     firstRounds: boolean;
 };
 
@@ -74,6 +78,7 @@ type CatanActions = {
         "settlements" | "roads",
         Map<number, number>
     > & { cities: Set<number> };
+    allowedPicks: () => Set<number>;
     resetToDefaults: () => void;
 };
 
@@ -165,5 +170,175 @@ export const useCatanStore = create<CatanStore>((set, get) => ({
                 name: old.local.name,
             },
         }));
+    },
+    allowedPicks() {
+        const {
+            secondSettlement,
+            ui: { mapState },
+            local,
+            firstRounds,
+            prepareMapSets,
+        } = get();
+
+        const { roads, settlements } = prepareMapSets();
+
+        const allowed = new Set<number>();
+
+        const hashRoad = (from: number, to: number) => {
+            const min = Math.min(from, to);
+            const max = Math.max(from, to);
+
+            return min * 1000 + max;
+        };
+
+        const addRoad = (from: number, to: number) => {
+            allowed.add(hashRoad(from, to));
+        };
+
+        const deleteNearbyRoads = () => {
+            // Delete nearby roads connection to online settlements for 2 spaces rule
+            settlements.forEach((color, settlementIndex) => {
+                if (color !== local.color) {
+                    const settlementId = settlementIndex + AREAS;
+
+                    allowed.forEach((road) => {
+                        const to = road % 1000;
+                        const from = Math.floor(road / 1000);
+
+                        if (settlementId === to || settlementId === from) {
+                            allowed.delete(road);
+                        }
+                    });
+                }
+            });
+
+            roads.forEach((color, onlineRoad) => {
+                if (color !== local.color) {
+                    allowed.forEach((road) => {
+                        const to = road % 1000;
+                        const from = Math.floor(road / 1000);
+
+                        const onlineTo = onlineRoad % 100;
+                        const onlineFrom = Math.floor(onlineRoad / 1000);
+
+                        if (
+                            onlineTo === to ||
+                            onlineFrom === from ||
+                            onlineTo === from ||
+                            onlineFrom === to
+                        ) {
+                            allowed.delete(road);
+                        }
+                    });
+                }
+            });
+        };
+
+        if (secondSettlement) {
+            const connections = Settlements.filter(
+                ({ from }) => from === secondSettlement + AREAS
+            );
+
+            connections.forEach(({ from, to }) => addRoad(from, to));
+
+            deleteNearbyRoads();
+
+            return allowed;
+        }
+
+        if (firstRounds && mapState.includes("vertex")) {
+            console.log("picks:", "first rounds and vertex");
+
+            // Add all settlements
+            for (let index = 0; index < VERTECIES; index++) {
+                allowed.add(index);
+            }
+
+            settlements.forEach((_, key) => {
+                const hash = key + AREAS;
+
+                // Delete current settlement cause its bought
+                allowed.delete(key);
+
+                // Delete nearby settlements for 2 spaces rule
+                Settlements.filter(({ from }) => from === hash).forEach(
+                    ({ to }) => {
+                        allowed.delete(to - AREAS);
+                    }
+                );
+            });
+
+            return allowed;
+        }
+
+        if (mapState.includes("edge") && firstRounds) {
+            const connections = Settlements.filter(
+                ({ from }) => from === local.settlements[0] + AREAS
+            );
+
+            connections.forEach(({ from, to }) => addRoad(from, to));
+
+            deleteNearbyRoads();
+
+            return allowed;
+        }
+
+        if (mapState.includes("edge")) {
+            for (const { from, to } of Settlements.filter(({ from }) =>
+                local.roads.some((road) => road.includes(from))
+            )) {
+                addRoad(from, to);
+            }
+            for (const { from, to } of Settlements.filter(({ to }) =>
+                local.roads.some((road) => road.includes(to))
+            )) {
+                addRoad(from, to);
+            }
+
+            // Delete already bought roads
+            roads.forEach((roadHash) => {
+                allowed.has(roadHash) && allowed.delete(roadHash);
+            });
+
+            deleteNearbyRoads();
+
+            return allowed;
+        }
+
+        if (mapState.includes("vertex")) {
+            // Add all settlements
+            for (let index = 0; index < VERTECIES; index++) {
+                allowed.add(index);
+            }
+
+            settlements.forEach((_, key) => {
+                const hash = key + AREAS;
+
+                // Delete current settlement cause its bought
+                allowed.delete(key);
+
+                // Delete nearby settlements for 2 spaces rule
+                Settlements.filter(({ from }) => from === hash).forEach(
+                    ({ to }) => {
+                        allowed.delete(to - AREAS);
+                    }
+                );
+            });
+
+            // Only leave those that have local roads connections
+            const connectedRoads = Array.from(allowed.values()).filter(
+                (settlementIndex) => {
+                    const settlementId = settlementIndex + AREAS;
+
+                    return local.roads.some((road) =>
+                        road.includes(settlementId)
+                    );
+                }
+            );
+
+            return new Set(connectedRoads);
+        }
+
+        return allowed;
     },
 }));

@@ -65,7 +65,6 @@ export function handleSocket(
                 devcards: number;
             }[];
         }) => {
-            console.log("client INIT id", id);
             const materialsMap = new Map(
                 materials.map(([index, { num, material }]) => {
                     return [
@@ -104,14 +103,10 @@ export function handleSocket(
             });
 
             const { onlines } = get();
-            console.log("onlines.clear before", onlines);
             onlines.forEach((_, key) => onlines.delete(key));
-            console.log("onlines.clear after", onlines);
 
             for (const xplayer of xplayers) {
                 const { devcards, id, materials, name } = xplayer;
-
-                console.log("client player INIT", xplayer);
 
                 onlines.set(id, {
                     devcards,
@@ -190,7 +185,6 @@ export function handleSocket(
             materials: number;
             devcards: number;
         }) => {
-            console.log("client player PLAYER_JOIN", xplayer);
             const { onlines } = get();
             const { devcards, id, materials, name } = xplayer;
 
@@ -301,8 +295,6 @@ export function handleSocket(
             id: number;
             players: { id: number; vp: number; vpdc: number }[];
         }) => {
-            console.log("winner.client");
-
             get().ui.events.emit("win", id, players);
         }
     );
@@ -341,6 +333,9 @@ export function handleSocket(
                         events.once("picked vertex", (index) => {
                             socket?.emit(ServerCodes.BUY_SETTLEMENT, index);
 
+                            if (round === 1) {
+                                set({ secondSettlement: index });
+                            }
                             set((old) => ({
                                 ui: { ...old.ui, mapState: "ready" },
                             }));
@@ -350,7 +345,7 @@ export function handleSocket(
                                     ui: { ...old.ui, mapState: "picking edge" },
                                 }));
 
-                                // pick edge (TODO: that is near that vertex!)
+                                // pick edge
                                 events.once(
                                     "picked edge",
                                     (from: number, to: number) => {
@@ -367,11 +362,15 @@ export function handleSocket(
                                         }));
 
                                         setTimeout(() => {
+                                            set({
+                                                secondSettlement: undefined,
+                                            });
+
                                             socket.emit(ServerCodes.STOP_TURN);
-                                        }, 100);
+                                        }, 50);
                                     }
                                 );
-                            }, 100);
+                            }, 50);
                         });
                         break;
                     }
