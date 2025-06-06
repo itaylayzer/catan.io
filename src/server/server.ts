@@ -169,7 +169,7 @@ export default function createServer(onOpen?: (server: Server) => void) {
 
             socket.on(ServerCodes.DROP_MATS, (mats: MaterialList) => {
                 const state = catan.dropMaterials(local!, mats);
-                
+
                 state && deckUpdate({});
             });
 
@@ -227,6 +227,24 @@ export default function createServer(onOpen?: (server: Server) => void) {
                 }
             });
 
+            const knightPick = ({ fromId, mat }: Record<string, number>) => {
+                deckUpdate({}, catan.players[fromId]);
+
+                catan.players[fromId].socket.emit(ClientCodes.KNIGHT_FROM, {
+                    from: local!.id,
+                    mat,
+                });
+
+                const addons = [0, 0, 0, 0, 0];
+                addons[mat] = 1;
+
+                socket.emit(ClientCodes.MATS_NOTIFICATION, [addons, empty]);
+            };
+
+            socket.on(ServerCodes.KNIGHT_PICK, (pickId: number) => {
+                knightPick(catan.knightTake(local!, pickId));
+            });
+
             socket.on(
                 ServerCodes.MOVE_ROBBER,
                 ({
@@ -236,7 +254,13 @@ export default function createServer(onOpen?: (server: Server) => void) {
                     areaOffset: number;
                     useDevcard: boolean;
                 }) => {
-                    if (catan.act_moveRobber(local!, areaOffset, useDevcard)) {
+                    const state = catan.act_moveRobber(
+                        local!,
+                        areaOffset,
+                        useDevcard
+                    );
+
+                    if (state !== false) {
                         if (useDevcard) {
                             if (catan.updateLargestArmy()) {
                                 achivementsUpdate();
@@ -249,6 +273,12 @@ export default function createServer(onOpen?: (server: Server) => void) {
                         }
 
                         lobby.sockets.emit(ClientCodes.MOVE_ROBBER, areaOffset);
+
+                        if (state.picks) {
+                            socket.emit(ClientCodes.KNIGHT_PICKS, state.picks);
+                        } else if (state.tooks) {
+                            knightPick(state.tooks);
+                        }
                     }
                 }
             );

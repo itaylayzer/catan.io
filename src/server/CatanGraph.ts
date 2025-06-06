@@ -456,12 +456,25 @@ export class Catan {
         return index;
     }
 
+    public knightTake(
+        player: Player,
+        fromId: number
+    ): { fromId: number; mat: number } {
+        const mat = randIndexBasedValues(this.players[fromId].materials);
+        if (mat === -1) return { fromId, mat };
+
+        player.materials[mat]++;
+        this.players[fromId].materials[mat]--;
+
+        return { fromId, mat };
+    }
+
     public act_moveRobber(
         player: Player,
         areaOffset: number,
         useDevcard: boolean
         // takeFromPlayerIndex
-    ): boolean {
+    ): false | { picks?: number[]; tooks?: { fromId: number; mat: number } } {
         // If moved by devcard and theres no enough knight devcards return false
         if (useDevcard && player.devcards[0] <= 0) return false;
 
@@ -470,8 +483,23 @@ export class Catan {
         this.robberArea = areaOffset;
 
         // TODO: take 1 random card from a player that is near the robbed area, only 1 player he choses if theres multiple players around the same area
+        const picksSet = new Set<number>();
 
-        return true;
+        this.vertecies[areaOffset].edges.forEach(({ vertex }) => {
+            if (vertex.color < MAX_PLAYERS && vertex.color !== player.id)
+                picksSet.add(vertex.color);
+        });
+
+        const picks = Array.from(picksSet.values());
+
+        if (picksSet.size === 0) return {};
+
+        if (picksSet.size === 1)
+            return {
+                tooks: this.knightTake(player, picks[0]),
+            };
+
+        return { picks };
     }
 
     public dropMaterials(player: Player, mats: MaterialList) {
