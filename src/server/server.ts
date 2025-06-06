@@ -386,8 +386,11 @@ export default function createServer(onOpen?: (server: Server) => void) {
                     VMath(from.materials).sameSize.add(mats);
                     VMath(local!.materials).sameSize.sub(mats);
 
+                    deckUpdate({});
+                    deckUpdate({}, from);
+
                     const acceptedAddons = mats.map(
-                        (value) => -Math.max(0, value)
+                        (value) => -Math.min(0, value)
                     );
                     socket.emit(ClientCodes.MATS_NOTIFICATION, [
                         acceptedAddons,
@@ -395,7 +398,7 @@ export default function createServer(onOpen?: (server: Server) => void) {
                     ]);
 
                     const offeredAddons = mats.map((value) =>
-                        Math.min(0, value)
+                        Math.max(0, value)
                     );
                     from.socket.emit(ClientCodes.MATS_NOTIFICATION, [
                         offeredAddons,

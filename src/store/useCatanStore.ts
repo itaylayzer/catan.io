@@ -1,13 +1,14 @@
 import { handleSocket } from "@/client/client";
 import { Socket } from "@/server/sockets";
 import { DevcardList, MaterialList } from "@/types/materials";
-import { Player } from "@/types/player";
+import { LocalPlayer, Player } from "@/types/player";
 import { EventDispatcher } from "@/utils/EventDispatcher";
 import { create } from "zustand";
 import MaterialsStarter from "@/config/data/starter/materials.json";
 import DevcardsStarter from "@/config/data/starter/devcards.json";
 import Settlements from "@/config/data/game/settlements.json";
 import { AREAS, VERTECIES } from "@/config/constants/game";
+import { Trade } from "@/types/trade";
 
 export type UIMapState =
     | "loading"
@@ -41,11 +42,7 @@ type CatanData = {
         socket?: Socket;
     };
     onlines: Map<number, Player>;
-    local: Omit<Player, "materials" | "devcards"> & {
-        materials: MaterialList;
-        devcards: DevcardList;
-        amounts: Record<"road" | "settlement" | "city", number>;
-    };
+    local: LocalPlayer;
     turnId: number;
     dices: undefined | [number, number];
     ui: {
@@ -55,8 +52,8 @@ type CatanData = {
         events: EventDispatcher;
     };
     secondSettlement?: number | undefined;
-
     firstRounds: boolean;
+    trades: Map<number, Trade>;
 };
 
 type CatanActions = {
@@ -83,6 +80,7 @@ type CatanActions = {
 };
 
 const defaultValue: CatanData = {
+    trades: new Map(),
     longestRoad: -1,
     largestArmy: -1,
     robberArea: -1,

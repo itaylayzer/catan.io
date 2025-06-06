@@ -1,3 +1,5 @@
+import { DevcardList, MaterialList } from "./materials";
+
 export interface Player {
     name: string;
     victoryPoints: number;
@@ -11,3 +13,9 @@ export interface Player {
     knightUsed: number;
     ready: boolean;
 }
+
+export type LocalPlayer = Omit<Player, "materials" | "devcards"> & {
+    materials: MaterialList;
+    devcards: DevcardList;
+    amounts: Record<"road" | "settlement" | "city", number>;
+};

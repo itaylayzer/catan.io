@@ -25,5 +25,5 @@ npx peer --port 9000
 
 ## TODO
 
--   players trade: global offer
--   players trade: private offer
+-   players trade: animations for all reasons & validations
+-   states: use acordion for height animations

@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/popover";
 import createServer from "@/server/server";
 import { useCatanStore } from "@/store/useCatanStore";
-import { ClassValue } from "clsx";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";

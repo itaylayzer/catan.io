@@ -1,6 +1,5 @@
 import { ClientCodes } from "@/config/constants/codes";
 import { Player } from "./Player";
-import VMath from "@/utils/VMath";
 
 interface Trade {
     id: number;
@@ -28,6 +27,17 @@ export class TradesSet {
         };
 
         this.trades.set(id, trade);
+
+        const players = [trade.from, ...Array.from(trade.players.values())];
+
+        players.forEach((player) =>
+            player.socket.emit(ClientCodes.OFFER_TRADE, {
+                id,
+                to: to.map((player) => player.id),
+                from: from.id,
+                mats,
+            })
+        );
     }
 
     public accept(id: number, to: Player) {
@@ -39,11 +49,24 @@ export class TradesSet {
             reason: 0,
         });
 
-        const { from, mats } = trade;
+        to.socket.emit(ClientCodes.CANCEL_TRADE, {
+            id,
+            reason: 0,
+        });
+
+        Array.from(trade.players.values())
+            .filter((player) => ![trade.from.id, to.id].includes(player.id))
+            .forEach((player) => {
+                player.socket.emit(ClientCodes.CANCEL_TRADE, {
+                    id,
+                    reason: 0,
+                });
+            });
 
         this.trades.delete(id);
+        const { from, mats } = trade;
 
-        return { from: trade.from, mats: trade.mats };
+        return { from, mats };
     }
 
     public reject(id: number, to: Player) {
@@ -59,6 +82,15 @@ export class TradesSet {
                 id,
                 reason: 1,
             });
+        } else {
+            const players = [trade.from, ...Array.from(trade.players.values())];
+
+            players.forEach((player) =>
+                player.socket.emit(ClientCodes.UPDATE_TRADE, {
+                    id,
+                    players: Array.from(trade.players.keys()),
+                })
+            );
         }
     }
 

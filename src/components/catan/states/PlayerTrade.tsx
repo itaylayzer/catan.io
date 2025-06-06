@@ -17,7 +17,7 @@ import { FaFaceGrinWide, FaRegFaceSadTear } from "react-icons/fa6";
 export function PlayerTrade() {
     const key = "PlayerTrade";
 
-    const [hidden, setHidden] = useState(false);
+    const [hidden, setHidden] = useState(true);
     const [values, setValues] = useState([0, 0, 0, 0, 0]);
     const [pickedPlayers, setPickedPlayers] = useState<Set<number>>(new Set());
 
@@ -54,11 +54,7 @@ export function PlayerTrade() {
 
     const disabled = !hasPositive || !hasNegative || noPickedPlayers;
 
-    const onlines = [
-        { name: "hi", color: 1 },
-        { name: "a", color: 2 },
-        { name: "a", color: 3 },
-    ]; //Array.from(onlinesMap.values());
+    const onlines = Array.from(onlinesMap.values());
 
     return (
         <div
