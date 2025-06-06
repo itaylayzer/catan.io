@@ -31,7 +31,6 @@ export class Lobby {
     }
 
     public disconnect(socket: Socket) {
-        console.log("server.lobby.disconnect");
         this.readies.delete(socket);
         this.clients.delete(socket);
     }

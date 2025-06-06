@@ -1,10 +1,10 @@
 import {
     Tooltip,
-    TooltipTrigger,
     TooltipContent,
+    TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { COLORS, DEVELOPMENTS, ONLINE_STATS } from "@/config/constants/ui";
-import { useCatanStore } from "@/store/useCatanStore";
+import { cn } from "@/lib/utils";
 import { Player } from "@/types/player";
 
 // import { IoLogoGameControllerB } from "react-icons/io";
@@ -65,10 +65,12 @@ export function OnlinePlayerCard({
     player,
     largestArmy,
     longestRoad,
+    turnId,
 }: {
     player: Player;
     largestArmy: number;
     longestRoad: number;
+    turnId: number;
 }) {
     const {
         materials,
@@ -79,9 +81,6 @@ export function OnlinePlayerCard({
         maxRoad,
         knightUsed,
     } = player;
-
-    console.log("client", "victoryPoints", victoryPoints);
-    console.log("client", "OnlinePlayerCard", "maxRoad", maxRoad);
 
     const belongLargestArmy = largestArmy === color;
     const belongLongestRoad = longestRoad === color;
@@ -124,10 +123,12 @@ export function OnlinePlayerCard({
                 style={{
                     filter: `drop-shadow(0px 0px 10px ${COLORS[color]}, drop-shadow(0px 0px 10px ${COLORS[color]}`,
                     animationDelay: `${color / 2}s`,
-                    rotate: "90deg",
                     scale: "0.7",
                 }}
-                className="animate-pulse"
+                className={cn(
+                    "animate-pulse transition-all",
+                    turnId === player.color ? "rotate-180" : "rotate-90"
+                )}
                 color={COLORS[color]}
             />
             <h2 className="flex-1 mr-12 text-[20px]">{name}</h2>

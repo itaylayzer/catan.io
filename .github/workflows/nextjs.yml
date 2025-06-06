@@ -41,6 +41,11 @@ jobs:
               env:
                   CONFIG_TS: ${{ vars.CONFIG_TS }}
 
+            - name: Change starters jsons
+              run: |
+                  echo "[0,0,0,0,0]" > ./src/config/data/starter/materials.json;
+                  echo "[0,0,0,0,0]" > ./src/config/data/starter/devcards.json;
+
             - name: Detect package manager
               id: detect-package-manager
               run: |

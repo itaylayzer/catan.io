@@ -25,6 +25,8 @@ export class Catan {
     public bank: { materials: number[]; devcards: number[] };
     private turnId: number;
     private harborsMats: number[];
+    private round: number;
+    private preTurns: (number | boolean)[];
 
     // Achivements variables
     private longestRoadColor = -1;
@@ -46,9 +48,11 @@ export class Catan {
             materials: [19, 19, 19, 19, 19],
         };
 
+        this.preTurns = [0, 1, 2, 3, true, 3, 2, 1, 0, true];
+        this.round = 0;
         this.availableIds = new ListSet([0, 1, 2, 3], (a, b) => b - a);
 
-        this.turnId = 0;
+        this.turnId = -1;
         this.robberArea = MIDDLE_INDEX;
         this.players = [];
 
@@ -147,8 +151,6 @@ export class Catan {
         const id = this.availableIds.pop();
         if (id === undefined) return null;
 
-        console.log("server.playerJoin.id.pop", id);
-
         const player = new Player(id, name, socket, this);
         this.players.push(player);
 
@@ -157,13 +159,10 @@ export class Catan {
 
     public disconnect(player: Player) {
         try {
-            console.log("server.catan.disconnect before", this.players);
             const { id } = player;
-            console.log("server.catan.disconnect id", id);
             this.availableIds.add(id);
 
             this.players = this.players.filter((p) => p.id !== id);
-            console.log("server.catan.disconnect after", this.players);
         } catch (err) {
             console.error("server.catan.disconnect error", err);
         }
@@ -279,8 +278,37 @@ export class Catan {
         };
     }
 
-    public act_stopTurn(): number {
-        return (this.turnId = (this.turnId + 1) % this.players.length);
+    public act_stopTurn(): { turnId: number; round: number } {
+        if (this.preTurns.length) {
+            do {
+                const state = this.preTurns.shift();
+                if (state === undefined) {
+                    console.log("server.turn = turn=", this.turnId);
+
+                    break;
+                } else if (typeof state === "boolean") {
+                    this.round++;
+                    console.log("server.turn.round true rounds=", this.round);
+                } else {
+                    this.turnId = state;
+                    console.log("server.turn.pop turn=", this.turnId);
+
+                    if (this.players[this.turnId] !== undefined) break;
+                }
+            } while (true);
+        } else {
+            console.log("server.turn ++ turn=", this.turnId);
+
+            this.turnId++;
+            if (this.turnId >= this.players.length) {
+                this.turnId = 0;
+
+                this.round++;
+            }
+        }
+
+        const { round, turnId } = this;
+        return { round, turnId };
     }
 
     public act_buyRoad(
@@ -299,6 +327,11 @@ export class Catan {
 
         // check if theres enough amounts
         if (player.amounts.road <= 0) return false;
+
+        // first two rounds roads dont cost
+        if (useMoney && this.round < 2) {
+            useMoney = false;
+        }
 
         // check if theres enough materials
         if (useMoney && !VMath(player.materials).available(Store.road))
@@ -323,7 +356,27 @@ export class Catan {
         return true;
     }
 
+    private collectMaterialsBaseSettlement(
+        player: Player,
+        settlementIndex: number
+    ) {
+        const mats: number[] = [];
+
+        this.vertecies[settlementIndex + AREAS].edges.forEach(
+            ({ offset, vertex }) => {
+                if (offset < AREAS) {
+                    const material = vertex.material?.material;
+                    material !== undefined && mats.push(material);
+                }
+            }
+        );
+
+        VMath(player.materials).countpicks(mats);
+    }
+
     public act_buySettlement(player: Player, settlementIndex: number): boolean {
+        let useMoney = true;
+
         // check if settlement already bought
         if (
             player.settlements.has(settlementIndex) ||
@@ -335,12 +388,18 @@ export class Catan {
         // check if theres enough amounts
         if (player.amounts.settlement <= 0) return false;
 
+        // first two rounds settlements dont cost
+        if (this.round < 2) {
+            useMoney = false;
+        }
+
         // check if theres enough materials
-        if (!VMath(player.materials).available(Store.settlement)) return false;
+        if (useMoney && !VMath(player.materials).available(Store.settlement))
+            return false;
 
         // Move mats
-        VMath(this.bank.materials).sameSize.add(Store.settlement);
-        VMath(player.materials).sameSize.sub(Store.settlement);
+        useMoney && VMath(this.bank.materials).sameSize.add(Store.settlement);
+        useMoney && VMath(player.materials).sameSize.sub(Store.settlement);
 
         // Paint
         this.vertecies[settlementIndex + AREAS].color = player.id;
@@ -348,6 +407,11 @@ export class Catan {
         // Add to map
         player.settlements.add(settlementIndex);
         player.amounts.settlement--;
+
+        // if round index is 1 then give them materials
+        if (this.round === 1) {
+            this.collectMaterialsBaseSettlement(player, settlementIndex);
+        }
 
         return true;
     }
@@ -572,7 +636,6 @@ export class Catan {
 
     public checkWin(): false | number {
         const vps = this.players.map((p) => p.realVictoryPoints);
-        console.log("server.vps", vps);
         const maxValue = VMath(vps).max();
 
         if (maxValue < 10) return false;

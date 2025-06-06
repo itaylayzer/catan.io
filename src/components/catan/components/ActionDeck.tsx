@@ -15,6 +15,7 @@ import { FaHandshakeSimple } from "react-icons/fa6";
 import { RiDiceFill } from "react-icons/ri";
 import { MaterialNotify } from "../notifications/MaterialNotify";
 import { TradeButton } from "./TradeButton";
+import { cn } from "@/lib/utils";
 
 export function ActionDeck() {
     const {
@@ -23,6 +24,7 @@ export function ActionDeck() {
         ui: { dicesState, events, mapState },
         local,
         set,
+        firstRounds,
     } = useCatanStore();
 
     const [sevenMode, setSevenMode] = useState(false);
@@ -135,7 +137,6 @@ export function ActionDeck() {
         },
     ];
 
-    console.log("dicesState", dicesState);
 
     const turnNotMine = dicesState !== "mine";
     const allDisabled =
@@ -161,7 +162,12 @@ export function ActionDeck() {
     ];
 
     return (
-        <div>
+        <div
+            className={cn(
+                "transition-[opacity,scale] duration-1000",
+                firstRounds && "opacity-0 scale-80 pointer-events-none"
+            )}
+        >
             <MaterialNotify />
 
             <div className="relative z-30 flex flex-row-reverse border-1 rounded-2xl bg-accent gap-5 px-4 pb-1 pt-2 scale-110 items-center justify-around">

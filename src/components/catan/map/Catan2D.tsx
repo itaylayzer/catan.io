@@ -44,6 +44,7 @@ class Catan2D extends Component<
             roads: Map<number, number>;
             cities: Set<number>;
         };
+        allowed: Set<number>;
         harbors: number[];
     },
     {}
@@ -67,6 +68,7 @@ class Catan2D extends Component<
             ui: { mapState, events },
             prepareMapSets,
             harbors,
+            allowedPicks,
         } = useCatanStore.getState();
 
         this.state = {
@@ -77,6 +79,7 @@ class Catan2D extends Component<
             events,
             scale: 1,
             sets: prepareMapSets(),
+            allowed: allowedPicks(),
             harbors,
         };
 
@@ -89,6 +92,7 @@ class Catan2D extends Component<
                 events: newState.ui.events,
                 sets: newState.prepareMapSets(),
                 harbors: newState.harbors,
+                allowed: newState.allowedPicks(),
             });
         });
     }
@@ -115,8 +119,15 @@ class Catan2D extends Component<
     };
 
     render() {
-        const { scale, mapState, materials, robberArea, sets, harbors } =
-            this.state;
+        const {
+            scale,
+            mapState,
+            materials,
+            robberArea,
+            sets,
+            harbors,
+            allowed,
+        } = this.state;
         const { roads, settlements, cities } = sets;
 
         if (mapState === "loading" || harbors.length === 0)
@@ -214,6 +225,7 @@ class Catan2D extends Component<
                             )}
 
                             {Settlements.map(({ x, y }: any, index: number) => {
+                                const allow = allowed.has(index);
                                 const used =
                                     settlements.has(index) &&
                                     !cities.has(index);
@@ -226,13 +238,15 @@ class Catan2D extends Component<
                                     used &&
                                     mapState !== "picking vertex upgrade"
                                         ? "ff"
-                                        : mapState === "picking vertex"
+                                        : mapState === "picking vertex" && allow
                                         ? "88"
                                         : "00";
 
                                 const color = `${baseColor}${opacity}`;
                                 const className =
-                                    mapState === "picking vertex" && !used
+                                    mapState === "picking vertex" &&
+                                    !used &&
+                                    allow
                                         ? "animate-pulse hover:scale-95 hover:animate-none cursor-pointer"
                                         : "pointer-events-none";
 
@@ -444,6 +458,8 @@ class Catan2D extends Component<
                                 {Roads.map(({ from, to }, index: number) => {
                                     const hash = from.index * 1000 + to.index;
 
+                                    const allow = allowed.has(hash);
+
                                     const used = roads.has(hash);
                                     let color = used
                                         ? COLORS[roads.get(hash)!]
@@ -457,12 +473,12 @@ class Catan2D extends Component<
                                     const stroke = `${color}${
                                         used
                                             ? "ff"
-                                            : insidePickingState
+                                            : insidePickingState && allow
                                             ? "55"
                                             : "00"
                                     }`;
                                     const className =
-                                        insidePickingState && !used
+                                        insidePickingState && !used && allow
                                             ? "animate-pulse hover:animate-none cursor-pointer"
                                             : "pointer-events-none";
 
