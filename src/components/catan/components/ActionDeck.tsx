@@ -32,10 +32,13 @@ export function ActionDeck() {
         sevenMode || ["ready", "loading", "picking 2 edges"].includes(mapState);
 
     events.on("dock 7 free", () => {
+        console.log('action deck 7 free')
+
         setSevenMode(false);
     });
 
-    events.on("7", () => {
+    events.on("dock 7", () => {
+        console.log('action deck 7 mode')
         setSevenMode(true);
     });
 

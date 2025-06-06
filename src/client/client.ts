@@ -260,6 +260,9 @@ export function handleSocket(
                         });
                     }
 
+                    // Lock dock
+                    get().ui.events.emit("dock 7");
+
                     // If local materials are bigger then 6 then drop mats
                     if (VMath(get().local.materials).sum() > 6) {
                         get().ui.events.emit("7");
