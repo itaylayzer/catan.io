@@ -151,8 +151,6 @@ export class Catan {
         const id = this.availableIds.pop();
         if (id === undefined) return null;
 
-        console.log("server.playerJoin.id.pop", id);
-
         const player = new Player(id, name, socket, this);
         this.players.push(player);
 
@@ -161,13 +159,10 @@ export class Catan {
 
     public disconnect(player: Player) {
         try {
-            console.log("server.catan.disconnect before", this.players);
             const { id } = player;
-            console.log("server.catan.disconnect id", id);
             this.availableIds.add(id);
 
             this.players = this.players.filter((p) => p.id !== id);
-            console.log("server.catan.disconnect after", this.players);
         } catch (err) {
             console.error("server.catan.disconnect error", err);
         }
@@ -641,7 +636,6 @@ export class Catan {
 
     public checkWin(): false | number {
         const vps = this.players.map((p) => p.realVictoryPoints);
-        console.log("server.vps", vps);
         const maxValue = VMath(vps).max();
 
         if (maxValue < 10) return false;

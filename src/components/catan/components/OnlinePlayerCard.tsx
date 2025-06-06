@@ -82,9 +82,6 @@ export function OnlinePlayerCard({
         knightUsed,
     } = player;
 
-    console.log("client", "victoryPoints", victoryPoints);
-    console.log("client", "OnlinePlayerCard", "maxRoad", maxRoad);
-
     const belongLargestArmy = largestArmy === color;
     const belongLongestRoad = longestRoad === color;
 
@@ -129,7 +126,7 @@ export function OnlinePlayerCard({
                     scale: "0.7",
                 }}
                 className={cn(
-                    "animate-pulse transition-[rotate]",
+                    "animate-pulse transition-all",
                     turnId === player.color ? "rotate-180" : "rotate-90"
                 )}
                 color={COLORS[color]}

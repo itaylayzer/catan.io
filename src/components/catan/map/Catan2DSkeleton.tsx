@@ -111,7 +111,6 @@ export default function Catan2DSkeleton() {
                                 return (
                                     <Hex
                                         onClick={() => {
-                                            console.log("picked area:", index);
 
                                             state === "picking area" &&
                                                 callback(index);
@@ -201,10 +200,7 @@ export default function Catan2DSkeleton() {
                                             translate: `${-15}px ${-15}px`,
                                         }}
                                         onClick={() => {
-                                            console.log(
-                                                "picked vertex:",
-                                                index
-                                            );
+                                            
 
                                             state === "picking vertex" &&
                                                 callback([index]);
@@ -240,7 +236,6 @@ export default function Catan2DSkeleton() {
                                         y1={to.y + 50}
                                         y2={from.y + 50}
                                         onClick={() => {
-                                            console.log("picked edge:", index);
 
                                             state === "picking edge" &&
                                                 callback([index, from, to]);

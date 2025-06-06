@@ -31,7 +31,6 @@ export default function createServer(onOpen?: (server: Server) => void) {
                         })
                     );
 
-                    console.log("winner.server");
                     lobby.sockets.emit(ClientCodes.WIN, { id: state, players });
                 }
             });
@@ -55,11 +54,6 @@ export default function createServer(onOpen?: (server: Server) => void) {
 
                 lobby.join(socket);
 
-                console.log(
-                    "disconnect.server.init.size",
-                    catan.players.length
-                );
-
                 socket.emit(ClientCodes.INIT, {
                     ...catan.json(),
                     id: local.id,
@@ -72,8 +66,6 @@ export default function createServer(onOpen?: (server: Server) => void) {
                             devcards: VMath(devcards).sum(),
                         })),
                 });
-
-                console.log("local.name", local.name);
 
                 lobby.sockets.emitExcept(socket, ClientCodes.PLAYER_JOIN, {
                     id: local.id,
@@ -176,35 +168,14 @@ export default function createServer(onOpen?: (server: Server) => void) {
             };
 
             socket.on(ServerCodes.DROP_MATS, (mats: MaterialList) => {
-                console.log(
-                    "server ServerCodes.DROP_MATS before",
-                    mats,
-                    "from local",
-                    local!.id,
-                    local!.materials,
-                    local!.sevenNeedToGive
-                );
-
                 const state = catan.dropMaterials(local!, mats);
-                console.log(
-                    "server ServerCodes.DROP_MATS after",
-                    mats,
-                    "from local",
-                    local!.id,
-                    local!.materials,
-                    local!.sevenNeedToGive,
-                    state
-                );
+                
                 state && deckUpdate({});
             });
 
             socket.on(
                 ServerCodes.BUY_ROAD,
                 ([roadFrom, roadTo]: [number, number]) => {
-                    console.log("server", "buy_road", "input", [
-                        roadFrom,
-                        roadTo,
-                    ]);
                     if (
                         catan.act_buyRoad(
                             local!,
@@ -297,11 +268,6 @@ export default function createServer(onOpen?: (server: Server) => void) {
                 if (catan.dev_monopol(local!, matIndex)) {
                     const current = local!.materials[matIndex];
 
-                    console.log(
-                        "server.dev_monopol local",
-                        local!.materials,
-                        local!.materials[matIndex]
-                    );
                     deckUpdate({
                         devcards: local!.devcards,
                     });
@@ -366,7 +332,6 @@ export default function createServer(onOpen?: (server: Server) => void) {
                     lobby.sockets.emitExcept(socket, ClientCodes.STOP);
                     server.stop();
                 } else {
-                    console.log("server.socket.disconnect");
                     lobby.sockets.emitExcept(
                         socket,
                         ClientCodes.DISCONNECTED,

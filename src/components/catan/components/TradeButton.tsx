@@ -185,7 +185,6 @@ export function TradeButton(): {
 
     events.on("trade requests", (trades: Deal[]) => {
         trades.sort((a, b) => a.count - b.count);
-        console.log("trades.trades", trades);
         setTrades(trades);
     });
 

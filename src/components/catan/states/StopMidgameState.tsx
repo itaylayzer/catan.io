@@ -16,7 +16,6 @@ export function StopMidgameState() {
     const [hidden, setHidden] = useState(true);
 
     events.on("stop midgame", () => {
-        console.log("got here");
         setHidden(false);
         StateOverlay.instance?.show(key);
     });

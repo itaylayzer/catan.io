@@ -137,7 +137,6 @@ export function ActionDeck() {
         },
     ];
 
-    console.log("dicesState", dicesState);
 
     const turnNotMine = dicesState !== "mine";
     const allDisabled =

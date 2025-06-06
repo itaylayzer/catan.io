@@ -28,7 +28,6 @@ export class StateOverlay extends Component<{}, { hiddenSet: Set<string> }> {
     };
 
     render(): ReactNode {
-        console.log("state hidden", this.state.hiddenSet);
         return (
             <div
                 className={cn(
