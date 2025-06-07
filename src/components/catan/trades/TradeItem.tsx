@@ -28,6 +28,7 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
+import VMath from "@/utils/VMath";
 
 type TradeProps = { trade: Trade; onCancel: () => void };
 type TradeState = {
@@ -111,6 +112,10 @@ export class TradeItem extends Component<TradeProps, TradeState> {
         const wantedMaterials = mats.map((value) => Math.max(0, value));
         const offeredMaterials = mats.map((value) => -Math.min(0, value));
 
+        const acceptDisabled = isLocalTrade
+            ? false
+            : !VMath(local.materials).available(wantedMaterials);
+
         return (
             <Accordion type="single" value={String(open)}>
                 <AccordionItem
@@ -166,7 +171,8 @@ export class TradeItem extends Component<TradeProps, TradeState> {
                             <>
                                 <Button
                                     variant="link"
-                                    className="cursor-pointer z-20"
+                                    className="cursor-pointer z-20 disabled:opacity-50"
+                                    disabled={acceptDisabled}
                                     onClick={() => {
                                         socket?.emit(
                                             ServerCodes.ACCEPT_TRADE,
@@ -178,7 +184,7 @@ export class TradeItem extends Component<TradeProps, TradeState> {
                                         color={convertions.matsColors.wood}
                                         opacity={0.5}
                                     />{" "}
-                                    accept
+                                    {acceptDisabled ? "accept" : "accept"}
                                 </Button>
                                 <Button
                                     variant="link"
