@@ -16,7 +16,7 @@ import {
 } from "react-icons/fa";
 import { FaChessKnight, FaHouse } from "react-icons/fa6";
 import { RiPlantFill } from "react-icons/ri";
-export const COLORS = ["#ffffff", "#3b82f6", "#e34653", "#c2410c"];
+export const COLORS = ["#ffffff", "#3b82f6", "#e34653", "#db7b27"];
 
 export const MATERIALS = [
     { name: "Wood", icon: SVGWood },

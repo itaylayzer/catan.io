@@ -283,21 +283,17 @@ export class Catan {
             do {
                 const state = this.preTurns.shift();
                 if (state === undefined) {
-                    console.log("server.turn = turn=", this.turnId);
 
                     break;
                 } else if (typeof state === "boolean") {
                     this.round++;
-                    console.log("server.turn.round true rounds=", this.round);
                 } else {
                     this.turnId = state;
-                    console.log("server.turn.pop turn=", this.turnId);
 
                     if (this.players[this.turnId] !== undefined) break;
                 }
             } while (true);
         } else {
-            console.log("server.turn ++ turn=", this.turnId);
 
             this.turnId++;
             if (this.turnId >= this.players.length) {
@@ -482,7 +478,6 @@ export class Catan {
         player.knightUsed += +useDevcard;
         this.robberArea = areaOffset;
 
-        // TODO: take 1 random card from a player that is near the robbed area, only 1 player he choses if theres multiple players around the same area
         const picksSet = new Set<number>();
 
         this.vertecies[areaOffset].edges.forEach(({ vertex }) => {

@@ -5,6 +5,7 @@ import { ClientCodes, ServerCodes } from "@/config/constants/codes";
 import { Socket } from "@/server/sockets";
 import { CatanStore, UITurnState } from "@/store/useCatanStore";
 import { DevcardList, MaterialList } from "@/types/materials";
+import { Trade } from "@/types/trade";
 import { randIntNot } from "@/utils/randIntNot";
 import VMath from "@/utils/VMath";
 
@@ -330,7 +331,6 @@ export function handleSocket(
     socket.on(
         ClientCodes.TURN_SWITCH,
         ({ turnId, round }: { turnId: number; round: number }) => {
-            console.log("client.turn turn=", turnId, "round=", round);
             const myTurn = turnId === get().local.color;
 
             if (round === 2) {
@@ -492,6 +492,34 @@ export function handleSocket(
     socket.on(ClientCodes.GET_TRADES, (trades) => {
         get().ui.events.emit("trade requests", trades);
     });
+
+    socket.on(ClientCodes.OFFER_TRADE, (trade: Trade) => {
+        const { trades } = get();
+
+        trades.set(trade.id, trade);
+
+        set({ trades: new Map(trades) });
+    });
+    socket.on(
+        ClientCodes.CANCEL_TRADE,
+        ({ id, reason }: { id: number; reason: number }) => {
+            get().ui.events.emit(`cancel trade ${id}`, reason);
+        }
+    );
+    socket.on(
+        ClientCodes.UPDATE_TRADE,
+        ({ id, players }: { id: number; players: number[] }) => {
+            const { trades } = get();
+
+            const trade = trades.get(id);
+            if (trade === undefined) return;
+
+            trade.to = new Set(players);
+            trades.set(trade.id, trade);
+
+            set({ trades: new Map(trades) });
+        }
+    );
 
     socket.emit(ServerCodes.INIT, get().local.name);
 

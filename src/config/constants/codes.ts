@@ -18,6 +18,10 @@ export enum ServerCodes {
     APPLY_TRADE = "at",
     READY = "rea",
     KNIGHT_PICK = "kp",
+    OFFER_TRADE = "ot",
+    CANCEL_TRADE = "ct",
+    ACCEPT_TRADE = "act",
+    REJECT_TRADE = "rjt",
 }
 // Server to Client
 export enum ClientCodes {
@@ -40,6 +44,9 @@ export enum ClientCodes {
     GET_TRADES = "gt",
     READY = "rea",
     START_GAME = "sg",
-    KNIGHT_FROM = "kf", // TODO:
+    KNIGHT_FROM = "kf",
     KNIGHT_PICKS = "kp",
+    OFFER_TRADE = "ot",
+    UPDATE_TRADE = "ut",
+    CANCEL_TRADE = "ct",
 }

@@ -5,12 +5,14 @@ import { Player } from "./Player";
 import VMath from "@/utils/VMath";
 import { MaterialList } from "@/types/materials";
 import { Lobby } from "./Lobby";
+import { TradesSet } from "./TradesSet";
 
 const empty = [0, 0, 0, 0, 0];
 
 export default function createServer(onOpen?: (server: Server) => void) {
     const catan = new Catan();
     const lobby = new Lobby();
+    const trades = new TradesSet();
 
     new Server(
         (self) => {
@@ -355,6 +357,56 @@ export default function createServer(onOpen?: (server: Server) => void) {
                     }
                 }
             );
+
+            socket.on(
+                ServerCodes.OFFER_TRADE,
+                ({ players, mats }: { players: number[]; mats: number[] }) => {
+                    trades.add(
+                        local!,
+                        players.map((playerId) => catan.players[playerId]),
+                        mats
+                    );
+                }
+            );
+
+            socket.on(ServerCodes.CANCEL_TRADE, (id: number) => {
+                trades.cancel(id, local!);
+            });
+
+            socket.on(ServerCodes.REJECT_TRADE, (id: number) => {
+                trades.reject(id, local!);
+            });
+
+            socket.on(ServerCodes.ACCEPT_TRADE, (id: number) => {
+                const state = trades.accept(id, local!);
+
+                if (state !== false) {
+                    const { mats, from } = state;
+
+                    VMath(from.materials).sameSize.add(mats);
+                    VMath(local!.materials).sameSize.sub(mats);
+
+                    deckUpdate({});
+                    deckUpdate({}, from);
+
+                    const acceptedAddons = mats.map(
+                        (value) => -Math.min(0, value)
+                    );
+                    socket.emit(ClientCodes.MATS_NOTIFICATION, [
+                        acceptedAddons,
+                        empty,
+                    ]);
+
+                    const offeredAddons = mats.map((value) =>
+                        Math.max(0, value)
+                    );
+                    from.socket.emit(ClientCodes.MATS_NOTIFICATION, [
+                        offeredAddons,
+                        empty,
+                    ]);
+                }
+            });
+
             socket.on("disconnect", () => {
                 if (!lobby.has(socket)) return;
 

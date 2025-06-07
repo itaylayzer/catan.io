@@ -222,7 +222,14 @@ export function TradeButton(): {
                 ) : (
                     <StateCarosul trades={trades!} />
                 )}
-                <Button variant="link" className="cursor-pointer">
+                <Button
+                    onClick={() => {
+                        togglePop();
+                        events.emit("offer trade");
+                    }}
+                    variant="link"
+                    className="cursor-pointer"
+                >
                     {FaHandshakeSimple({})} Offer a Trade
                 </Button>
             </PopoverContent>

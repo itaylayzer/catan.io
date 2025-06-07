@@ -16,6 +16,8 @@ import { MdStore } from "react-icons/md";
 import { KnightPickPlayer } from "../states/KnightPickPlayer";
 import { KnightSteal } from "../states/KnightSteal";
 import { StopMidgameState } from "../states/StopMidgameState";
+import { PlayerTrade } from "../states/PlayerTrade";
+import { TradesArea } from "../trades/TradesArea";
 
 export default function CatanGame() {
     return (
@@ -40,8 +42,10 @@ export default function CatanGame() {
                     </div>
                     <SevenMatsDropState />
                     <KnightPickPlayer />
+                    <PlayerTrade />
                     <TwoYearOfPlentyState />
                     <MonopolyState />
+                    <TradesArea />
                 </div>
             </div>
             <div className="flex-1 flex flex-col gap-3 items-center">
