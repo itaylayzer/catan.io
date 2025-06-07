@@ -86,17 +86,18 @@ export function PlayerTrade() {
                                 <div
                                     onClick={() => {
                                         const old = [...values];
-                                        old[index] = Math.min(
-                                            materials[index],
-                                            old[index] + 1
-                                        );
+                                        old[index] = old[index] + 1;
                                         setValues(old);
                                     }}
                                     onContextMenu={(e) => {
                                         e.preventDefault();
 
                                         const old = [...values];
-                                        old[index] = old[index] - 1;
+
+                                        old[index] = Math.max(
+                                            -materials[index],
+                                            old[index] - 1
+                                        );
 
                                         setValues(old);
                                     }}
