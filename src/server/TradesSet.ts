@@ -1,5 +1,6 @@
 import { ClientCodes } from "@/config/constants/codes";
 import { Player } from "./Player";
+import VMath from "@/utils/VMath";
 
 interface Trade {
     id: number;
@@ -44,6 +45,29 @@ export class TradesSet {
         const trade = this.trades.get(id);
 
         if (trade === undefined || !trade.players.has(to.id)) return false;
+
+        // check if player have enough materials
+        if (
+            !VMath(to.materials).available(
+                trade.mats.map((value) => Math.max(value, 0))
+            )
+        ) {
+            console.log(
+                "trade.accept.validation",
+                to.materials,
+                trade.mats,
+                "got here"
+            );
+            return false;
+        } else {
+            console.log(
+                "trade.accept.validation",
+                to.materials,
+                trade.mats,
+                "outside"
+            );
+        }
+
         trade.from.socket.emit(ClientCodes.CANCEL_TRADE, {
             id,
             reason: 0,
