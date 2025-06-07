@@ -331,7 +331,6 @@ export function handleSocket(
     socket.on(
         ClientCodes.TURN_SWITCH,
         ({ turnId, round }: { turnId: number; round: number }) => {
-            console.log("client.turn turn=", turnId, "round=", round);
             const myTurn = turnId === get().local.color;
 
             if (round === 2) {

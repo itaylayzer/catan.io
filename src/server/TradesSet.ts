@@ -52,20 +52,7 @@ export class TradesSet {
                 trade.mats.map((value) => Math.max(value, 0))
             )
         ) {
-            console.log(
-                "trade.accept.validation",
-                to.materials,
-                trade.mats,
-                "got here"
-            );
             return false;
-        } else {
-            console.log(
-                "trade.accept.validation",
-                to.materials,
-                trade.mats,
-                "outside"
-            );
         }
 
         trade.from.socket.emit(ClientCodes.CANCEL_TRADE, {

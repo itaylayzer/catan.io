@@ -245,8 +245,6 @@ export const useCatanStore = create<CatanStore>((set, get) => ({
         }
 
         if (firstRounds && mapState.includes("vertex")) {
-            console.log("picks:", "first rounds and vertex");
-
             // Add all settlements
             for (let index = 0; index < VERTECIES; index++) {
                 allowed.add(index);

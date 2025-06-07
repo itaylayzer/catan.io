@@ -283,21 +283,17 @@ export class Catan {
             do {
                 const state = this.preTurns.shift();
                 if (state === undefined) {
-                    console.log("server.turn = turn=", this.turnId);
 
                     break;
                 } else if (typeof state === "boolean") {
                     this.round++;
-                    console.log("server.turn.round true rounds=", this.round);
                 } else {
                     this.turnId = state;
-                    console.log("server.turn.pop turn=", this.turnId);
 
                     if (this.players[this.turnId] !== undefined) break;
                 }
             } while (true);
         } else {
-            console.log("server.turn ++ turn=", this.turnId);
 
             this.turnId++;
             if (this.turnId >= this.players.length) {
