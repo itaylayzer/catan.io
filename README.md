@@ -1,7 +1,7 @@
 # Catan.io
 
 Catan multiplayer game, created with Next.js & Peer.js \
-The game is currently playable, [missing players global/private offer trade system](#todo)
+The game is playable, [theres some more last things to do](#todo)
 
 ## How to run the project
 
@@ -25,5 +25,5 @@ npx peer --port 9000
 
 ## TODO
 
--   players trade: animations for all reasons & validations
+-   players trade: animations for all reasons
 -   states: use acordion for height animations
