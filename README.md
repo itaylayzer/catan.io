@@ -25,5 +25,4 @@ npx peer --port 9000
 
 ## TODO
 
--   players trade: animations for all reasons
--       map: fit to the players screen
+- map: fit to the players screen

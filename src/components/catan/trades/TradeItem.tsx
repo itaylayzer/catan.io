@@ -40,6 +40,8 @@ type TradeState = {
     open: boolean;
 };
 
+const REASONS = [{text:"ACCEPTED",color:'#15803d88'}, {text:"REJECTED", color:"#b91c1c88"}, {text:"CANCELED", color:"#26262688"}]
+
 export class TradeItem extends Component<TradeProps, TradeState> {
     private key: string;
     constructor(props: TradeProps) {
@@ -77,6 +79,9 @@ export class TradeItem extends Component<TradeProps, TradeState> {
     }
 
     onCancelTradeEvent = (reason: number) => {
+        reason !== undefined && setTimeout(()=>{
+            this.props.onCancel();
+        },1700);
         this.setState((old) => ({ ...old, reason }));
     };
 
@@ -88,13 +93,6 @@ export class TradeItem extends Component<TradeProps, TradeState> {
         const { onCancel, trade } = this.props;
         const { reason, local, onlines, socket, open } = this.state;
         const { from, id, mats, to } = trade;
-
-        if (reason !== undefined) {
-            onCancel();
-            // setTimeout(() => {
-            //     onCancel();
-            // }, 0);
-        }
 
         const players = new Map<number, Player | LocalPlayer>([
             [local.color, local],
@@ -115,9 +113,11 @@ export class TradeItem extends Component<TradeProps, TradeState> {
         const acceptDisabled = isLocalTrade
             ? false
             : !VMath(local.materials).available(wantedMaterials);
+            
+            
 
         return (
-            <Accordion type="single" value={String(open)}>
+            <Accordion type="single" value={String(open || reason !== undefined)}>
                 <AccordionItem
                     onMouseEnter={() => {
                         this.setState((old) => ({ ...old, open: true }));
@@ -127,8 +127,14 @@ export class TradeItem extends Component<TradeProps, TradeState> {
                     }}
                     className={cn(
                         "w-full max-w-100 flex flex-col hover:animate-none rounded py-2 outline items-center px-4 gap-1",
-                        `outline-[${color}]`
+                        `outline-[${color}]`,
+                        reason !== undefined && "animate-[out] animation-duration-[10s] outline-card",
                     )}
+                    style={{
+                        backgroundColor: reason !== undefined ? REASONS[reason].color : "",
+                        animationTimingFunction: "cubic-bezier(1,0,1,1)"
+                    }}
+                    
                     value="true"
                 >
                     <AccordionTrigger className="flex gap-2 w-full items-center">
@@ -167,7 +173,9 @@ export class TradeItem extends Component<TradeProps, TradeState> {
                         </div>
                     </AccordionTrigger>
                     <AccordionContent className="flex justify-center items-center gap-2">
-                        {!isLocalTrade ? (
+                        {reason !== undefined ? <div className={`w-full h-full text-center text-white opacity-100 font-medium font-[Rubik]`}>{REASONS[reason].text}</div>
+                        : 
+                        !isLocalTrade ? (
                             <>
                                 <Button
                                     variant="link"
@@ -178,6 +186,8 @@ export class TradeItem extends Component<TradeProps, TradeState> {
                                             ServerCodes.ACCEPT_TRADE,
                                             id
                                         );
+
+                                        this.onCancelTradeEvent(0);
                                     }}
                                 >
                                     <FaHandshakeSimple
@@ -194,8 +204,8 @@ export class TradeItem extends Component<TradeProps, TradeState> {
                                             ServerCodes.REJECT_TRADE,
                                             id
                                         );
-
-                                        onCancel();
+                                    
+                                        this.onCancelTradeEvent(1);
                                     }}
                                 >
                                     <FaHandshakeSimpleSlash
@@ -211,6 +221,8 @@ export class TradeItem extends Component<TradeProps, TradeState> {
                                 className="cursor-pointer z-20"
                                 onClick={() => {
                                     socket?.emit(ServerCodes.CANCEL_TRADE, id);
+
+                                    this.onCancelTradeEvent(2);
                                 }}
                             >
                                 <FaHandshakeSimpleSlash
