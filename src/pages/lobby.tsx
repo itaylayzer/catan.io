@@ -48,7 +48,7 @@ function LobbyRoom({ code }: { code: string }) {
                 {players.map((p) => (
                     <div
                         className={cn(
-                            "transition-[background-color] px-5  rounded py-2 text-1xl text-center font-[Rubik] flex flex-col",
+                            "transition-[background-color] px-5  rounded py-2 text-1xl text-center font-[Rubik] flex items-center flex-col",
                             p.ready ? "text-green-700" : "bg-transparent"
                         )}
                     >
