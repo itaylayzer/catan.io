@@ -7,18 +7,21 @@ import {
 import { COLORS, MATERIALS } from "@/config/constants/ui";
 import { cn } from "@/lib/utils";
 import { useCatanStore } from "@/store/useCatanStore";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { StateOverlay } from "./StateOverlay";
 import { ServerCodes } from "@/config/constants/codes";
 import { FaHandshakeSimple } from "react-icons/fa6";
 
 import { FaFaceGrinWide, FaRegFaceSadTear } from "react-icons/fa6";
+import StateContainer from "./StateContainer";
 
 export function PlayerTrade() {
     const key = "PlayerTrade";
 
     const [hidden, setHidden] = useState(true);
     const [values, setValues] = useState([0, 0, 0, 0, 0]);
+
+    const [lastIndex, setLastIndex] = useState<number>();
     const [pickedPlayers, setPickedPlayers] = useState<Set<number>>(new Set());
 
     const {
@@ -36,6 +39,8 @@ export function PlayerTrade() {
 
         setValues([0, 0, 0, 0, 0]);
         setPickedPlayers(new Set());
+
+        setLastIndex(undefined);
     });
 
     const confirm = () => {
@@ -56,15 +61,43 @@ export function PlayerTrade() {
 
     const onlines = Array.from(onlinesMap.values());
 
+    useEffect(()=>{
+        if (lastIndex === undefined) return;
+        
+        const change = (addon:number) => {
+            setValues(old => {
+                const copy = [...old]
+            
+                copy[lastIndex] += addon;
+
+                return copy;
+            })
+        }
+        const onKeyDown = (event:KeyboardEvent)=>{
+            switch(event.which) {
+                case 40:
+                    change(-1);
+                    break;
+                case 38:
+                    change(1);
+                    break;
+            }
+        }
+
+        window.addEventListener('keydown', onKeyDown);
+        return () => window.removeEventListener('keydown', onKeyDown);
+    },[lastIndex]);
+
     return (
         <div
             className={cn(
                 " hover:animate-none transition-all overflow-y-hidden relative duration-500 ease-in-out w-full z-50 rounded pt-3 pb-2 px-4",
                 hidden
-                    ? "h-0 opacity-0  pointer-events-none"
+                    ? "opacity-0 pointer-events-none"
                     : "animate-pulse  pointer-events-auto opacity-100 outline-1 bg-accent"
             )}
         >
+            <StateContainer open={!hidden}>
             <p className="font-[Rubik] text-center">Offer a player trade</p>
             <div className="flex font-[Rubik] scale-90 text-xs opacity-50 justify-center mb-1">
                 <p>red is to offer | green is wanted</p>
@@ -88,6 +121,7 @@ export function PlayerTrade() {
                                         const old = [...values];
                                         old[index] = old[index] + 1;
                                         setValues(old);
+                                        setLastIndex(index);
                                     }}
                                     onContextMenu={(e) => {
                                         e.preventDefault();
@@ -100,6 +134,7 @@ export function PlayerTrade() {
                                         );
 
                                         setValues(old);
+                                        setLastIndex(index);
                                     }}
                                     className="flex flex-row-reverse items-center  cursor-pointer select-none"
                                 >
@@ -206,6 +241,7 @@ export function PlayerTrade() {
                         : "confirm"}
                 </Button>
             </div>
+            </StateContainer>
         </div>
     );
 }

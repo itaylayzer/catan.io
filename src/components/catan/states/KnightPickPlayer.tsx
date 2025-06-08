@@ -4,6 +4,7 @@ import { useCatanStore } from "@/store/useCatanStore";
 import { useState } from "react";
 import { StateOverlay } from "./StateOverlay";
 import { PiHouseSimpleFill } from "react-icons/pi";
+import StateContainer from "./StateContainer";
 
 export function KnightPickPlayer() {
     const key = "KnightPickPlayer";
@@ -37,10 +38,12 @@ export function KnightPickPlayer() {
             className={cn(
                 "hover:animate-none transition-all overflow-y-hidden relative duration-500 ease-in-out w-full z-50 rounded pt-3 pb-2 px-4",
                 hidden
-                    ? "h-0 opacity-0  pointer-events-none"
+                    ? "opacity-0 pointer-events-none"
                     : "animate-pulse  pointer-events-auto opacity-100 outline-1 bg-accent"
             )}
         >
+            <StateContainer open={!hidden}>
+
             <p className="font-[Rubik] text-center mb-2">
                 Pick a Player you want to steal from!
             </p>
@@ -69,6 +72,8 @@ export function KnightPickPlayer() {
                     );
                 })}
             </div>
+            </StateContainer>
+
         </div>
     );
 }

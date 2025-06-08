@@ -8,13 +8,16 @@ import { MATERIALS } from "@/config/constants/ui";
 import { cn } from "@/lib/utils";
 import { useCatanStore } from "@/store/useCatanStore";
 import VMath from "@/utils/VMath";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { RiBankFill } from "react-icons/ri";
 import { StateOverlay } from "./StateOverlay";
+import StateContainer from "./StateContainer";
 
 export function TwoYearOfPlentyState() {
     const key = "TwoYearOfPlentyState";
     const [hidden, setHidden] = useState(true);
+
+    const [lastIndex, setLastIndex] = useState<number>();
     const [values, setValues] = useState([0, 0, 0, 0, 0]);
 
     const {
@@ -31,6 +34,7 @@ export function TwoYearOfPlentyState() {
         setHidden(false);
         StateOverlay.instance?.show(key);
         setValues([0, 0, 0, 0, 0]);
+        setLastIndex(undefined);
     });
 
     const confirm = () => {
@@ -45,15 +49,44 @@ export function TwoYearOfPlentyState() {
         StateOverlay.instance?.hide(key);
     };
 
+    useEffect(()=>{
+            if (lastIndex === undefined) return;
+            
+            const change = (addon:number) => {
+                setValues(old => {
+                    const copy = [...old]
+                
+                    copy[lastIndex] += addon;
+    
+                    return copy;
+                })
+            }
+            const onKeyDown = (event:KeyboardEvent)=>{
+                switch(event.which) {
+                    case 40:
+                        change(-1);
+                        break;
+                    case 38:
+                        change(1);
+                        break;
+                }
+            }
+    
+            window.addEventListener('keydown', onKeyDown);
+            return () => window.removeEventListener('keydown', onKeyDown);
+        },[lastIndex]);
+
     return (
         <div
             className={cn(
                 " hover:animate-none transition-all overflow-y-hidden relative duration-500 ease-in-out w-full z-50 rounded pt-3 pb-2 px-4",
                 hidden
-                    ? "h-0 opacity-0  pointer-events-none"
+                    ? "opacity-0 pointer-events-none"
                     : "animate-pulse  pointer-events-auto opacity-100 outline-1 bg-accent"
             )}
         >
+                        <StateContainer open={!hidden}>
+            
             <p className="font-[Rubik] text-center mb-2">
                 Choose 2 materials you want!
             </p>
@@ -84,6 +117,7 @@ export function TwoYearOfPlentyState() {
                                             old[index] + 1
                                         );
                                         setValues(old);
+                                        setLastIndex(index);
                                     }}
                                     onContextMenu={(e) => {
                                         e.preventDefault();
@@ -94,6 +128,7 @@ export function TwoYearOfPlentyState() {
                                             old[index] - 1
                                         );
                                         setValues(old);
+                                        setLastIndex(index);
                                     }}
                                     className="flex flex-row-reverse  items-center  cursor-pointer select-none"
                                 >
@@ -152,6 +187,7 @@ export function TwoYearOfPlentyState() {
                     cancel
                 </Button>
             </div>
+            </StateContainer>
         </div>
     );
 }

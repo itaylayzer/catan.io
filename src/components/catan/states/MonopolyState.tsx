@@ -10,6 +10,7 @@ import { useCatanStore } from "@/store/useCatanStore";
 import { useState } from "react";
 import { StateOverlay } from "./StateOverlay";
 import { convertions } from "../map/configs";
+import StateContainer from "./StateContainer";
 
 export function MonopolyState() {
     const key = "MonopolyState";
@@ -43,10 +44,11 @@ export function MonopolyState() {
             className={cn(
                 " hover:animate-none transition-all overflow-y-hidden relative duration-500 ease-in-out w-full z-50 rounded pt-3 pb-2 px-4",
                 hidden
-                    ? "h-0 opacity-0  pointer-events-none"
+                    ? "opacity-0 pointer-events-none"
                     : "animate-pulse  pointer-events-auto opacity-100 outline-1 bg-accent"
             )}
         >
+            <StateContainer open={!hidden}>
             <p className="font-[Rubik] text-center mb-2">
                 Choose Material you want to Monopol!
             </p>
@@ -109,6 +111,7 @@ export function MonopolyState() {
                     cancel
                 </Button>
             </div>
+            </StateContainer>
         </div>
     );
 }

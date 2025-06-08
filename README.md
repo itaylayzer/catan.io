@@ -26,4 +26,4 @@ npx peer --port 9000
 ## TODO
 
 -   players trade: animations for all reasons
--   states: use acordion for height animations
+-       map: fit to the players screen
