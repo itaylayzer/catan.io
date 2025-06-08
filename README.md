@@ -1,7 +1,6 @@
 # Catan.io
 
-Catan multiplayer game, created with Next.js & Peer.js \
-The game is playable, [theres some more last things to do](#todo)
+Catan multiplayer game, created with Next.js & Peer.js
 
 ## How to run the project
 
@@ -22,7 +21,3 @@ to run the peer-js server locally run the following command:
 ```bash
 npx peer --port 9000
 ```
-
-## TODO
-
-- map: fit to the players screen
