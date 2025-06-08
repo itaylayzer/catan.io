@@ -48,7 +48,7 @@ export function io(uri: string): Promise<Socket> {
 // class For Server
 export class Socket {
     private client: DataConnection;
-    public events: Map<string, (args: any) => void>;
+    public events: Map<string | number, (args: any) => void>;
     public id: string;
     constructor(_socket: DataConnection) {
         this.id = "";
@@ -85,10 +85,13 @@ export class Socket {
         this.client.on("data", handler);
     }
 
-    public on(event_name: string | "disconnect", handler: (args: any) => void) {
+    public on(
+        event_name: string | number | "disconnect",
+        handler: (args: any) => void
+    ) {
         this.events.set(event_name, handler);
     }
-    public emit(event_name: string, args?: any) {
+    public emit(event_name: string | number, args?: any) {
         try {
             this.client.send(
                 encrypt(
@@ -151,7 +154,7 @@ export class Server {
                 onf?.(socket, this);
             });
         });
-        }
+    }
     public set OnLogs(v: (...data: any[]) => void) {
         this.logFunction = v;
     }
