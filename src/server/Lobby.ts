@@ -37,10 +37,14 @@ export class Lobby {
 
     public get sockets() {
         return {
-            emit: (eventName: string, args?: any) => {
+            emit: (eventName: string | number, args?: any) => {
                 this.clients.forEach((socket) => socket.emit(eventName, args));
             },
-            emitExcept: (except: Socket, eventName: string, args?: any) => {
+            emitExcept: (
+                except: Socket,
+                eventName: string | number,
+                args?: any
+            ) => {
                 this.clients.forEach(
                     (socket) =>
                         socket !== except && socket.emit(eventName, args)
