@@ -8,7 +8,7 @@ import { MATERIALS } from "@/config/constants/ui";
 import { cn } from "@/lib/utils";
 import { useCatanStore } from "@/store/useCatanStore";
 import VMath from "@/utils/VMath";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { RiBankFill } from "react-icons/ri";
 import { StateOverlay } from "./StateOverlay";
 import StateContainer from "./StateContainer";
@@ -16,6 +16,8 @@ import StateContainer from "./StateContainer";
 export function SevenMatsDropState() {
     const key = "SevenMatsDropState";
     const [hidden, setHidden] = useState(true);
+
+    const [lastIndex, setLastIndex] = useState<number>();
     const [values, setValues] = useState([0, 0, 0, 0, 0]);
 
     const {
@@ -34,6 +36,7 @@ export function SevenMatsDropState() {
         setHidden(false);
         StateOverlay.instance?.show(key);
         setValues([0, 0, 0, 0, 0]);
+        setLastIndex(undefined);
     });
 
     const confirm = () => {
@@ -42,6 +45,33 @@ export function SevenMatsDropState() {
 
         events.emit("7 give", values);
     };
+
+    useEffect(()=>{
+            if (lastIndex === undefined) return;
+            
+            const change = (addon:number) => {
+                setValues(old => {
+                    const copy = [...old]
+                
+                    copy[lastIndex] += addon;
+    
+                    return copy;
+                })
+            }
+            const onKeyDown = (event:KeyboardEvent)=>{
+                switch(event.which) {
+                    case 40:
+                        change(-1);
+                        break;
+                    case 38:
+                        change(1);
+                        break;
+                }
+            }
+    
+            window.addEventListener('keydown', onKeyDown);
+            return () => window.removeEventListener('keydown', onKeyDown);
+        },[lastIndex]);
 
     return (
         <div
@@ -83,6 +113,7 @@ export function SevenMatsDropState() {
                                             old[index] + 1
                                         );
                                         setValues(old);
+                                        setLastIndex(index);
                                     }}
                                     onContextMenu={(e) => {
                                         e.preventDefault();
@@ -93,6 +124,7 @@ export function SevenMatsDropState() {
                                             old[index] - 1
                                         );
                                         setValues(old);
+                                        setLastIndex(index);
                                     }}
                                     className="flex flex-row-reverse  items-center  cursor-pointer select-none"
                                 >

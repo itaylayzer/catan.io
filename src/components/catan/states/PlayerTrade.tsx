@@ -20,6 +20,8 @@ export function PlayerTrade() {
 
     const [hidden, setHidden] = useState(true);
     const [values, setValues] = useState([0, 0, 0, 0, 0]);
+
+    const [lastIndex, setLastIndex] = useState<number>();
     const [pickedPlayers, setPickedPlayers] = useState<Set<number>>(new Set());
 
     const {
@@ -37,6 +39,8 @@ export function PlayerTrade() {
 
         setValues([0, 0, 0, 0, 0]);
         setPickedPlayers(new Set());
+
+        setLastIndex(undefined);
     });
 
     const confirm = () => {
@@ -56,6 +60,33 @@ export function PlayerTrade() {
     const disabled = !hasPositive || !hasNegative || noPickedPlayers;
 
     const onlines = Array.from(onlinesMap.values());
+
+    useEffect(()=>{
+        if (lastIndex === undefined) return;
+        
+        const change = (addon:number) => {
+            setValues(old => {
+                const copy = [...old]
+            
+                copy[lastIndex] += addon;
+
+                return copy;
+            })
+        }
+        const onKeyDown = (event:KeyboardEvent)=>{
+            switch(event.which) {
+                case 40:
+                    change(-1);
+                    break;
+                case 38:
+                    change(1);
+                    break;
+            }
+        }
+
+        window.addEventListener('keydown', onKeyDown);
+        return () => window.removeEventListener('keydown', onKeyDown);
+    },[lastIndex]);
 
     return (
         <div
@@ -90,6 +121,7 @@ export function PlayerTrade() {
                                         const old = [...values];
                                         old[index] = old[index] + 1;
                                         setValues(old);
+                                        setLastIndex(index);
                                     }}
                                     onContextMenu={(e) => {
                                         e.preventDefault();
@@ -102,6 +134,7 @@ export function PlayerTrade() {
                                         );
 
                                         setValues(old);
+                                        setLastIndex(index);
                                     }}
                                     className="flex flex-row-reverse items-center  cursor-pointer select-none"
                                 >
