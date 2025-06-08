@@ -11,6 +11,7 @@ import VMath from "@/utils/VMath";
 import { useMemo, useState } from "react";
 import { RiBankFill } from "react-icons/ri";
 import { StateOverlay } from "./StateOverlay";
+import StateContainer from "./StateContainer";
 
 export function SevenMatsDropState() {
     const key = "SevenMatsDropState";
@@ -47,10 +48,11 @@ export function SevenMatsDropState() {
             className={cn(
                 " hover:animate-none transition-all overflow-y-hidden relative duration-500 ease-in-out w-full z-50 rounded pt-3 pb-2 px-4",
                 hidden
-                    ? "h-0 opacity-0  pointer-events-none"
+                    ? "opacity-0 pointer-events-none"
                     : "animate-pulse  pointer-events-auto opacity-100 outline-1 bg-accent"
             )}
         >
+            <StateContainer open={!hidden}>
             <p className="font-[Rubik] text-center mb-2">
                 You have more then 6 materials
             </p>
@@ -142,6 +144,7 @@ export function SevenMatsDropState() {
                         : `Retrieve more ${leftCount - totalCount} materials!`}
                 </Button>
             </div>
+            </StateContainer>
         </div>
     );
 }

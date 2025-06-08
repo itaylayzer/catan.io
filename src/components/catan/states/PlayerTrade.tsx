@@ -7,12 +7,13 @@ import {
 import { COLORS, MATERIALS } from "@/config/constants/ui";
 import { cn } from "@/lib/utils";
 import { useCatanStore } from "@/store/useCatanStore";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { StateOverlay } from "./StateOverlay";
 import { ServerCodes } from "@/config/constants/codes";
 import { FaHandshakeSimple } from "react-icons/fa6";
 
 import { FaFaceGrinWide, FaRegFaceSadTear } from "react-icons/fa6";
+import StateContainer from "./StateContainer";
 
 export function PlayerTrade() {
     const key = "PlayerTrade";
@@ -61,10 +62,11 @@ export function PlayerTrade() {
             className={cn(
                 " hover:animate-none transition-all overflow-y-hidden relative duration-500 ease-in-out w-full z-50 rounded pt-3 pb-2 px-4",
                 hidden
-                    ? "h-0 opacity-0  pointer-events-none"
+                    ? "opacity-0 pointer-events-none"
                     : "animate-pulse  pointer-events-auto opacity-100 outline-1 bg-accent"
             )}
         >
+            <StateContainer open={!hidden}>
             <p className="font-[Rubik] text-center">Offer a player trade</p>
             <div className="flex font-[Rubik] scale-90 text-xs opacity-50 justify-center mb-1">
                 <p>red is to offer | green is wanted</p>
@@ -206,6 +208,7 @@ export function PlayerTrade() {
                         : "confirm"}
                 </Button>
             </div>
+            </StateContainer>
         </div>
     );
 }
