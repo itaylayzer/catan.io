@@ -13,8 +13,9 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { FaDoorOpen, FaKey } from "react-icons/fa";
-
-const inputClassName: string = "border-0 border-b rounded-none  ";
+import { MdMenuBook } from "react-icons/md";
+import { FaFlipboard } from "react-icons/fa6";
+const inputClassName: string = "border-0 border-b rounded-none";
 
 export default function HomePage() {
     const router = useRouter();
@@ -31,7 +32,9 @@ export default function HomePage() {
         resetToDefaults();
     }, []);
 
-    const [name, setName] = useState("");
+    const [name, setName] = useState(
+        `Guest_${Math.floor(Math.random() * 1000)}`,
+    );
     const [code, setCode] = useState("");
 
     const updateName = () =>
@@ -72,63 +75,47 @@ export default function HomePage() {
                 @itaylayzer
             </Button>
             <div className="absolute z-20 flex flex-col gap-2 justify-center items-start top-0 left-50 w-[30%] h-full">
-                <div className="flex gap-2 items-center ">
+                <div className="flex gap-2 items-center mt-40">
                     <SVGWood height={80} width={80} fill="#222" />
                     <h1 className="text-8xl font-[Rubik] font-bold">Catan</h1>
                 </div>
-
-                <div className="flex gap-2">
+                <Input
+                    className="border-0 border-b w-65 rounded ml-22.5"
+                    onInput={({ currentTarget: { value } }) => setName(value)}
+                    defaultValue={name}
+                    placeholder="Enter Name"
+                ></Input>
+                <div className="flex flex-col items-start gap-2 ml-22.5 mt-10">
+                    <Button
+                        variant="link"
+                        className="cursor-pointer text-xl hover:translate-x-2"
+                    >
+                        <FaFlipboard className="rotate-45" /> Quick Play
+                    </Button>
+                    <Button
+                        onClick={host}
+                        variant="link"
+                        className="cursor-pointer text-xl hover:translate-x-2"
+                    >
+                        <FaDoorOpen /> Host
+                    </Button>
+                    <Button
+                        variant="link"
+                        className="cursor-pointer text-xl hover:translate-x-2"
+                    >
+                        <MdMenuBook /> Lobbies
+                    </Button>
                     <Popover>
                         <PopoverTrigger>
                             <Button
                                 variant="link"
-                                className="cursor-pointer text-xl"
-                            >
-                                <FaDoorOpen /> Host
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="border-0">
-                            <div className="flex flex-col gap-3">
-                                <Input
-                                    className={inputClassName}
-                                    onInput={({ currentTarget: { value } }) =>
-                                        setName(value)
-                                    }
-                                    defaultValue={name}
-                                    placeholder="Enter Name"
-                                ></Input>
-                                <div className="flex justify-end">
-                                    <Button
-                                        onClick={host}
-                                        variant="link"
-                                        className="cursor-pointer"
-                                    >
-                                        <FaDoorOpen />
-                                        Host
-                                    </Button>
-                                </div>
-                            </div>
-                        </PopoverContent>
-                    </Popover>
-                    <Popover>
-                        <PopoverTrigger>
-                            <Button
-                                variant="link"
-                                className="cursor-pointer text-xl"
+                                className="cursor-pointer text-xl hover:translate-x-2"
                             >
                                 <FaKey /> Join
                             </Button>
                         </PopoverTrigger>
                         <PopoverContent className="border-0">
                             <div className="flex flex-col gap-3">
-                                <Input
-                                    className={inputClassName}
-                                    onInput={({ currentTarget: { value } }) =>
-                                        setName(value)
-                                    }
-                                    defaultValue={name}
-                                    placeholder="Enter Name"
-                                ></Input>
                                 <Input
                                     className={inputClassName}
                                     onInput={({ currentTarget: { value } }) =>

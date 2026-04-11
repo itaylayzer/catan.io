@@ -13,6 +13,8 @@ const peerOptions: PeerOptions = {
     port: Config.PEER_SERVER_PORT ?? 443,
     // @ts-ignore
     host: Config.PEER_SERVER_HOST ?? undefined,
+    // @ts-ignore
+    path: Config.PEER_SERVER_PATH ?? undefined,
 };
 
 export function io(uri: string): Promise<Socket> {
@@ -65,7 +67,7 @@ export class Socket {
                 if (xhandler !== undefined) {
                     xhandler(d.args);
                 }
-            } catch {}
+            } catch { }
         });
 
         this.client.on("error", (error) => {
@@ -77,7 +79,7 @@ export class Socket {
                 if (xhandler !== undefined) {
                     xhandler("");
                 }
-            } catch {}
+            } catch { }
         });
     }
 
@@ -101,7 +103,7 @@ export class Socket {
                     })
                 )
             );
-        } catch {}
+        } catch { }
     }
     public disconnect() {
         this.emit("disconnect");
@@ -142,7 +144,7 @@ export class Server {
             this.logs.push(data);
             this.renderFunction(this.logs);
         };
-        this.renderFunction = () => {};
+        this.renderFunction = () => { };
         this.socket.on("open", async () => {
             idf?.(this);
         });
