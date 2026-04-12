@@ -7,7 +7,6 @@ import { COLORS } from "@/config/constants/ui";
 import { cn } from "@/lib/utils";
 import { io } from "@/server/sockets";
 import { useCatanStore } from "@/store/useCatanStore";
-import { TranslateCode } from "@/utils/code";
 import Head from "next/head";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/router";
@@ -26,7 +25,7 @@ function LobbyRoom({ code }: { code: string }) {
             color,
             name,
             ready,
-        })
+        }),
     );
 
     const { ready } = local;
@@ -40,7 +39,8 @@ function LobbyRoom({ code }: { code: string }) {
             <p className="opacity-70">share this code to invite others</p>
             <CopyButton
                 className="text-4xl font-[Rubik] font-medium"
-                text={code}
+                text={code.substring(0, 3) + "-" + code.substring(3)}
+                copyText={code}
             />
             <div className="h-1"></div>
 
@@ -49,7 +49,7 @@ function LobbyRoom({ code }: { code: string }) {
                     <div
                         className={cn(
                             "transition-[background-color] px-5  rounded py-2 text-1xl text-center font-[Rubik] flex items-center flex-col",
-                            p.ready ? "text-green-700" : "bg-transparent"
+                            p.ready ? "text-green-700" : "bg-transparent",
                         )}
                     >
                         {p.name}
@@ -106,7 +106,7 @@ export default function LobbyPage() {
 
         (async () => {
             try {
-                const socket = await io(TranslateCode(code));
+                const socket = await io(code);
                 setSocket(socket);
 
                 window.addEventListener("unload", () => {

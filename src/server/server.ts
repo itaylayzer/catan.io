@@ -6,6 +6,7 @@ import VMath from "@/utils/VMath";
 import { MaterialList } from "@/types/materials";
 import { Lobby } from "./Lobby";
 import { TradesSet } from "./TradesSet";
+import LobbyRTCClient from "@/lib/LobbyRTCClient";
 
 const empty = [0, 0, 0, 0, 0];
 
@@ -109,6 +110,9 @@ export default function createServer(onOpen?: (server: Server) => void) {
                         ClientCodes.TURN_SWITCH,
                         catan.act_stopTurn()
                     );
+
+                    LobbyRTCClient.closeLobbyQuiet();
+                    server.stop();
                 }
             });
 
@@ -147,10 +151,10 @@ export default function createServer(onOpen?: (server: Server) => void) {
                             : {}),
                         ...(data.settlements
                             ? {
-                                  settlements: Array.from(
-                                      player.settlements.values()
-                                  ),
-                              }
+                                settlements: Array.from(
+                                    player.settlements.values()
+                                ),
+                            }
                             : {}),
                         ...(data.maxRoad === undefined
                             ? {}

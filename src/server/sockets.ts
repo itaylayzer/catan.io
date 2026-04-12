@@ -1,30 +1,24 @@
 import Peer, { DataConnection, PeerOptions } from "peerjs";
-import { TranslateCode, code } from "../utils/code";
 import Config from "../config";
 import { decrypt, encrypt } from "./chiper";
 import Pako from "pako";
+import LobbyRTCClient from "@/lib/LobbyRTCClient";
 
 const peerOptions: PeerOptions = {
-    // @ts-ignore
+    ...LobbyRTCClient.peerSettings(),
     debug: Config.PEER_DEBUG_LEVEL ?? 0,
-    // @ts-ignore
-    secure: Config.PEER_SECURE ?? false,
-    // @ts-ignore
-    port: Config.PEER_SERVER_PORT ?? 443,
-    // @ts-ignore
-    host: Config.PEER_SERVER_HOST ?? undefined,
-    // @ts-ignore
-    path: Config.PEER_SERVER_PATH ?? undefined,
 };
 
 export function io(uri: string): Promise<Socket> {
+    const promise = LobbyRTCClient.joinLobby(uri);
     return new Promise((resolve, reject) => {
         const peer = new Peer(peerOptions);
 
         // Listen for the 'open' event, which indicates that the Peer connection is open.
-        peer.on("open", (id) => {
+        peer.on("open", async (id) => {
             // Once the Peer connection is open, create a data connection.
-            const dataConnection = peer.connect(uri, { reliable: true });
+            const { webRTCId } = await promise;
+            const dataConnection = peer.connect(webRTCId, { reliable: true });
 
             setTimeout(() => {
                 reject("the server took too long to respond");
@@ -91,7 +85,13 @@ export class Socket {
         event_name: string | number | "disconnect",
         handler: (args: any) => void
     ) {
-        this.events.set(event_name, handler);
+        const oldEvent = this.events.get(event_name);
+        if (oldEvent) {
+            this.events.set(event_name, (args) => {
+                oldEvent(args);
+                handler(args);
+            });
+        } else this.events.set(event_name, handler);
     }
     public emit(event_name: string | number, args?: any) {
         try {
@@ -123,30 +123,21 @@ export class Server {
         idf?: (thisobj: Server) => void,
         onf?: (s: Socket, server: Server) => void
     ) {
-        var error = true;
 
-        var _code: string = "";
-        var _socket: Peer;
+        this.code = "waiting";
+        this.socket = new Peer(peerOptions);
 
-        while (error) {
-            try {
-                _code = code();
-                _socket = new Peer(TranslateCode(_code), peerOptions);
-                error = false;
-            } catch {
-                error = true;
-            }
-        }
-        this.code = _code;
-        // @ts-ignore
-        this.socket = _socket;
+
         this.logFunction = (...data) => {
             this.logs.push(data);
             this.renderFunction(this.logs);
         };
         this.renderFunction = () => { };
         this.socket.on("open", async () => {
-            idf?.(this);
+            LobbyRTCClient.hostLobby(this.socket.id).then((code) => {
+                this.code = code;
+                idf?.(this);
+            })
         });
 
         this.socket.on("connection", (dataConnection) => {
@@ -154,8 +145,16 @@ export class Server {
                 const socket = new Socket(dataConnection);
                 socket.id = dataConnection.peer;
                 onf?.(socket, this);
+                socket.on('disconnect', () => {
+                    LobbyRTCClient.updatePlayersCount((old) => old - 1);
+                });
+                LobbyRTCClient.updatePlayersCount((old) => old + 1);
             });
         });
+
+        this.socket.on("disconnected", () => {
+            LobbyRTCClient.closeLobbyQuiet();
+        })
     }
     public set OnLogs(v: (...data: any[]) => void) {
         this.logFunction = v;
@@ -166,6 +165,9 @@ export class Server {
         f(this.logs);
     }
     public stop() {
+        LobbyRTCClient.closeLobbyQuiet();
         this.socket.destroy();
     }
+
+
 }
