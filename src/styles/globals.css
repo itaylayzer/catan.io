@@ -113,11 +113,16 @@
 }
 
 @layer base {
+    /* Reserve scrollbar width so Radix Dialog scroll-lock does not change viewport width (scrollbar jump). */
     * {
         @apply border-border outline-ring/50;
     }
     body {
         @apply bg-background text-foreground;
+    }
+
+    body[style] {
+        position: static !important;
     }
 }
 /* Target all scrollbars */

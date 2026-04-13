@@ -106,7 +106,10 @@ export default function LobbyPage() {
 
         (async () => {
             try {
-                const socket = await io(code);
+                const socket = await io(
+                    code,
+                    sessionStorage.getItem("password") ?? undefined,
+                );
                 setSocket(socket);
 
                 window.addEventListener("unload", () => {

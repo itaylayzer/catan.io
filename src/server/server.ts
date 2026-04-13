@@ -10,12 +10,12 @@ import LobbyRTCClient from "@/lib/LobbyRTCClient";
 
 const empty = [0, 0, 0, 0, 0];
 
-export default function createServer(onOpen?: (server: Server) => void) {
+export default function createServer({ password, visible }: { password?: string; visible: boolean }, onOpen?: (server: Server) => void) {
     const catan = new Catan();
     const lobby = new Lobby();
     const trades = new TradesSet();
 
-    new Server(
+    new Server(password, visible,
         (self) => {
             onOpen?.(self);
         },

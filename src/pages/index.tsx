@@ -34,8 +34,16 @@ import {
     InputOTPSeparator,
     InputOTPSlot,
 } from "@/components/ui/input-otp";
+import { LobbiesTable } from "@/components/catan/components/LobbiesTable";
+import { IoMdEye } from "react-icons/io";
 
-const inputClassName: string = "border-0 border-b rounded-none";
+import { cn } from "@/lib/utils";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { hashPassword } from "@/utils/hashPassword";
 
 export default function HomePage() {
     const router = useRouter();
@@ -55,6 +63,8 @@ export default function HomePage() {
     const [name, setName] = useState(
         `Guest_${Math.floor(Math.random() * 1000)}`,
     );
+    const [hostPassword, setHostPassword] = useState<string>();
+    const [hostVisible, setHostVisible] = useState<boolean>(true);
     const [code, setCode] = useState("");
 
     const updateName = () =>
@@ -70,12 +80,22 @@ export default function HomePage() {
 
         router.push(`/lobby?code=${code}`);
     };
-    const host = () => {
+
+    const host = async () => {
         updateName();
 
-        createServer(async ({ code: serverCode }) => {
-            router.push(`/lobby?code=${serverCode}`);
-        });
+        var password: string | undefined = undefined;
+        if (typeof hostPassword === "string" && hostPassword.trim() !== "") {
+            password = await hashPassword(hostPassword);
+            sessionStorage.setItem("password", password);
+        }
+
+        createServer(
+            { password: password, visible: hostVisible },
+            async ({ code: serverCode }) => {
+                router.push(`/lobby?code=${serverCode}`);
+            },
+        );
     };
 
     const quickJoin = async () => {
@@ -142,13 +162,67 @@ export default function HomePage() {
                         >
                             <FaFlipboard /> Quick Play
                         </Button>
-                        <Button
-                            onClick={host}
-                            variant="link"
-                            className="cursor-pointer text-xl hover:translate-x-2"
-                        >
-                            <FaDoorOpen /> Host
-                        </Button>
+
+                        <Popover>
+                            <PopoverTrigger>
+                                <Button
+                                    variant="link"
+                                    className="cursor-pointer text-xl hover:translate-x-2"
+                                >
+                                    <FaDoorOpen /> Host
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent>
+                                <div className="flex flex-col gap-3">
+                                    <Input
+                                        type="password"
+                                        className="border-0 border-b w-65 rounded "
+                                        onInput={({
+                                            currentTarget: { value },
+                                        }) => setHostPassword(value)}
+                                        defaultValue={hostPassword}
+                                        placeholder="Password (Optional)"
+                                    />
+
+                                    <div className="flex justify-between">
+                                        <Tooltip>
+                                            <TooltipTrigger>
+                                                <Button
+                                                    variant="ghost"
+                                                    className={cn(
+                                                        "cursor-pointer",
+                                                        hostVisible
+                                                            ? "opacity-100"
+                                                            : "opacity-50",
+                                                    )}
+                                                    onClick={() => {
+                                                        setHostVisible(
+                                                            (old) => !old,
+                                                        );
+                                                    }}
+                                                >
+                                                    <IoMdEye />
+                                                </Button>
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                                <p>
+                                                    {hostVisible
+                                                        ? "Click to Hide Room"
+                                                        : "Click to Show Room"}
+                                                </p>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                        <Button
+                                            onClick={host}
+                                            variant="link"
+                                            className="cursor-pointer"
+                                        >
+                                            <FaKey /> Host
+                                        </Button>
+                                    </div>
+                                </div>
+                            </PopoverContent>
+                        </Popover>
                         <DialogTrigger asChild>
                             <Button
                                 variant="link"
@@ -167,7 +241,7 @@ export default function HomePage() {
                                     <FaKey /> Join
                                 </Button>
                             </PopoverTrigger>
-                            <PopoverContent className="border-0">
+                            <PopoverContent>
                                 <div className="flex flex-col gap-3">
                                     <InputOTP
                                         id="disabled"
@@ -188,7 +262,6 @@ export default function HomePage() {
                                             <InputOTPSlot index={5} />
                                         </InputOTPGroup>
                                     </InputOTP>
-
                                     <div className="flex justify-end">
                                         <Button
                                             onClick={join}
@@ -210,10 +283,17 @@ export default function HomePage() {
                 </div>{" "}
                 <DialogContent className="z-[60]">
                     <DialogHeader>
-                        <DialogTitle>Available Lobbies</DialogTitle>
-                    </DialogHeader>
+                        <DialogTitle className="text-center">
+                            Available Lobbies
+                        </DialogTitle>
+                        <LobbiesTable
+                            onClickLobby={(code) => {
+                                updateName();
 
-                    <p>This is a simple dialog.</p>
+                                router.push(`/lobby?code=${code}`);
+                            }}
+                        />
+                    </DialogHeader>
                 </DialogContent>
             </Dialog>
         </>

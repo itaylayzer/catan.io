@@ -1,5 +1,5 @@
 import CONFIG from '@/config'
-import Axios from 'axios'
+import Axios, { AxiosRequestConfig } from 'axios'
 
 const { LOBBYRTC_CONNECTION_URL, PEER_SECURE } = CONFIG;
 
@@ -33,10 +33,11 @@ class LobbyRTCClient {
     async listLobbies() {
         const { data } = await this.axios.get(`/lobbies/${LobbyRTCClient.gameId}/visibles`);
 
-        return data as Array<{ token: string, playersCount: number, webRTCId: string, password?: string }>;
+        return data as Array<{ token: string, playersCount: number, password?: string }>;
     }
     async joinLobby(token: string, password?: string) {
-        const { data } = await this.axios.get(`/lobbies/${LobbyRTCClient.gameId}/${token}`);;
+        const passwordSettings: AxiosRequestConfig = password ? { auth: { password, username: '' } } : {};
+        const { data } = await this.axios.get(`/lobbies/${LobbyRTCClient.gameId}/${token}`, passwordSettings);;
 
         return data as { webRTCId: string };
     }
@@ -68,13 +69,17 @@ class LobbyRTCClient {
     }
 
     async closeLobby() {
-        if (await this.closeLobbyQuiet() === -1) throw new Error("Not connected to a lobby");
+        const result = await this.closeLobbyQuiet();
+        if (result === -1) throw new Error("Not connected to a lobby");
+        if (result !== 0) throw result;
     }
 
     async closeLobbyQuiet() {
         if (this.managedRoom === null) return -1;
 
-        await this.axios.delete(`/lobbies/`, { data: { accessToken: this.managedRoom.accessToken } });
+        try {
+            await this.axios.delete(`/lobbies/`, { data: { accessToken: this.managedRoom.accessToken } });
+        } catch (err) { return err }
         this.managedRoom = null;
 
         return 0;

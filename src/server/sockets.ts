@@ -9,8 +9,8 @@ const peerOptions: PeerOptions = {
     debug: Config.PEER_DEBUG_LEVEL ?? 0,
 };
 
-export function io(uri: string): Promise<Socket> {
-    const promise = LobbyRTCClient.joinLobby(uri);
+export function io(uri: string, password?: string): Promise<Socket> {
+    const promise = LobbyRTCClient.joinLobby(uri, password);
     return new Promise((resolve, reject) => {
         const peer = new Peer(peerOptions);
 
@@ -120,6 +120,8 @@ export class Server {
     public logs: Array<any[]> = [];
     public code: string;
     constructor(
+        password: string | undefined,
+        visible: boolean,
         idf?: (thisobj: Server) => void,
         onf?: (s: Socket, server: Server) => void
     ) {
@@ -127,14 +129,13 @@ export class Server {
         this.code = "waiting";
         this.socket = new Peer(peerOptions);
 
-
         this.logFunction = (...data) => {
             this.logs.push(data);
             this.renderFunction(this.logs);
         };
         this.renderFunction = () => { };
         this.socket.on("open", async () => {
-            LobbyRTCClient.hostLobby(this.socket.id).then((code) => {
+            LobbyRTCClient.hostLobby(this.socket.id, password, visible).then((code) => {
                 this.code = code;
                 idf?.(this);
             })
