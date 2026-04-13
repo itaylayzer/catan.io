@@ -90,7 +90,7 @@ class LobbyRTCClient {
         return {
             host: LOBBYRTC_CONNECTION_URL.split(':')[1].replace('//', ''),
             path: '/peer',
-            port: LOBBYRTC_CONNECTION_URL.includes(':') ? parseInt(LOBBYRTC_CONNECTION_URL.split(':')[2]) : LOBBYRTC_CONNECTION_URL.includes('https://') ? 443 : 80,
+            port: /:\d+$/.test(LOBBYRTC_CONNECTION_URL) ? parseInt(LOBBYRTC_CONNECTION_URL.split(':')[2]) : LOBBYRTC_CONNECTION_URL.includes('https://') ? 443 : 80,
             secure: LOBBYRTC_CONNECTION_URL.includes('https://') ? true : (PEER_SECURE ?? false)
         };
     }
