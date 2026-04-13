@@ -4,9 +4,10 @@ import { useState } from "react";
 export default function CopyButton({
     text,
     className,
+    copyText,
     onClick: _,
     ...rest
-}: { text: string } & React.DetailedHTMLProps<
+}: { text: string; copyText: string } & React.DetailedHTMLProps<
     React.HTMLAttributes<HTMLParagraphElement>,
     HTMLParagraphElement
 >) {
@@ -16,7 +17,7 @@ export default function CopyButton({
         try {
             if (toggleText === true) return;
 
-            navigator.clipboard.writeText(text);
+            navigator.clipboard.writeText(copyText);
 
             setToggle(true);
 
@@ -34,7 +35,7 @@ export default function CopyButton({
             className={cn(
                 className,
                 "select-none",
-                toggleText ? "font-light" : "cursor-pointer z-[100]"
+                toggleText ? "font-light" : "cursor-pointer z-[100]",
             )}
             onClick={onClick}
         >

@@ -1,42 +1,43 @@
 import Peer, { DataConnection, PeerOptions } from "peerjs";
-import { TranslateCode, code } from "../utils/code";
 import Config from "../config";
 import { decrypt, encrypt } from "./chiper";
 import Pako from "pako";
+import LobbyRTCClient from "@/lib/LobbyRTCClient";
 
 const peerOptions: PeerOptions = {
-    // @ts-ignore
+    ...LobbyRTCClient.peerSettings(),
     debug: Config.PEER_DEBUG_LEVEL ?? 0,
-    // @ts-ignore
-    secure: Config.PEER_SECURE ?? false,
-    // @ts-ignore
-    port: Config.PEER_SERVER_PORT ?? 443,
-    // @ts-ignore
-    host: Config.PEER_SERVER_HOST ?? undefined,
 };
 
-export function io(uri: string): Promise<Socket> {
+export function io(uri: string, password?: string): Promise<Socket> {
     return new Promise((resolve, reject) => {
+        const promise = LobbyRTCClient.joinLobby(uri, password);
+
         const peer = new Peer(peerOptions);
 
         // Listen for the 'open' event, which indicates that the Peer connection is open.
-        peer.on("open", (id) => {
-            // Once the Peer connection is open, create a data connection.
-            const dataConnection = peer.connect(uri, { reliable: true });
-
-            setTimeout(() => {
+        peer.on("open", async (id) => {
+            const timeoutId = setTimeout(() => {
                 reject("the server took too long to respond");
             }, 5000);
-            dataConnection.on("open", () => {
-                // Create a new Socket instance with the data connection.
-                const sock = new Socket(dataConnection);
-                sock.id = id;
-                // Resolve the Promise with the Socket object.
-                resolve(sock);
-            });
-            dataConnection.on("error", (r) => {
-                reject(r.message);
-            });
+            try {
+                // Once the Peer connection is open, create a data connection.
+                const { webRTCId } = await promise;
+                const dataConnection = peer.connect(webRTCId, { reliable: true });
+
+
+                dataConnection.on("open", () => {
+                    // Create a new Socket instance with the data connection.
+                    const sock = new Socket(dataConnection);
+                    sock.id = id;
+                    clearTimeout(timeoutId);
+                    // Resolve the Promise with the Socket object.
+                    resolve(sock);
+                });
+                dataConnection.on("error", (r) => {
+                    reject(r.message);
+                });
+            } catch (err) { clearTimeout(timeoutId); reject(err) };
         });
 
         peer.on("error", (error) => {
@@ -65,7 +66,7 @@ export class Socket {
                 if (xhandler !== undefined) {
                     xhandler(d.args);
                 }
-            } catch {}
+            } catch { }
         });
 
         this.client.on("error", (error) => {
@@ -77,7 +78,7 @@ export class Socket {
                 if (xhandler !== undefined) {
                     xhandler("");
                 }
-            } catch {}
+            } catch { }
         });
     }
 
@@ -89,7 +90,13 @@ export class Socket {
         event_name: string | number | "disconnect",
         handler: (args: any) => void
     ) {
-        this.events.set(event_name, handler);
+        const oldEvent = this.events.get(event_name);
+        if (oldEvent) {
+            this.events.set(event_name, (args) => {
+                oldEvent(args);
+                handler(args);
+            });
+        } else this.events.set(event_name, handler);
     }
     public emit(event_name: string | number, args?: any) {
         try {
@@ -101,7 +108,7 @@ export class Socket {
                     })
                 )
             );
-        } catch {}
+        } catch { }
     }
     public disconnect() {
         this.emit("disconnect");
@@ -118,33 +125,25 @@ export class Server {
     public logs: Array<any[]> = [];
     public code: string;
     constructor(
+        password: string | undefined,
+        visible: boolean,
         idf?: (thisobj: Server) => void,
         onf?: (s: Socket, server: Server) => void
     ) {
-        var error = true;
 
-        var _code: string = "";
-        var _socket: Peer;
+        this.code = "waiting";
+        this.socket = new Peer(peerOptions);
 
-        while (error) {
-            try {
-                _code = code();
-                _socket = new Peer(TranslateCode(_code), peerOptions);
-                error = false;
-            } catch {
-                error = true;
-            }
-        }
-        this.code = _code;
-        // @ts-ignore
-        this.socket = _socket;
         this.logFunction = (...data) => {
             this.logs.push(data);
             this.renderFunction(this.logs);
         };
-        this.renderFunction = () => {};
+        this.renderFunction = () => { };
         this.socket.on("open", async () => {
-            idf?.(this);
+            LobbyRTCClient.hostLobby(this.socket.id, password, visible).then((code) => {
+                this.code = code;
+                idf?.(this);
+            })
         });
 
         this.socket.on("connection", (dataConnection) => {
@@ -152,6 +151,10 @@ export class Server {
                 const socket = new Socket(dataConnection);
                 socket.id = dataConnection.peer;
                 onf?.(socket, this);
+                socket.on('disconnect', () => {
+                    LobbyRTCClient.updatePlayersCount((old) => old - 1);
+                });
+                LobbyRTCClient.updatePlayersCount((old) => old + 1);
             });
         });
     }
@@ -164,6 +167,13 @@ export class Server {
         f(this.logs);
     }
     public stop() {
+        LobbyRTCClient.closeLobbyQuiet();
+        this.socket.disconnect();
+    }
+
+    public destroy() {
         this.socket.destroy();
     }
+
+
 }

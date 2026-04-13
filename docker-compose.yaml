@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  lobbyrtc:
+    image: lobbyrtc:1.2.8
+    container_name: lobbyrtc
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+      - "9000:9000"
