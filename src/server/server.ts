@@ -111,7 +111,6 @@ export default function createServer({ password, visible }: { password?: string;
                         catan.act_stopTurn()
                     );
 
-                    LobbyRTCClient.closeLobbyQuiet();
                     server.stop();
                 }
             });

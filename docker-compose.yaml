@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   lobbyrtc:
-    image: lobbyrtc:1.2.7
+    image: lobbyrtc:1.2.8
     container_name: lobbyrtc
     restart: unless-stopped
     ports:

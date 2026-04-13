@@ -10,29 +10,34 @@ const peerOptions: PeerOptions = {
 };
 
 export function io(uri: string, password?: string): Promise<Socket> {
-    const promise = LobbyRTCClient.joinLobby(uri, password);
     return new Promise((resolve, reject) => {
+        const promise = LobbyRTCClient.joinLobby(uri, password);
+
         const peer = new Peer(peerOptions);
 
         // Listen for the 'open' event, which indicates that the Peer connection is open.
         peer.on("open", async (id) => {
-            // Once the Peer connection is open, create a data connection.
-            const { webRTCId } = await promise;
-            const dataConnection = peer.connect(webRTCId, { reliable: true });
-
-            setTimeout(() => {
+            const timeoutId = setTimeout(() => {
                 reject("the server took too long to respond");
             }, 5000);
-            dataConnection.on("open", () => {
-                // Create a new Socket instance with the data connection.
-                const sock = new Socket(dataConnection);
-                sock.id = id;
-                // Resolve the Promise with the Socket object.
-                resolve(sock);
-            });
-            dataConnection.on("error", (r) => {
-                reject(r.message);
-            });
+            try {
+                // Once the Peer connection is open, create a data connection.
+                const { webRTCId } = await promise;
+                const dataConnection = peer.connect(webRTCId, { reliable: true });
+
+
+                dataConnection.on("open", () => {
+                    // Create a new Socket instance with the data connection.
+                    const sock = new Socket(dataConnection);
+                    sock.id = id;
+                    clearTimeout(timeoutId);
+                    // Resolve the Promise with the Socket object.
+                    resolve(sock);
+                });
+                dataConnection.on("error", (r) => {
+                    reject(r.message);
+                });
+            } catch (err) { clearTimeout(timeoutId); reject(err) };
         });
 
         peer.on("error", (error) => {
@@ -152,10 +157,6 @@ export class Server {
                 LobbyRTCClient.updatePlayersCount((old) => old + 1);
             });
         });
-
-        this.socket.on("disconnected", () => {
-            LobbyRTCClient.closeLobbyQuiet();
-        })
     }
     public set OnLogs(v: (...data: any[]) => void) {
         this.logFunction = v;
@@ -167,6 +168,10 @@ export class Server {
     }
     public stop() {
         LobbyRTCClient.closeLobbyQuiet();
+        this.socket.disconnect();
+    }
+
+    public destroy() {
         this.socket.destroy();
     }
 

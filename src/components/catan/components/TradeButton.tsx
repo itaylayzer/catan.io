@@ -1,4 +1,4 @@
-import Switch from "@/components/custom/logical/Switch";
+import SwitchIndex from "@/components/custom/logical/SwitchIndex";
 import { Button } from "@/components/ui/button";
 import {
     Popover,
@@ -29,7 +29,7 @@ function RenderMaterial(matIndex: number, matCount: number) {
                     width: 30,
                     fill: color,
                     stroke: color,
-                })
+                }),
             );
         }
 
@@ -79,7 +79,7 @@ function StateCarosul({ trades }: { trades: Deal[] }) {
     return (
         <>
             <div className="flex gap-2 items-center -translate-y-2 opacity-70">
-                <Switch index={index}>
+                <SwitchIndex index={index}>
                     <>
                         <p>Pick Offer</p>
                     </>
@@ -102,9 +102,9 @@ function StateCarosul({ trades }: { trades: Deal[] }) {
                         })}
                         <p>Confirm</p>
                     </>
-                </Switch>
+                </SwitchIndex>
             </div>
-            <Switch
+            <SwitchIndex
                 index={
                     +(deal !== undefined) +
                     +(wanted !== undefined) +
@@ -123,7 +123,7 @@ function StateCarosul({ trades }: { trades: Deal[] }) {
                                 {" "}
                                 {RenderMaterial(index, count)}{" "}
                             </div>
-                        )
+                        ),
                     )}
                 </div>
                 <div className="flex flex-col items-center gap-5">
@@ -162,7 +162,7 @@ function StateCarosul({ trades }: { trades: Deal[] }) {
                         </div>
                     </div>
                 </div>
-            </Switch>
+            </SwitchIndex>
         </>
     );
 }
@@ -203,7 +203,7 @@ export function TradeButton(): {
                                 count,
                             });
                             togglePop();
-                        }
+                        },
                     );
                 }
             }}
