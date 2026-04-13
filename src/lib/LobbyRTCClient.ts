@@ -1,6 +1,7 @@
 import CONFIG from '@/config'
 import Axios, { AxiosRequestConfig } from 'axios'
 
+// @ts-ignore
 const { LOBBYRTC_CONNECTION_URL, PEER_SECURE } = CONFIG;
 
 class LobbyRTCClient {
